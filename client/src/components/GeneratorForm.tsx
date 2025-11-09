@@ -143,27 +143,6 @@ export default function GeneratorForm({ type, onGenerate, isGenerating = false, 
         </div>
       )}
 
-      {/* Style Options */}
-      <div className="space-y-2">
-        <Label className="text-base font-semibold">Style Options</Label>
-        <div className="flex flex-wrap gap-2">
-          {styleOptions[type].map((style) => (
-            <Badge
-              key={style}
-              variant={selectedStyles.includes(style) ? 'default' : 'outline'}
-              className="cursor-pointer hover-elevate active-elevate-2 px-3 py-1"
-              onClick={() => handleStyleToggle(style)}
-              data-testid={`badge-style-${style}`}
-            >
-              {style}
-              {selectedStyles.includes(style) && (
-                <X className="ml-1 h-3 w-3" />
-              )}
-            </Badge>
-          ))}
-        </div>
-      </div>
-
       {/* Generate Button */}
       <Button
         type="submit"
