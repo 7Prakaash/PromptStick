@@ -14,6 +14,7 @@ import { generateImagePrompt } from '@/utils/imagePromptGen';
 import { generateVideoPrompt } from '@/utils/videoPromptGen';
 import {
   savePrompt,
+  updatePrompt,
   hasReachedDailyLimit,
   hasReachedMonthlyLimit,
 } from '@/utils/localStorage';
@@ -148,7 +149,6 @@ export default function GeneratorPage() {
 
     if (editPromptId) {
       // Update existing prompt
-      const { updatePrompt } = require('@/utils/localStorage');
       updatePrompt(editPromptId, {
         query: lastParams.query,
         generatedPrompt,
