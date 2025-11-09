@@ -19,6 +19,8 @@ import { Copy, Trash2, Star, Edit, Save, X, Pencil } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { SavedPrompt } from '@/utils/localStorage';
 import { format } from 'date-fns';
+import { useDraggable } from '@dnd-kit/core';
+import { CSS } from '@dnd-kit/utilities';
 
 interface PromptCardProps {
   prompt: SavedPrompt;
@@ -38,6 +40,15 @@ export default function PromptCard({ prompt, onCopy, onDelete, onToggleFavorite,
     text: 'bg-primary/10 text-primary',
     image: 'bg-chart-3/10 text-chart-3',
     video: 'bg-chart-5/10 text-chart-5',
+  };
+
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: prompt.id,
+  });
+
+  const style = {
+    transform: CSS.Translate.toString(transform),
+    opacity: isDragging ? 0.5 : 1,
   };
 
   const handleStartEdit = () => {
@@ -110,9 +121,13 @@ export default function PromptCard({ prompt, onCopy, onDelete, onToggleFavorite,
   return (
     <>
       <Card 
+        ref={setNodeRef}
+        style={style}
         className="p-4 hover-elevate transition-all cursor-pointer" 
         data-testid={`card-prompt-${prompt.id}`}
         onClick={() => setIsOpen(true)}
+        {...attributes}
+        {...listeners}
       >
         <div className="space-y-3">
           {/* Header */}

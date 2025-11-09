@@ -16,6 +16,7 @@ import {
   useSensor,
   useSensors,
   DragEndEvent,
+  useDroppable,
 } from '@dnd-kit/core';
 import {
   arrayMove,
@@ -70,6 +71,10 @@ function SortableFolderItem({
     isDragging,
   } = useSortable({ id: folder.id });
 
+  const { setNodeRef: setDroppableRef, isOver } = useDroppable({
+    id: folder.id,
+  });
+
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -78,7 +83,12 @@ function SortableFolderItem({
 
   return (
     <div ref={setNodeRef} style={style} className="space-y-1">
-      <div className="flex items-center gap-1">
+      <div 
+        ref={setDroppableRef}
+        className={`flex items-center gap-1 rounded-md transition-colors ${
+          isOver ? 'bg-primary/10 ring-2 ring-primary' : ''
+        }`}
+      >
         <Button
           variant="ghost"
           size="icon"
@@ -232,18 +242,32 @@ export default function FolderTree({ onSelectFolder, selectedFolderId }: FolderT
     }
   };
 
+  const AllPromptsDropZone = () => {
+    const { setNodeRef, isOver } = useDroppable({
+      id: 'all-prompts',
+    });
+
+    return (
+      <div ref={setNodeRef}>
+        <Button
+          variant={selectedFolderId === undefined ? 'default' : 'ghost'}
+          className={`w-full justify-start transition-colors ${
+            isOver ? 'bg-primary/10 ring-2 ring-primary' : ''
+          }`}
+          onClick={() => onSelectFolder(undefined)}
+          data-testid="button-folder-all"
+        >
+          <FolderOpen className="h-4 w-4 mr-2" />
+          All Prompts
+        </Button>
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-2" data-testid="container-folder-tree">
       {/* All Prompts */}
-      <Button
-        variant={selectedFolderId === undefined ? 'default' : 'ghost'}
-        className="w-full justify-start"
-        onClick={() => onSelectFolder(undefined)}
-        data-testid="button-folder-all"
-      >
-        <FolderOpen className="h-4 w-4 mr-2" />
-        All Prompts
-      </Button>
+      <AllPromptsDropZone />
 
       {/* Folder List */}
       <DndContext

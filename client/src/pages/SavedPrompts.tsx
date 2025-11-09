@@ -38,6 +38,15 @@ import {
   updatePrompt,
 } from '@/utils/localStorage';
 import { useToast } from '@/hooks/use-toast';
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverlay,
+  DragStartEvent,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
 
 export default function SavedPrompts() {
   const [prompts, setPrompts] = useState<SavedPrompt[]>([]);
@@ -51,7 +60,16 @@ export default function SavedPrompts() {
     prompt: '',
     llm: '',
   });
+  const [activePromptId, setActivePromptId] = useState<string | null>(null);
   const { toast } = useToast();
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
 
   useEffect(() => {
     loadPrompts();
@@ -105,6 +123,34 @@ export default function SavedPrompts() {
     });
   };
 
+  const handlePromptDrop = (promptId: string, folderId?: string) => {
+    movePromptToFolder(promptId, folderId);
+    loadPrompts();
+    toast({
+      title: 'Moved!',
+      description: `Prompt moved to ${folderId ? 'folder' : 'All Prompts'}`,
+    });
+  };
+
+  const handleDragStart = (event: DragStartEvent) => {
+    setActivePromptId(event.active.id as string);
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    setActivePromptId(null);
+
+    if (over && active.id !== over.id) {
+      const promptId = active.id as string;
+      const targetFolderId = over.id === 'all-prompts' ? undefined : (over.id as string);
+      handlePromptDrop(promptId, targetFolderId);
+    }
+  };
+
+  const handleDragCancel = () => {
+    setActivePromptId(null);
+  };
+
   const handleAddCustomPrompt = () => {
     if (!newPrompt.query || !newPrompt.prompt || !newPrompt.llm) {
       toast({
@@ -140,31 +186,37 @@ export default function SavedPrompts() {
   );
 
   return (
-    <div className="min-h-screen py-8" data-testid="page-saved-prompts">
-      <div className="container mx-auto px-4">
-        <div className="max-w-7xl mx-auto">
-          {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold mb-2" data-testid="text-page-title">
-              Saved Prompts
-            </h1>
-            <p className="text-muted-foreground" data-testid="text-page-description">
-              Manage and organize your prompt library
-            </p>
-          </div>
+    <DndContext
+      sensors={sensors}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      onDragCancel={handleDragCancel}
+    >
+      <div className="min-h-screen py-8" data-testid="page-saved-prompts">
+        <div className="container mx-auto px-4">
+          <div className="max-w-7xl mx-auto">
+            {/* Header */}
+            <div className="mb-8">
+              <h1 className="text-3xl md:text-4xl font-bold mb-2" data-testid="text-page-title">
+                Saved Prompts
+              </h1>
+              <p className="text-muted-foreground" data-testid="text-page-description">
+                Manage and organize your prompt library
+              </p>
+            </div>
 
-          {/* Layout */}
-          <div className="grid lg:grid-cols-[250px,1fr] gap-6">
-            {/* Sidebar */}
-            <aside className="space-y-4">
-              <Card className="p-4">
-                <h3 className="font-semibold mb-3">Folders</h3>
-                <FolderTree
-                  onSelectFolder={setSelectedFolder}
-                  selectedFolderId={selectedFolder}
-                />
-              </Card>
-            </aside>
+            {/* Layout */}
+            <div className="grid lg:grid-cols-[250px,1fr] gap-6">
+              {/* Sidebar */}
+              <aside className="space-y-4">
+                <Card className="p-4">
+                  <h3 className="font-semibold mb-3">Folders</h3>
+                  <FolderTree
+                    onSelectFolder={setSelectedFolder}
+                    selectedFolderId={selectedFolder}
+                  />
+                </Card>
+              </aside>
 
             {/* Main Content */}
             <main className="space-y-6">
@@ -242,6 +294,7 @@ export default function SavedPrompts() {
           </div>
         </div>
       </div>
+      </div>
 
       {/* Add Custom Prompt Modal */}
       <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
@@ -316,6 +369,6 @@ export default function SavedPrompts() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </DndContext>
   );
 }
