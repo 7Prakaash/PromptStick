@@ -125,21 +125,23 @@ export default function GeneratorForm({ type, onGenerate, isGenerating = false, 
       {/* Tone Selection (text only) */}
       {type === 'text' && (
         <div className="space-y-2">
-          <Label htmlFor="tone" className="text-base font-semibold">
+          <Label className="text-base font-semibold">
             Tone
           </Label>
-          <Select value={tone} onValueChange={setTone}>
-            <SelectTrigger id="tone" data-testid="select-tone">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {toneOptions.map((t) => (
-                <SelectItem key={t} value={t} data-testid={`option-tone-${t}`}>
-                  {t.charAt(0).toUpperCase() + t.slice(1)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="flex flex-wrap gap-2">
+            {toneOptions.map((t) => (
+              <Button
+                key={t}
+                type="button"
+                variant={tone === t ? 'default' : 'outline'}
+                className="px-4"
+                onClick={() => setTone(t)}
+                data-testid={`button-tone-${t}`}
+              >
+                {t.charAt(0).toUpperCase() + t.slice(1)}
+              </Button>
+            ))}
+          </div>
         </div>
       )}
 

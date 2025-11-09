@@ -11,3 +11,4 @@
 [x] 11. Screenshot confirms PromptStick application is fully functional
 [x] 12. Added folder rename functionality with double-click to edit
 [x] 13. Added auto-hide for new folder input when clicking outside without text
+[x] 14. Replaced tone dropdown with toggle buttons for better UX
