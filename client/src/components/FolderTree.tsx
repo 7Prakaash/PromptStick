@@ -6,12 +6,147 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Folder, FolderOpen, Plus, Trash2, ChevronRight, ChevronDown } from 'lucide-react';
-import { Folder as FolderType, getAllFolders, createFolder, deleteFolder, updateFolder } from '@/utils/localStorage';
+import { Folder, FolderOpen, Plus, Trash2, ChevronRight, ChevronDown, GripVertical } from 'lucide-react';
+import { Folder as FolderType, getAllFolders, createFolder, deleteFolder, updateFolder, reorderFolders } from '@/utils/localStorage';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 interface FolderTreeProps {
   onSelectFolder: (folderId?: string) => void;
   selectedFolderId?: string;
+  onPromptDrop?: (promptId: string, folderId?: string) => void;
+}
+
+interface SortableFolderItemProps {
+  folder: FolderType;
+  selectedFolderId?: string;
+  expandedFolders: Set<string>;
+  editingFolderId: string | null;
+  editingName: string;
+  onSelect: (folderId: string) => void;
+  onToggle: (folderId: string) => void;
+  onDelete: (folderId: string) => void;
+  onStartRename: (folder: FolderType, event: React.MouseEvent) => void;
+  onSaveRename: (folderId: string) => void;
+  onCancelRename: () => void;
+  setEditingName: (name: string) => void;
+}
+
+function SortableFolderItem({
+  folder,
+  selectedFolderId,
+  expandedFolders,
+  editingFolderId,
+  editingName,
+  onSelect,
+  onToggle,
+  onDelete,
+  onStartRename,
+  onSaveRename,
+  onCancelRename,
+  setEditingName,
+}: SortableFolderItemProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: folder.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} className="space-y-1">
+      <div className="flex items-center gap-1">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-6 w-6 cursor-grab active:cursor-grabbing"
+          {...attributes}
+          {...listeners}
+          data-testid={`button-drag-${folder.id}`}
+        >
+          <GripVertical className="h-3 w-3" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-6 w-6"
+          onClick={() => onToggle(folder.id)}
+          data-testid={`button-toggle-${folder.id}`}
+        >
+          {expandedFolders.has(folder.id) ? (
+            <ChevronDown className="h-3 w-3" />
+          ) : (
+            <ChevronRight className="h-3 w-3" />
+          )}
+        </Button>
+        {editingFolderId === folder.id ? (
+          <div className="flex-1 flex items-center gap-2 ml-6">
+            <Folder className="h-4 w-4 flex-shrink-0" />
+            <Input
+              value={editingName}
+              onChange={(e) => setEditingName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') onSaveRename(folder.id);
+                if (e.key === 'Escape') onCancelRename();
+              }}
+              onBlur={() => onSaveRename(folder.id)}
+              autoFocus
+              className="h-7 flex-1"
+              data-testid={`input-rename-${folder.id}`}
+            />
+          </div>
+        ) : (
+          <Button
+            variant={selectedFolderId === folder.id ? 'default' : 'ghost'}
+            className="flex-1 justify-start"
+            onClick={() => onSelect(folder.id)}
+            data-testid={`button-folder-${folder.id}`}
+          >
+            <Folder className="h-4 w-4 mr-2" />
+            <span 
+              className="truncate"
+              onDoubleClick={(e) => onStartRename(folder, e)}
+              data-testid={`text-folder-name-${folder.id}`}
+            >
+              {folder.name}
+            </span>
+          </Button>
+        )}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-6 w-6"
+          onClick={() => onDelete(folder.id)}
+          data-testid={`button-delete-${folder.id}`}
+        >
+          <Trash2 className="h-3 w-3" />
+        </Button>
+      </div>
+    </div>
+  );
 }
 
 export default function FolderTree({ onSelectFolder, selectedFolderId }: FolderTreeProps) {
@@ -21,6 +156,13 @@ export default function FolderTree({ onSelectFolder, selectedFolderId }: FolderT
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
   const [editingFolderId, setEditingFolderId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const handleCreateFolder = () => {
     if (!newFolderName.trim()) return;
@@ -75,6 +217,21 @@ export default function FolderTree({ onSelectFolder, selectedFolderId }: FolderT
     setEditingName('');
   };
 
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      setFolders((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over.id);
+        
+        const reordered = arrayMove(items, oldIndex, newIndex);
+        reorderFolders(reordered);
+        return reordered;
+      });
+    }
+  };
+
   return (
     <div className="space-y-2" data-testid="container-folder-tree">
       {/* All Prompts */}
@@ -89,67 +246,34 @@ export default function FolderTree({ onSelectFolder, selectedFolderId }: FolderT
       </Button>
 
       {/* Folder List */}
-      {folders.map((folder) => (
-        <div key={folder.id} className="space-y-1">
-          <div className="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-6 w-6"
-              onClick={() => toggleFolder(folder.id)}
-              data-testid={`button-toggle-${folder.id}`}
-            >
-              {expandedFolders.has(folder.id) ? (
-                <ChevronDown className="h-3 w-3" />
-              ) : (
-                <ChevronRight className="h-3 w-3" />
-              )}
-            </Button>
-            {editingFolderId === folder.id ? (
-              <div className="flex-1 flex items-center gap-2 ml-6">
-                <Folder className="h-4 w-4 flex-shrink-0" />
-                <Input
-                  value={editingName}
-                  onChange={(e) => setEditingName(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') handleSaveRename(folder.id);
-                    if (e.key === 'Escape') handleCancelRename();
-                  }}
-                  onBlur={() => handleSaveRename(folder.id)}
-                  autoFocus
-                  className="h-7 flex-1"
-                  data-testid={`input-rename-${folder.id}`}
-                />
-              </div>
-            ) : (
-              <Button
-                variant={selectedFolderId === folder.id ? 'default' : 'ghost'}
-                className="flex-1 justify-start"
-                onClick={() => onSelectFolder(folder.id)}
-                data-testid={`button-folder-${folder.id}`}
-              >
-                <Folder className="h-4 w-4 mr-2" />
-                <span 
-                  className="truncate"
-                  onDoubleClick={(e) => handleStartRename(folder, e)}
-                  data-testid={`text-folder-name-${folder.id}`}
-                >
-                  {folder.name}
-                </span>
-              </Button>
-            )}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-6 w-6"
-              onClick={() => handleDeleteFolder(folder.id)}
-              data-testid={`button-delete-${folder.id}`}
-            >
-              <Trash2 className="h-3 w-3" />
-            </Button>
-          </div>
-        </div>
-      ))}
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext
+          items={folders.map(f => f.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          {folders.map((folder) => (
+            <SortableFolderItem
+              key={folder.id}
+              folder={folder}
+              selectedFolderId={selectedFolderId}
+              expandedFolders={expandedFolders}
+              editingFolderId={editingFolderId}
+              editingName={editingName}
+              onSelect={onSelectFolder}
+              onToggle={toggleFolder}
+              onDelete={handleDeleteFolder}
+              onStartRename={handleStartRename}
+              onSaveRename={handleSaveRename}
+              onCancelRename={handleCancelRename}
+              setEditingName={setEditingName}
+            />
+          ))}
+        </SortableContext>
+      </DndContext>
 
       {/* Add Folder */}
       {isAdding ? (
