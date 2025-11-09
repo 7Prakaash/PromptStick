@@ -24,12 +24,13 @@ interface PromptCardProps {
   onCopy: (prompt: SavedPrompt) => void;
   onDelete: (id: string) => void;
   onToggleFavorite: (id: string) => void;
-  onSaveEdit: (id: string, updatedPrompt: string) => void;
+  onSaveEdit: (id: string, updates: { query?: string; generatedPrompt?: string }) => void;
 }
 
 export default function PromptCard({ prompt, onCopy, onDelete, onToggleFavorite, onSaveEdit }: PromptCardProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [editedQuery, setEditedQuery] = useState(prompt.query);
   const [editedPrompt, setEditedPrompt] = useState(prompt.generatedPrompt);
   const typeColors: Record<string, string> = {
     text: 'bg-primary/10 text-primary',
@@ -39,17 +40,30 @@ export default function PromptCard({ prompt, onCopy, onDelete, onToggleFavorite,
 
   const handleStartEdit = () => {
     setIsEditing(true);
+    setEditedQuery(prompt.query);
     setEditedPrompt(prompt.generatedPrompt);
   };
 
   const handleSave = () => {
-    if (editedPrompt.trim() && editedPrompt !== prompt.generatedPrompt) {
-      onSaveEdit(prompt.id, editedPrompt.trim());
+    const updates: { query?: string; generatedPrompt?: string } = {};
+    
+    if (editedQuery.trim() && editedQuery !== prompt.query) {
+      updates.query = editedQuery.trim();
     }
+    
+    if (editedPrompt.trim() && editedPrompt !== prompt.generatedPrompt) {
+      updates.generatedPrompt = editedPrompt.trim();
+    }
+    
+    if (Object.keys(updates).length > 0) {
+      onSaveEdit(prompt.id, updates);
+    }
+    
     setIsEditing(false);
   };
 
   const handleCancel = () => {
+    setEditedQuery(prompt.query);
     setEditedPrompt(prompt.generatedPrompt);
     setIsEditing(false);
   };
@@ -63,6 +77,7 @@ export default function PromptCard({ prompt, onCopy, onDelete, onToggleFavorite,
     setIsOpen(open);
     if (!open) {
       setIsEditing(false);
+      setEditedQuery(prompt.query);
       setEditedPrompt(prompt.generatedPrompt);
     }
   };
@@ -148,9 +163,18 @@ export default function PromptCard({ prompt, onCopy, onDelete, onToggleFavorite,
             {/* Query */}
             <div>
               <p className="text-sm font-medium text-muted-foreground mb-2">Query:</p>
-              <p className="text-sm" data-testid="text-query-modal">
-                {prompt.query}
-              </p>
+              {isEditing ? (
+                <Textarea
+                  value={editedQuery}
+                  onChange={(e) => setEditedQuery(e.target.value)}
+                  className="min-h-20 text-sm resize-y"
+                  data-testid="textarea-edit-query"
+                />
+              ) : (
+                <p className="text-sm" data-testid="text-query-modal">
+                  {prompt.query}
+                </p>
+              )}
             </div>
 
             {/* Generated Prompt */}

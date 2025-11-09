@@ -96,8 +96,8 @@ export default function SavedPrompts() {
     loadPrompts();
   };
 
-  const handleSaveEdit = (id: string, updatedPrompt: string) => {
-    updatePrompt(id, { generatedPrompt: updatedPrompt });
+  const handleSaveEdit = (id: string, updates: { query?: string; generatedPrompt?: string }) => {
+    updatePrompt(id, updates);
     loadPrompts();
     toast({
       title: 'Updated!',
