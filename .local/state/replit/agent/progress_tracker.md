@@ -9,3 +9,4 @@
 [x] 9. Install tsx package to fix workflow startup error
 [x] 10. Restart workflow and verify application is running successfully
 [x] 11. Screenshot confirms PromptStick application is fully functional
+[x] 12. Added folder rename functionality with double-click to edit

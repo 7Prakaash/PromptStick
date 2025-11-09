@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Folder, FolderOpen, Plus, Trash2, ChevronRight, ChevronDown } from 'lucide-react';
-import { Folder as FolderType, getAllFolders, createFolder, deleteFolder } from '@/utils/localStorage';
+import { Folder as FolderType, getAllFolders, createFolder, deleteFolder, updateFolder } from '@/utils/localStorage';
 
 interface FolderTreeProps {
   onSelectFolder: (folderId?: string) => void;
@@ -19,6 +19,8 @@ export default function FolderTree({ onSelectFolder, selectedFolderId }: FolderT
   const [isAdding, setIsAdding] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
+  const [editingFolderId, setEditingFolderId] = useState<string | null>(null);
+  const [editingName, setEditingName] = useState('');
 
   const handleCreateFolder = () => {
     if (!newFolderName.trim()) return;
@@ -47,6 +49,30 @@ export default function FolderTree({ onSelectFolder, selectedFolderId }: FolderT
       newExpanded.add(id);
     }
     setExpandedFolders(newExpanded);
+  };
+
+  const handleStartRename = (folder: FolderType, event: React.MouseEvent) => {
+    event.stopPropagation();
+    setEditingFolderId(folder.id);
+    setEditingName(folder.name);
+  };
+
+  const handleSaveRename = (folderId: string) => {
+    if (!editingName.trim()) {
+      setEditingFolderId(null);
+      setEditingName('');
+      return;
+    }
+    
+    updateFolder(folderId, { name: editingName.trim() });
+    setFolders(getAllFolders());
+    setEditingFolderId(null);
+    setEditingName('');
+  };
+
+  const handleCancelRename = () => {
+    setEditingFolderId(null);
+    setEditingName('');
   };
 
   return (
@@ -79,15 +105,39 @@ export default function FolderTree({ onSelectFolder, selectedFolderId }: FolderT
                 <ChevronRight className="h-3 w-3" />
               )}
             </Button>
-            <Button
-              variant={selectedFolderId === folder.id ? 'default' : 'ghost'}
-              className="flex-1 justify-start"
-              onClick={() => onSelectFolder(folder.id)}
-              data-testid={`button-folder-${folder.id}`}
-            >
-              <Folder className="h-4 w-4 mr-2" />
-              <span className="truncate">{folder.name}</span>
-            </Button>
+            {editingFolderId === folder.id ? (
+              <div className="flex-1 flex items-center gap-2 ml-6">
+                <Folder className="h-4 w-4 flex-shrink-0" />
+                <Input
+                  value={editingName}
+                  onChange={(e) => setEditingName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleSaveRename(folder.id);
+                    if (e.key === 'Escape') handleCancelRename();
+                  }}
+                  onBlur={() => handleSaveRename(folder.id)}
+                  autoFocus
+                  className="h-7 flex-1"
+                  data-testid={`input-rename-${folder.id}`}
+                />
+              </div>
+            ) : (
+              <Button
+                variant={selectedFolderId === folder.id ? 'default' : 'ghost'}
+                className="flex-1 justify-start"
+                onClick={() => onSelectFolder(folder.id)}
+                data-testid={`button-folder-${folder.id}`}
+              >
+                <Folder className="h-4 w-4 mr-2" />
+                <span 
+                  className="truncate"
+                  onDoubleClick={(e) => handleStartRename(folder, e)}
+                  data-testid={`text-folder-name-${folder.id}`}
+                >
+                  {folder.name}
+                </span>
+              </Button>
+            )}
             <Button
               variant="ghost"
               size="icon"
