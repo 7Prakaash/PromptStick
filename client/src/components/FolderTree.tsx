@@ -165,6 +165,12 @@ export default function FolderTree({ onSelectFolder, selectedFolderId }: FolderT
                 setNewFolderName('');
               }
             }}
+            onBlur={() => {
+              if (!newFolderName.trim()) {
+                setIsAdding(false);
+                setNewFolderName('');
+              }
+            }}
             autoFocus
             className="flex-1"
             data-testid="input-folder-name"
