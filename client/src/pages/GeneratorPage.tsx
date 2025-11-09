@@ -28,21 +28,48 @@ export default function GeneratorPage() {
   const [showLimitModal, setShowLimitModal] = useState(false);
   const [limitType, setLimitType] = useState<'daily' | 'monthly'>('daily');
   const [lastParams, setLastParams] = useState<GeneratorParams | null>(null);
+  const [editPromptId, setEditPromptId] = useState<string | null>(null);
+  const [initialFormValues, setInitialFormValues] = useState<Partial<GeneratorParams> | undefined>(undefined);
   const { toast } = useToast();
 
-  // Check for template in sessionStorage
+  // Check for edit prompt or template in sessionStorage
   useEffect(() => {
+    const editData = sessionStorage.getItem('editPrompt');
+    if (editData) {
+      try {
+        const editPrompt = JSON.parse(editData);
+        if (editPrompt.type === type) {
+          setEditPromptId(editPrompt.id);
+          setGeneratedPrompt(editPrompt.generatedPrompt);
+          setInitialFormValues({
+            query: editPrompt.query,
+            llm: editPrompt.llm,
+            tone: editPrompt.tone,
+            style: editPrompt.style || [],
+          });
+          setLastParams({
+            query: editPrompt.query,
+            llm: editPrompt.llm,
+            tone: editPrompt.tone,
+            style: editPrompt.style || [],
+          });
+        }
+        sessionStorage.removeItem('editPrompt');
+      } catch (e) {
+        console.error('Error loading edit data:', e);
+      }
+    }
+
     const templateData = sessionStorage.getItem('template');
     if (templateData) {
       try {
         const template = JSON.parse(templateData);
-        // You could pre-fill the form here if needed
         sessionStorage.removeItem('template');
       } catch (e) {
         console.error('Error loading template:', e);
       }
     }
-  }, []);
+  }, [type]);
 
   const pageConfig = {
     text: {
@@ -119,20 +146,39 @@ export default function GeneratorPage() {
   const handleSave = () => {
     if (!generatedPrompt || !lastParams) return;
 
-    savePrompt({
-      type,
-      query: lastParams.query,
-      generatedPrompt,
-      llm: lastParams.llm,
-      tone: lastParams.tone,
-      style: lastParams.style,
-      isFavorite: false,
-    });
+    if (editPromptId) {
+      // Update existing prompt
+      const { updatePrompt } = require('@/utils/localStorage');
+      updatePrompt(editPromptId, {
+        query: lastParams.query,
+        generatedPrompt,
+        llm: lastParams.llm,
+        tone: lastParams.tone,
+        style: lastParams.style,
+      });
+      
+      toast({
+        title: 'Updated!',
+        description: 'Prompt updated in your library',
+      });
+      setEditPromptId(null);
+    } else {
+      // Save new prompt
+      savePrompt({
+        type,
+        query: lastParams.query,
+        generatedPrompt,
+        llm: lastParams.llm,
+        tone: lastParams.tone,
+        style: lastParams.style,
+        isFavorite: false,
+      });
 
-    toast({
-      title: 'Saved!',
-      description: 'Prompt saved to your library',
-    });
+      toast({
+        title: 'Saved!',
+        description: 'Prompt saved to your library',
+      });
+    }
   };
 
   return (
@@ -162,6 +208,7 @@ export default function GeneratorPage() {
                 type={type}
                 onGenerate={handleGenerate}
                 isGenerating={isGenerating}
+                initialValues={initialFormValues}
               />
             </div>
             <UsageLimitBar />
