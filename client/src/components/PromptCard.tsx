@@ -15,7 +15,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Copy, Trash2, Star, Edit, Save, X } from 'lucide-react';
+import { Copy, Trash2, Star, Edit, Save, X, Pencil } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import { SavedPrompt } from '@/utils/localStorage';
 import { format } from 'date-fns';
 
@@ -30,6 +31,7 @@ interface PromptCardProps {
 export default function PromptCard({ prompt, onCopy, onDelete, onToggleFavorite, onSaveEdit }: PromptCardProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [isEditingQuery, setIsEditingQuery] = useState(false);
   const [editedQuery, setEditedQuery] = useState(prompt.query);
   const [editedPrompt, setEditedPrompt] = useState(prompt.generatedPrompt);
   const typeColors: Record<string, string> = {
@@ -77,8 +79,31 @@ export default function PromptCard({ prompt, onCopy, onDelete, onToggleFavorite,
     setIsOpen(open);
     if (!open) {
       setIsEditing(false);
+      setIsEditingQuery(false);
       setEditedQuery(prompt.query);
       setEditedPrompt(prompt.generatedPrompt);
+    }
+  };
+
+  const handleStartQueryEdit = () => {
+    setIsEditingQuery(true);
+    setEditedQuery(prompt.query);
+  };
+
+  const handleSaveQueryEdit = () => {
+    if (editedQuery.trim() && editedQuery !== prompt.query) {
+      onSaveEdit(prompt.id, { query: editedQuery.trim() });
+    }
+    setIsEditingQuery(false);
+  };
+
+  const handleQueryKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSaveQueryEdit();
+    } else if (e.key === 'Escape') {
+      setEditedQuery(prompt.query);
+      setIsEditingQuery(false);
     }
   };
 
@@ -162,13 +187,39 @@ export default function PromptCard({ prompt, onCopy, onDelete, onToggleFavorite,
           <div className="space-y-4 mt-4">
             {/* Query */}
             <div>
-              <p className="text-sm font-medium text-muted-foreground mb-2">Query:</p>
+              <div className="flex items-center gap-2 mb-2 group">
+                <p className="text-sm font-medium text-muted-foreground">Query:</p>
+                {!isEditing && !isEditingQuery && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleStartQueryEdit();
+                    }}
+                    data-testid="button-edit-query"
+                  >
+                    <Pencil className="h-3 w-3" />
+                  </Button>
+                )}
+              </div>
               {isEditing ? (
                 <Textarea
                   value={editedQuery}
                   onChange={(e) => setEditedQuery(e.target.value)}
                   className="min-h-20 text-sm resize-y"
                   data-testid="textarea-edit-query"
+                />
+              ) : isEditingQuery ? (
+                <Input
+                  value={editedQuery}
+                  onChange={(e) => setEditedQuery(e.target.value)}
+                  onBlur={handleSaveQueryEdit}
+                  onKeyDown={handleQueryKeyDown}
+                  className="text-sm"
+                  data-testid="input-edit-query"
+                  autoFocus
                 />
               ) : (
                 <p className="text-sm" data-testid="text-query-modal">
