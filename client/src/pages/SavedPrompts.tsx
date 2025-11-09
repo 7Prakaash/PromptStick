@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
@@ -39,6 +40,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 
 export default function SavedPrompts() {
+  const [, setLocation] = useLocation();
   const [prompts, setPrompts] = useState<SavedPrompt[]>([]);
   const [selectedFolder, setSelectedFolder] = useState<string | undefined>();
   const [searchQuery, setSearchQuery] = useState('');
@@ -93,6 +95,19 @@ export default function SavedPrompts() {
   const handleToggleFavorite = (id: string) => {
     toggleFavorite(id);
     loadPrompts();
+  };
+
+  const handleEdit = (prompt: SavedPrompt) => {
+    sessionStorage.setItem('editPrompt', JSON.stringify({
+      id: prompt.id,
+      type: prompt.type,
+      query: prompt.query,
+      generatedPrompt: prompt.generatedPrompt,
+      llm: prompt.llm,
+      tone: prompt.tone,
+      style: prompt.style,
+    }));
+    setLocation(`/generator/${prompt.type}`);
   };
 
   const handleAddCustomPrompt = () => {
@@ -223,6 +238,7 @@ export default function SavedPrompts() {
                       onCopy={handleCopy}
                       onDelete={handleDelete}
                       onToggleFavorite={handleToggleFavorite}
+                      onEdit={handleEdit}
                     />
                   ))}
                 </div>
