@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import LandingPage from "@/pages/LandingPage";
 import GeneratorSelection from "@/pages/GeneratorSelection";
 import GeneratorPage from "@/pages/GeneratorPage";
@@ -28,9 +29,12 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen bg-background flex flex-col">
           <Header />
-          <Router />
+          <main className="flex-1">
+            <Router />
+          </main>
+          <Footer />
         </div>
         <Toaster />
       </TooltipProvider>
