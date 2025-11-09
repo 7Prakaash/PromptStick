@@ -21,6 +21,7 @@ export interface Folder {
   name: string;
   parentId?: string;
   createdAt: number;
+  order: number;
 }
 
 export interface UsageStats {
@@ -126,11 +127,13 @@ export const toggleFavorite = (id: string): void => {
 // Folders CRUD
 export const createFolder = (name: string, parentId?: string): Folder => {
   const folders = getAllFolders();
+  const maxOrder = folders.length > 0 ? Math.max(...folders.map(f => f.order || 0)) : 0;
   const newFolder: Folder = {
     id: crypto.randomUUID(),
     name,
     parentId,
-    createdAt: Date.now()
+    createdAt: Date.now(),
+    order: maxOrder + 1
   };
   
   folders.push(newFolder);
@@ -141,7 +144,17 @@ export const createFolder = (name: string, parentId?: string): Folder => {
 
 export const getAllFolders = (): Folder[] => {
   const data = localStorage.getItem(STORAGE_KEYS.FOLDERS);
-  return data ? JSON.parse(data) : [];
+  const folders: Folder[] = data ? JSON.parse(data) : [];
+  
+  // Ensure all folders have an order property
+  folders.forEach((folder, index) => {
+    if (folder.order === undefined) {
+      folder.order = index;
+    }
+  });
+  
+  // Sort by order
+  return folders.sort((a, b) => (a.order || 0) - (b.order || 0));
 };
 
 export const updateFolder = (id: string, updates: Partial<Folder>): void => {
@@ -171,6 +184,16 @@ export const deleteFolder = (id: string): void => {
 
 export const movePromptToFolder = (promptId: string, folderId?: string): void => {
   updatePrompt(promptId, { folderId });
+};
+
+export const reorderFolders = (reorderedFolders: Folder[]): void => {
+  // Update order property for each folder
+  const foldersWithOrder = reorderedFolders.map((folder, index) => ({
+    ...folder,
+    order: index
+  }));
+  
+  localStorage.setItem(STORAGE_KEYS.FOLDERS, JSON.stringify(foldersWithOrder));
 };
 
 // Usage tracking
