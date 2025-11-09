@@ -6,15 +6,27 @@
 import { Link, useLocation } from 'wouter';
 import { Sparkles, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
-import { getUsageStats, getDailyLimit } from '@/utils/localStorage';
+import { useState, useEffect } from 'react';
+import { getUsageStats, getDailyLimit, getMonthlyLimit } from '@/utils/localStorage';
 
 export default function Header() {
   const [location] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const stats = getUsageStats();
+  const [stats, setStats] = useState(getUsageStats());
   const dailyLimit = getDailyLimit();
-  const usagePercent = (stats.daily.count / dailyLimit) * 100;
+  const monthlyLimit = getMonthlyLimit();
+  const dailyPercent = (stats.daily.count / dailyLimit) * 100;
+  const monthlyPercent = (stats.monthly.count / monthlyLimit) * 100;
+
+  // Listen for usage updates
+  useEffect(() => {
+    const handleUsageUpdate = () => {
+      setStats(getUsageStats());
+    };
+
+    window.addEventListener('usageUpdated', handleUsageUpdate);
+    return () => window.removeEventListener('usageUpdated', handleUsageUpdate);
+  }, []);
 
   const navLinks = [
     { href: '/', label: 'Home' },
@@ -53,18 +65,33 @@ export default function Header() {
 
           {/* Usage Counter - Only on generator pages */}
           {location.startsWith('/generator/') && (
-            <div className="hidden md:flex items-center gap-4">
-              <div className="flex flex-col items-end" data-testid="usage-counter">
-                <span className="text-xs text-muted-foreground">
-                  Today: {stats.daily.count}/{dailyLimit}
-                </span>
-                <div className="w-32 h-1.5 bg-muted rounded-full overflow-hidden">
-                  <div
-                    className={`h-full transition-all ${
-                      usagePercent > 80 ? 'bg-destructive' : 'bg-primary'
-                    }`}
-                    style={{ width: `${Math.min(usagePercent, 100)}%` }}
-                  />
+            <div className="hidden md:flex items-center gap-3">
+              <div className="flex flex-col items-end gap-1" data-testid="usage-counter">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">
+                    Daily: {stats.daily.count}/{dailyLimit}
+                  </span>
+                  <div className="w-20 h-1.5 bg-muted rounded-full overflow-hidden">
+                    <div
+                      className={`h-full transition-all ${
+                        dailyPercent > 80 ? 'bg-destructive' : 'bg-primary'
+                      }`}
+                      style={{ width: `${Math.min(dailyPercent, 100)}%` }}
+                    />
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">
+                    Monthly: {stats.monthly.count}/{monthlyLimit}
+                  </span>
+                  <div className="w-20 h-1.5 bg-muted rounded-full overflow-hidden">
+                    <div
+                      className={`h-full transition-all ${
+                        monthlyPercent > 80 ? 'bg-destructive' : 'bg-chart-2'
+                      }`}
+                      style={{ width: `${Math.min(monthlyPercent, 100)}%` }}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -101,8 +128,13 @@ export default function Header() {
               </Link>
             ))}
             {location.startsWith('/generator/') && (
-              <div className="px-4 py-2 text-xs text-muted-foreground" data-testid="usage-counter-mobile">
-                Daily usage: {stats.daily.count}/{dailyLimit}
+              <div className="px-4 py-2 space-y-1" data-testid="usage-counter-mobile">
+                <div className="text-xs text-muted-foreground">
+                  Daily: {stats.daily.count}/{dailyLimit}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  Monthly: {stats.monthly.count}/{monthlyLimit}
+                </div>
               </div>
             )}
           </nav>

@@ -15,3 +15,5 @@
 [x] 15. Removed UsageLimitBar component from GeneratorPage
 [x] 16. Updated credit limits to 5 per day and 50 per month
 [x] 17. Show usage counter only on generator pages (/generator/*)
+[x] 18. Display both daily and monthly limits together in header with progress bars
+[x] 19. Updated mobile view to show both daily and monthly usage

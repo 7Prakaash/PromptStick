@@ -56,6 +56,11 @@ const getMonthString = (): string => {
   return new Date().toISOString().slice(0, 7);
 };
 
+// Custom event to notify components of usage changes
+const dispatchUsageUpdate = () => {
+  window.dispatchEvent(new Event('usageUpdated'));
+};
+
 // Prompts CRUD
 export const savePrompt = (prompt: Omit<SavedPrompt, 'id' | 'timestamp'>): SavedPrompt => {
   const prompts = getAllPrompts();
@@ -70,6 +75,9 @@ export const savePrompt = (prompt: Omit<SavedPrompt, 'id' | 'timestamp'>): Saved
   
   // Update usage stats
   incrementUsage();
+  
+  // Notify components of usage change
+  dispatchUsageUpdate();
   
   return newPrompt;
 };
