@@ -12,3 +12,6 @@
 [x] 12. Added folder rename functionality with double-click to edit
 [x] 13. Added auto-hide for new folder input when clicking outside without text
 [x] 14. Replaced tone dropdown with toggle buttons for better UX
+[x] 15. Removed UsageLimitBar component from GeneratorPage
+[x] 16. Updated credit limits to 5 per day and 50 per month
+[x] 17. Show usage counter only on generator pages (/generator/*)

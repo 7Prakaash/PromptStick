@@ -7,7 +7,6 @@ import { useState, useEffect } from 'react';
 import { useRoute } from 'wouter';
 import GeneratorForm, { GeneratorParams } from '@/components/GeneratorForm';
 import CodeOutput from '@/components/CodeOutput';
-import UsageLimitBar from '@/components/UsageLimitBar';
 import LimitReachedModal from '@/components/LimitReachedModal';
 import { generateTextPrompt } from '@/utils/textPromptGen';
 import { generateImagePrompt } from '@/utils/imagePromptGen';
@@ -201,17 +200,14 @@ export default function GeneratorPage() {
 
         {/* Two Column Layout */}
         <div className="max-w-7xl mx-auto grid lg:grid-cols-[2fr,3fr] gap-8">
-          {/* Left Column: Form + Usage */}
-          <div className="space-y-6">
-            <div className="bg-card rounded-lg border p-6">
-              <GeneratorForm
-                type={type}
-                onGenerate={handleGenerate}
-                isGenerating={isGenerating}
-                initialValues={initialFormValues}
-              />
-            </div>
-            <UsageLimitBar />
+          {/* Left Column: Form */}
+          <div className="bg-card rounded-lg border p-6">
+            <GeneratorForm
+              type={type}
+              onGenerate={handleGenerate}
+              isGenerating={isGenerating}
+              initialValues={initialFormValues}
+            />
           </div>
 
           {/* Right Column: Output */}

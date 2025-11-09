@@ -42,8 +42,8 @@ const STORAGE_KEYS = {
 };
 
 const LIMITS = {
-  DAILY: 50,
-  MONTHLY: 500
+  DAILY: 5,
+  MONTHLY: 50
 };
 
 // Helper to get today's date string (YYYY-MM-DD)

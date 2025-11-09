@@ -51,22 +51,24 @@ export default function Header() {
             ))}
           </nav>
 
-          {/* Usage Counter */}
-          <div className="hidden md:flex items-center gap-4">
-            <div className="flex flex-col items-end" data-testid="usage-counter">
-              <span className="text-xs text-muted-foreground">
-                Today: {stats.daily.count}/{dailyLimit}
-              </span>
-              <div className="w-32 h-1.5 bg-muted rounded-full overflow-hidden">
-                <div
-                  className={`h-full transition-all ${
-                    usagePercent > 80 ? 'bg-destructive' : 'bg-primary'
-                  }`}
-                  style={{ width: `${Math.min(usagePercent, 100)}%` }}
-                />
+          {/* Usage Counter - Only on generator pages */}
+          {location.startsWith('/generator/') && (
+            <div className="hidden md:flex items-center gap-4">
+              <div className="flex flex-col items-end" data-testid="usage-counter">
+                <span className="text-xs text-muted-foreground">
+                  Today: {stats.daily.count}/{dailyLimit}
+                </span>
+                <div className="w-32 h-1.5 bg-muted rounded-full overflow-hidden">
+                  <div
+                    className={`h-full transition-all ${
+                      usagePercent > 80 ? 'bg-destructive' : 'bg-primary'
+                    }`}
+                    style={{ width: `${Math.min(usagePercent, 100)}%` }}
+                  />
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Mobile Menu Button */}
           <Button
@@ -98,9 +100,11 @@ export default function Header() {
                 {link.label}
               </Link>
             ))}
-            <div className="px-4 py-2 text-xs text-muted-foreground" data-testid="usage-counter-mobile">
-              Daily usage: {stats.daily.count}/{dailyLimit}
-            </div>
+            {location.startsWith('/generator/') && (
+              <div className="px-4 py-2 text-xs text-muted-foreground" data-testid="usage-counter-mobile">
+                Daily usage: {stats.daily.count}/{dailyLimit}
+              </div>
+            )}
           </nav>
         )}
       </div>
