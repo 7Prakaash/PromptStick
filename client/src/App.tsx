@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Header from "@/components/Header";
 import LandingPage from "@/pages/LandingPage";
+import GeneratorSelection from "@/pages/GeneratorSelection";
 import GeneratorPage from "@/pages/GeneratorPage";
 import SavedPrompts from "@/pages/SavedPrompts";
 import Templates from "@/pages/Templates";
@@ -14,6 +15,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={LandingPage} />
+      <Route path="/generators" component={GeneratorSelection} />
       <Route path="/generator/:type" component={GeneratorPage} />
       <Route path="/saved" component={SavedPrompts} />
       <Route path="/templates" component={Templates} />
