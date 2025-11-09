@@ -7,7 +7,8 @@ import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Copy, Trash2, Star, Edit, ChevronDown, ChevronUp } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import { Copy, Trash2, Star, Edit, ChevronDown, ChevronUp, Save, X } from 'lucide-react';
 import { SavedPrompt } from '@/utils/localStorage';
 import { format } from 'date-fns';
 
@@ -16,15 +17,35 @@ interface PromptCardProps {
   onCopy: (prompt: SavedPrompt) => void;
   onDelete: (id: string) => void;
   onToggleFavorite: (id: string) => void;
-  onEdit: (prompt: SavedPrompt) => void;
+  onSaveEdit: (id: string, updatedPrompt: string) => void;
 }
 
-export default function PromptCard({ prompt, onCopy, onDelete, onToggleFavorite, onEdit }: PromptCardProps) {
+export default function PromptCard({ prompt, onCopy, onDelete, onToggleFavorite, onSaveEdit }: PromptCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedPrompt, setEditedPrompt] = useState(prompt.generatedPrompt);
   const typeColors: Record<string, string> = {
     text: 'bg-primary/10 text-primary',
     image: 'bg-chart-3/10 text-chart-3',
     video: 'bg-chart-5/10 text-chart-5',
+  };
+
+  const handleStartEdit = () => {
+    setIsEditing(true);
+    setIsExpanded(true);
+    setEditedPrompt(prompt.generatedPrompt);
+  };
+
+  const handleSave = () => {
+    if (editedPrompt.trim() && editedPrompt !== prompt.generatedPrompt) {
+      onSaveEdit(prompt.id, editedPrompt.trim());
+    }
+    setIsEditing(false);
+  };
+
+  const handleCancel = () => {
+    setEditedPrompt(prompt.generatedPrompt);
+    setIsEditing(false);
   };
 
   return (
@@ -86,18 +107,26 @@ export default function PromptCard({ prompt, onCopy, onDelete, onToggleFavorite,
           </p>
         </div>
 
-        {/* Generated Prompt Preview */}
-        <div
-          className="cursor-pointer"
-          onClick={() => setIsExpanded(!isExpanded)}
-        >
+        {/* Generated Prompt Preview / Edit */}
+        <div>
           <p className="text-sm text-muted-foreground mb-1">Generated:</p>
-          <p
-            className={`text-sm font-mono bg-muted/50 p-2 rounded ${isExpanded ? 'whitespace-pre-wrap' : 'line-clamp-3'}`}
-            data-testid="text-prompt-preview"
-          >
-            {prompt.generatedPrompt}
-          </p>
+          {isEditing ? (
+            <Textarea
+              value={editedPrompt}
+              onChange={(e) => setEditedPrompt(e.target.value)}
+              className="min-h-48 font-mono text-sm resize-y"
+              data-testid="textarea-edit-prompt"
+              onClick={(e) => e.stopPropagation()}
+            />
+          ) : (
+            <p
+              className={`text-sm font-mono bg-muted/50 p-2 rounded cursor-pointer ${isExpanded ? 'whitespace-pre-wrap' : 'line-clamp-3'}`}
+              data-testid="text-prompt-preview"
+              onClick={() => setIsExpanded(!isExpanded)}
+            >
+              {prompt.generatedPrompt}
+            </p>
+          )}
         </div>
 
         {/* Footer */}
@@ -106,42 +135,73 @@ export default function PromptCard({ prompt, onCopy, onDelete, onToggleFavorite,
             {format(new Date(prompt.timestamp), 'MMM d, yyyy')}
           </span>
           <div className="flex gap-1 flex-wrap">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                onEdit(prompt);
-              }}
-              data-testid="button-edit"
-            >
-              <Edit className="h-4 w-4 mr-1" />
-              Edit
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                onCopy(prompt);
-              }}
-              data-testid="button-copy"
-            >
-              <Copy className="h-4 w-4 mr-1" />
-              Copy
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete(prompt.id);
-              }}
-              data-testid="button-delete"
-            >
-              <Trash2 className="h-4 w-4 mr-1" />
-              Delete
-            </Button>
+            {isEditing ? (
+              <>
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleSave();
+                  }}
+                  data-testid="button-save"
+                >
+                  <Save className="h-4 w-4 mr-1" />
+                  Save
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCancel();
+                  }}
+                  data-testid="button-cancel"
+                >
+                  <X className="h-4 w-4 mr-1" />
+                  Cancel
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleStartEdit();
+                  }}
+                  data-testid="button-edit"
+                >
+                  <Edit className="h-4 w-4 mr-1" />
+                  Edit
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onCopy(prompt);
+                  }}
+                  data-testid="button-copy"
+                >
+                  <Copy className="h-4 w-4 mr-1" />
+                  Copy
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete(prompt.id);
+                  }}
+                  data-testid="button-delete"
+                >
+                  <Trash2 className="h-4 w-4 mr-1" />
+                  Delete
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </div>
