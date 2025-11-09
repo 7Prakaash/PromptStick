@@ -3,10 +3,11 @@
  * Displays a saved prompt in card format with actions
  */
 
+import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Copy, Trash2, Star } from 'lucide-react';
+import { Copy, Trash2, Star, Edit, ChevronDown, ChevronUp } from 'lucide-react';
 import { SavedPrompt } from '@/utils/localStorage';
 import { format } from 'date-fns';
 
@@ -15,9 +16,11 @@ interface PromptCardProps {
   onCopy: (prompt: SavedPrompt) => void;
   onDelete: (id: string) => void;
   onToggleFavorite: (id: string) => void;
+  onEdit: (prompt: SavedPrompt) => void;
 }
 
-export default function PromptCard({ prompt, onCopy, onDelete, onToggleFavorite }: PromptCardProps) {
+export default function PromptCard({ prompt, onCopy, onDelete, onToggleFavorite, onEdit }: PromptCardProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
   const typeColors: Record<string, string> = {
     text: 'bg-primary/10 text-primary',
     image: 'bg-chart-3/10 text-chart-3',
@@ -37,43 +40,91 @@ export default function PromptCard({ prompt, onCopy, onDelete, onToggleFavorite 
               {prompt.llm}
             </span>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            className={`h-8 w-8 ${prompt.isFavorite ? 'text-primary' : 'text-muted-foreground'}`}
-            onClick={() => onToggleFavorite(prompt.id)}
-            data-testid="button-favorite"
-          >
-            <Star className={`h-4 w-4 ${prompt.isFavorite ? 'fill-current' : ''}`} />
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              className={`h-8 w-8 ${prompt.isFavorite ? 'text-primary' : 'text-muted-foreground'}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleFavorite(prompt.id);
+              }}
+              data-testid="button-favorite"
+            >
+              <Star className={`h-4 w-4 ${prompt.isFavorite ? 'fill-current' : ''}`} />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsExpanded(!isExpanded);
+              }}
+              data-testid="button-expand"
+            >
+              {isExpanded ? (
+                <ChevronUp className="h-4 w-4" />
+              ) : (
+                <ChevronDown className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
         </div>
 
         {/* Query */}
-        <div>
+        <div
+          className="cursor-pointer"
+          onClick={() => setIsExpanded(!isExpanded)}
+        >
           <p className="text-sm text-muted-foreground mb-1">Query:</p>
-          <p className="text-sm font-medium line-clamp-2" data-testid="text-query">
+          <p
+            className={`text-sm font-medium ${isExpanded ? '' : 'line-clamp-2'}`}
+            data-testid="text-query"
+          >
             {prompt.query}
           </p>
         </div>
 
         {/* Generated Prompt Preview */}
-        <div>
+        <div
+          className="cursor-pointer"
+          onClick={() => setIsExpanded(!isExpanded)}
+        >
           <p className="text-sm text-muted-foreground mb-1">Generated:</p>
-          <p className="text-sm font-mono bg-muted/50 p-2 rounded line-clamp-3" data-testid="text-prompt-preview">
+          <p
+            className={`text-sm font-mono bg-muted/50 p-2 rounded ${isExpanded ? 'whitespace-pre-wrap' : 'line-clamp-3'}`}
+            data-testid="text-prompt-preview"
+          >
             {prompt.generatedPrompt}
           </p>
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between pt-2 border-t">
+        <div className="flex items-center justify-between pt-2 border-t flex-wrap gap-2">
           <span className="text-xs text-muted-foreground" data-testid="text-timestamp">
             {format(new Date(prompt.timestamp), 'MMM d, yyyy')}
           </span>
-          <div className="flex gap-1">
+          <div className="flex gap-1 flex-wrap">
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => onCopy(prompt)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(prompt);
+              }}
+              data-testid="button-edit"
+            >
+              <Edit className="h-4 w-4 mr-1" />
+              Edit
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onCopy(prompt);
+              }}
               data-testid="button-copy"
             >
               <Copy className="h-4 w-4 mr-1" />
@@ -82,7 +133,10 @@ export default function PromptCard({ prompt, onCopy, onDelete, onToggleFavorite 
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => onDelete(prompt.id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(prompt.id);
+              }}
               data-testid="button-delete"
             >
               <Trash2 className="h-4 w-4 mr-1" />
