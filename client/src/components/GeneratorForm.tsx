@@ -3,7 +3,7 @@
  * Form for inputting prompt parameters and generating optimized prompts
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -21,6 +21,7 @@ interface GeneratorFormProps {
   type: 'text' | 'image' | 'video';
   onGenerate: (params: GeneratorParams) => void;
   isGenerating?: boolean;
+  initialValues?: Partial<GeneratorParams>;
 }
 
 export interface GeneratorParams {
@@ -30,11 +31,20 @@ export interface GeneratorParams {
   style: string[];
 }
 
-export default function GeneratorForm({ type, onGenerate, isGenerating = false }: GeneratorFormProps) {
-  const [query, setQuery] = useState('');
-  const [llm, setLlm] = useState('');
-  const [tone, setTone] = useState('professional');
-  const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
+export default function GeneratorForm({ type, onGenerate, isGenerating = false, initialValues }: GeneratorFormProps) {
+  const [query, setQuery] = useState(initialValues?.query || '');
+  const [llm, setLlm] = useState(initialValues?.llm || '');
+  const [tone, setTone] = useState(initialValues?.tone || 'professional');
+  const [selectedStyles, setSelectedStyles] = useState<string[]>(initialValues?.style || []);
+
+  useEffect(() => {
+    if (initialValues) {
+      setQuery(initialValues.query || '');
+      setLlm(initialValues.llm || '');
+      setTone(initialValues.tone || 'professional');
+      setSelectedStyles(initialValues.style || []);
+    }
+  }, [initialValues]);
 
   // LLM options based on type
   const llmOptions: Record<string, string[]> = {
