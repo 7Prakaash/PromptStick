@@ -48,6 +48,24 @@ interface SortableFolderItemProps {
   setEditingName: (name: string) => void;
 }
 
+function DroppableFolderWrapper({ 
+  folder, 
+  children 
+}: { 
+  folder: FolderType; 
+  children: React.ReactNode;
+}) {
+  const { setNodeRef, isOver } = useDroppable({
+    id: folder.id,
+  });
+
+  return (
+    <div ref={setNodeRef} className={isOver ? 'bg-primary/10 ring-2 ring-primary rounded-md' : ''}>
+      {children}
+    </div>
+  );
+}
+
 function SortableFolderItem({
   folder,
   selectedFolderId,
@@ -71,10 +89,6 @@ function SortableFolderItem({
     isDragging,
   } = useSortable({ id: folder.id });
 
-  const { setNodeRef: setDroppableRef, isOver } = useDroppable({
-    id: folder.id,
-  });
-
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -83,12 +97,7 @@ function SortableFolderItem({
 
   return (
     <div ref={setNodeRef} style={style} className="space-y-1">
-      <div 
-        ref={setDroppableRef}
-        className={`flex items-center gap-1 rounded-md transition-colors ${
-          isOver ? 'bg-primary/10 ring-2 ring-primary' : ''
-        }`}
-      >
+      <div className="flex items-center gap-1 rounded-md transition-colors">
         <Button
           variant="ghost"
           size="icon"
@@ -270,34 +279,35 @@ export default function FolderTree({ onSelectFolder, selectedFolderId }: FolderT
       <AllPromptsDropZone />
 
       {/* Folder List */}
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-      >
-        <SortableContext
-          items={folders.map(f => f.id)}
-          strategy={verticalListSortingStrategy}
-        >
-          {folders.map((folder) => (
-            <SortableFolderItem
-              key={folder.id}
-              folder={folder}
-              selectedFolderId={selectedFolderId}
-              expandedFolders={expandedFolders}
-              editingFolderId={editingFolderId}
-              editingName={editingName}
-              onSelect={onSelectFolder}
-              onToggle={toggleFolder}
-              onDelete={handleDeleteFolder}
-              onStartRename={handleStartRename}
-              onSaveRename={handleSaveRename}
-              onCancelRename={handleCancelRename}
-              setEditingName={setEditingName}
-            />
-          ))}
-        </SortableContext>
-      </DndContext>
+      {folders.map((folder) => (
+        <DroppableFolderWrapper key={folder.id} folder={folder}>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={[folder.id]}
+              strategy={verticalListSortingStrategy}
+            >
+              <SortableFolderItem
+                folder={folder}
+                selectedFolderId={selectedFolderId}
+                expandedFolders={expandedFolders}
+                editingFolderId={editingFolderId}
+                editingName={editingName}
+                onSelect={onSelectFolder}
+                onToggle={toggleFolder}
+                onDelete={handleDeleteFolder}
+                onStartRename={handleStartRename}
+                onSaveRename={handleSaveRename}
+                onCancelRename={handleCancelRename}
+                setEditingName={setEditingName}
+              />
+            </SortableContext>
+          </DndContext>
+        </DroppableFolderWrapper>
+      ))}
 
       {/* Add Folder */}
       {isAdding ? (

@@ -40,3 +40,8 @@
 [x] 40. Removed unused CSS import from PromptCard component
 [x] 41. Fixed hot-reload caching issue by restarting workflow
 [x] 42. Verified all drag-and-drop features work as specified
+[x] 43. Created DroppableFolderWrapper component for custom folders
+[x] 44. Made all custom folders valid drop targets by registering with parent DndContext
+[x] 45. Restructured folder components to support both folder reordering and prompt dropping
+[x] 46. Added visual highlight (primary ring) when dragging prompts over folders
+[x] 47. Restarted workflow and verified drag-and-drop works for all folders
