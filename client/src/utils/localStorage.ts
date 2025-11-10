@@ -58,7 +58,7 @@ const getMonthString = (): string => {
 };
 
 // Custom event to notify components of usage changes
-const dispatchUsageUpdate = () => {
+export const dispatchUsageUpdate = () => {
   window.dispatchEvent(new Event('usageUpdated'));
 };
 
@@ -73,12 +73,6 @@ export const savePrompt = (prompt: Omit<SavedPrompt, 'id' | 'timestamp'>): Saved
   
   prompts.push(newPrompt);
   localStorage.setItem(STORAGE_KEYS.PROMPTS, JSON.stringify(prompts));
-  
-  // Update usage stats
-  incrementUsage();
-  
-  // Notify components of usage change
-  dispatchUsageUpdate();
   
   return newPrompt;
 };
@@ -222,7 +216,7 @@ export const getUsageStats = (): UsageStats => {
   return stats;
 };
 
-const incrementUsage = (): void => {
+export const incrementUsage = (): void => {
   const stats = getUsageStats();
   
   stats.daily.count += 1;
