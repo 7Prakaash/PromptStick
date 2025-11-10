@@ -469,14 +469,17 @@ export default function SavedPrompts() {
                   return (
                     <div
                       key={prompt.id}
-                      className="flex items-start gap-3 p-3 rounded-md border hover-elevate"
+                      className="flex items-start gap-3 p-3 rounded-md border hover-elevate cursor-pointer"
                       data-testid={`import-prompt-${prompt.id}`}
+                      onClick={() => handleTogglePromptInFolder(prompt.id, isInCurrentFolder)}
                     >
-                      <Checkbox
-                        checked={isInCurrentFolder}
-                        onCheckedChange={() => handleTogglePromptInFolder(prompt.id, isInCurrentFolder)}
-                        data-testid={`checkbox-prompt-${prompt.id}`}
-                      />
+                      <div onClick={(e) => e.stopPropagation()}>
+                        <Checkbox
+                          checked={isInCurrentFolder}
+                          onCheckedChange={() => handleTogglePromptInFolder(prompt.id, isInCurrentFolder)}
+                          data-testid={`checkbox-prompt-${prompt.id}`}
+                        />
+                      </div>
                       <div className="flex-1 min-w-0 space-y-1">
                         <div className="flex items-center gap-2 flex-wrap">
                           <Badge className={typeColors[prompt.type]} data-testid={`badge-type-${prompt.id}`}>
