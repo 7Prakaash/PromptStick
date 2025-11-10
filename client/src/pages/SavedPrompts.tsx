@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import PromptCard from '@/components/PromptCard';
 import FolderTree from '@/components/FolderTree';
 import {
@@ -184,6 +185,16 @@ export default function SavedPrompts() {
     p.query.toLowerCase().includes(searchQuery.toLowerCase()) ||
     p.generatedPrompt.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const activePrompt = activePromptId 
+    ? getAllPrompts().find(p => p.id === activePromptId)
+    : null;
+
+  const typeColors: Record<string, string> = {
+    text: 'bg-primary/10 text-primary',
+    image: 'bg-chart-3/10 text-chart-3',
+    video: 'bg-chart-5/10 text-chart-5',
+  };
 
   return (
     <DndContext
@@ -369,6 +380,30 @@ export default function SavedPrompts() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Drag Overlay */}
+      <DragOverlay dropAnimation={null}>
+        {activePrompt ? (
+          <Card className="p-3 w-64 shadow-lg rotate-3 opacity-90 cursor-grabbing">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Badge className={typeColors[activePrompt.type]} data-testid="badge-type-overlay">
+                  {activePrompt.type}
+                </Badge>
+                <span className="text-xs text-muted-foreground truncate">
+                  {activePrompt.llm}
+                </span>
+              </div>
+              <p className="text-sm font-medium line-clamp-2">
+                {activePrompt.query}
+              </p>
+              <p className="text-xs font-mono bg-muted/50 p-2 rounded line-clamp-2">
+                {activePrompt.generatedPrompt}
+              </p>
+            </div>
+          </Card>
+        ) : null}
+      </DragOverlay>
     </DndContext>
   );
 }

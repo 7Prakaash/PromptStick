@@ -25,3 +25,8 @@
 [x] 25. Verified application is running successfully on port 5000
 [x] 26. Screenshot confirms PromptStick application is fully functional
 [x] 27. All import tasks completed - project ready for use
+[x] 28. Added DragOverlay component for drag preview functionality
+[x] 29. Created compact preview card (256px width) with slight rotation effect
+[x] 30. Preview shows badge, LLM name, query, and prompt snippet
+[x] 31. Imported Badge component to fix LSP errors
+[x] 32. Verified application compiles and runs successfully with drag preview
