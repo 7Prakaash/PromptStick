@@ -157,9 +157,20 @@ export default function SavedPrompts() {
   };
 
   const handleOpenImportModal = () => {
-    // Load all prompts from "All Prompts" folder (folderId === undefined)
+    // Load ALL prompts (both from "All Prompts" and current folder)
+    // This allows users to see what's already in the folder and toggle it
     const allPromptsFromRoot = getPromptsByFolder(undefined);
-    setAvailablePrompts(allPromptsFromRoot);
+    const promptsInCurrentFolder = selectedFolder ? getPromptsByFolder(selectedFolder) : [];
+    
+    // Combine both lists, removing duplicates by ID
+    const combinedPrompts = [...allPromptsFromRoot];
+    promptsInCurrentFolder.forEach(p => {
+      if (!combinedPrompts.find(existing => existing.id === p.id)) {
+        combinedPrompts.push(p);
+      }
+    });
+    
+    setAvailablePrompts(combinedPrompts);
     setShowImportModal(true);
   };
 
@@ -180,10 +191,19 @@ export default function SavedPrompts() {
       });
     }
     
-    // Refresh both lists
+    // Refresh both the current folder view and the modal's combined list
     loadPrompts();
-    const updatedAvailablePrompts = getPromptsByFolder(undefined);
-    setAvailablePrompts(updatedAvailablePrompts);
+    
+    // Reload combined list for the modal
+    const allPromptsFromRoot = getPromptsByFolder(undefined);
+    const promptsInCurrentFolder = selectedFolder ? getPromptsByFolder(selectedFolder) : [];
+    const combinedPrompts = [...allPromptsFromRoot];
+    promptsInCurrentFolder.forEach(p => {
+      if (!combinedPrompts.find(existing => existing.id === p.id)) {
+        combinedPrompts.push(p);
+      }
+    });
+    setAvailablePrompts(combinedPrompts);
   };
 
   const handleAddCustomPrompt = () => {
@@ -443,7 +463,8 @@ export default function SavedPrompts() {
             ) : (
               <div className="space-y-3 pr-4">
                 {availablePrompts.map((prompt) => {
-                  const isInCurrentFolder = prompts.some(p => p.id === prompt.id);
+                  // Check if prompt is in the current folder by checking its folderId
+                  const isInCurrentFolder = prompt.folderId === selectedFolder;
                   
                   return (
                     <div
