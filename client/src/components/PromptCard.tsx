@@ -42,13 +42,12 @@ export default function PromptCard({ prompt, onCopy, onDelete, onToggleFavorite,
     video: 'bg-chart-5/10 text-chart-5',
   };
 
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: prompt.id,
   });
 
   const style = {
     transform: CSS.Translate.toString(transform),
-    opacity: isDragging ? 0.5 : 1,
   };
 
   const handleStartEdit = () => {

@@ -27,7 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Plus, Search, Grid3x3, List } from 'lucide-react';
+import { Plus, Search, Grid3x3, List, FileText } from 'lucide-react';
 import {
   getAllPrompts,
   getPromptsByFolder,
@@ -77,9 +77,9 @@ export default function SavedPrompts() {
   }, [selectedFolder]);
 
   const loadPrompts = () => {
-    const allPrompts = selectedFolder !== undefined
-      ? getPromptsByFolder(selectedFolder)
-      : getAllPrompts();
+    // Always use getPromptsByFolder - when selectedFolder is undefined,
+    // it returns prompts with no folderId (i.e., prompts in "All Prompts")
+    const allPrompts = getPromptsByFolder(selectedFolder);
     setPrompts(allPrompts);
   };
 
@@ -384,24 +384,15 @@ export default function SavedPrompts() {
       {/* Drag Overlay */}
       <DragOverlay dropAnimation={null}>
         {activePrompt ? (
-          <Card className="p-3 w-64 shadow-lg rotate-3 opacity-90 cursor-grabbing">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Badge className={typeColors[activePrompt.type]} data-testid="badge-type-overlay">
-                  {activePrompt.type}
-                </Badge>
-                <span className="text-xs text-muted-foreground truncate">
-                  {activePrompt.llm}
-                </span>
-              </div>
-              <p className="text-sm font-medium line-clamp-2">
-                {activePrompt.query}
-              </p>
-              <p className="text-xs font-mono bg-muted/50 p-2 rounded line-clamp-2">
-                {activePrompt.generatedPrompt}
-              </p>
-            </div>
-          </Card>
+          <div className="flex items-center gap-2 bg-card border rounded-md shadow-lg px-3 py-2 cursor-grabbing">
+            <FileText className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+            <Badge className={`${typeColors[activePrompt.type]} flex-shrink-0`} data-testid="badge-type-overlay">
+              {activePrompt.type}
+            </Badge>
+            <span className="text-sm font-medium truncate max-w-[200px]">
+              {activePrompt.query}
+            </span>
+          </div>
         ) : null}
       </DragOverlay>
     </DndContext>

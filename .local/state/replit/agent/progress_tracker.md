@@ -30,3 +30,8 @@
 [x] 30. Preview shows badge, LLM name, query, and prompt snippet
 [x] 31. Imported Badge component to fix LSP errors
 [x] 32. Verified application compiles and runs successfully with drag preview
+[x] 33. Removed opacity change from PromptCard during drag (full card stays visible)
+[x] 34. Changed drag preview to small file-style preview (FileText icon + badge + query)
+[x] 35. Fixed "All Prompts" to only show prompts not in any folder
+[x] 36. When prompt is moved to folder, it's removed from "All Prompts" list
+[x] 37. Restarted workflow and verified all drag-and-drop changes work correctly
