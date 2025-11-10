@@ -384,14 +384,11 @@ export default function SavedPrompts() {
       {/* Drag Overlay */}
       <DragOverlay dropAnimation={null}>
         {activePrompt ? (
-          <div className="flex items-center gap-2 bg-card border rounded-md shadow-lg px-3 py-2 cursor-grabbing">
-            <FileText className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-            <Badge className={`${typeColors[activePrompt.type]} flex-shrink-0`} data-testid="badge-type-overlay">
+          <div className="flex flex-col items-center justify-center gap-1 bg-card border rounded-md shadow-lg w-16 h-16 cursor-grabbing">
+            <FileText className="h-6 w-6 text-muted-foreground" />
+            <Badge className={`${typeColors[activePrompt.type]} text-xs px-1 py-0`} data-testid="badge-type-overlay">
               {activePrompt.type}
             </Badge>
-            <span className="text-sm font-medium truncate max-w-[200px]">
-              {activePrompt.query}
-            </span>
           </div>
         ) : null}
       </DragOverlay>

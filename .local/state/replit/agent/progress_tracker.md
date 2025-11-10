@@ -35,3 +35,8 @@
 [x] 35. Fixed "All Prompts" to only show prompts not in any folder
 [x] 36. When prompt is moved to folder, it's removed from "All Prompts" list
 [x] 37. Restarted workflow and verified all drag-and-drop changes work correctly
+[x] 38. Removed transform style from PromptCard - cards no longer move during drag
+[x] 39. Created compact 64x64px square drag preview with file icon and badge
+[x] 40. Removed unused CSS import from PromptCard component
+[x] 41. Fixed hot-reload caching issue by restarting workflow
+[x] 42. Verified all drag-and-drop features work as specified

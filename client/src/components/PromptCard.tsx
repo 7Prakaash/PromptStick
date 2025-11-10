@@ -20,7 +20,6 @@ import { Input } from '@/components/ui/input';
 import { SavedPrompt } from '@/utils/localStorage';
 import { format } from 'date-fns';
 import { useDraggable } from '@dnd-kit/core';
-import { CSS } from '@dnd-kit/utilities';
 
 interface PromptCardProps {
   prompt: SavedPrompt;
@@ -42,13 +41,9 @@ export default function PromptCard({ prompt, onCopy, onDelete, onToggleFavorite,
     video: 'bg-chart-5/10 text-chart-5',
   };
 
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+  const { attributes, listeners, setNodeRef } = useDraggable({
     id: prompt.id,
   });
-
-  const style = {
-    transform: CSS.Translate.toString(transform),
-  };
 
   const handleStartEdit = () => {
     setIsEditing(true);
@@ -121,7 +116,6 @@ export default function PromptCard({ prompt, onCopy, onDelete, onToggleFavorite,
     <>
       <Card 
         ref={setNodeRef}
-        style={style}
         className="p-4 hover-elevate transition-all cursor-pointer" 
         data-testid={`card-prompt-${prompt.id}`}
         onClick={() => setIsOpen(true)}
