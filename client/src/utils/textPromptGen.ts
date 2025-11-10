@@ -3,24 +3,42 @@
  * Generates optimized prompts for text-based LLMs (GPT, Claude, etc.)
  */
 
+export interface MatchedTemplate {
+  id: string;
+  name: string;
+  template: string;
+  defaultLLM?: string;
+  defaultTone?: string;
+}
+
 interface TextPromptOptions {
   query: string;
   tone?: string;
   llm: string;
   style?: string[];
+  matchedTemplate?: MatchedTemplate | null;
 }
 
 /**
  * Generate an optimized text prompt based on user inputs
  */
 export const generateTextPrompt = (options: TextPromptOptions): string => {
-  const { query, tone = 'professional', llm, style = [] } = options;
+  const { query, tone = 'professional', llm, style = [], matchedTemplate } = options;
   
   let prompt = '';
   
+  // If a template was matched, use it as the foundation
+  if (matchedTemplate && matchedTemplate.template) {
+    // Replace {query} placeholder with actual query
+    prompt = matchedTemplate.template.replace(/\{query\}/g, query);
+  } else {
+    // No template matched - use query directly
+    prompt = query;
+  }
+  
   // Add role/context setting if needed
   if (style.includes('expert')) {
-    prompt += 'You are an expert in this field. ';
+    prompt = 'You are an expert in this field. ' + prompt;
   }
   
   // Add tone instruction
@@ -34,11 +52,8 @@ export const generateTextPrompt = (options: TextPromptOptions): string => {
   };
   
   if (tone && toneMap[tone]) {
-    prompt += toneMap[tone] + ' ';
+    prompt = toneMap[tone] + ' ' + prompt;
   }
-  
-  // Add the main query
-  prompt += query;
   
   // Add style modifiers
   if (style.includes('detailed')) {

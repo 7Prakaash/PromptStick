@@ -1,0 +1,82 @@
+[
+  {
+    "id": "logo-design",
+    "name": "Logo Design",
+    "description": "Generate unique logo concepts",
+    "template": "Design a modern, minimalist logo for {query}. The logo should be clean, professional, and memorable.",
+    "keywords": ["logo", "design", "branding", "brand", "identity", "icon", "emblem", "company logo", "business logo", "trademark"],
+    "defaultLLM": "DALL-E 3"
+  },
+  {
+    "id": "product-mockup",
+    "name": "Product Mockup",
+    "description": "Create product visualization mockups",
+    "template": "Create a realistic product mockup of {query}. High quality, professional photography style with clean composition.",
+    "keywords": ["product", "mockup", "visualization", "showcase", "photography", "product shot", "commercial", "advertising"],
+    "defaultLLM": "Midjourney"
+  },
+  {
+    "id": "character-design",
+    "name": "Character Design",
+    "description": "Design unique characters",
+    "template": "Design a character for {query}. Full body view, detailed, high quality with clear personality and distinctive features.",
+    "keywords": ["character", "design", "avatar", "mascot", "illustration", "cartoon", "anime", "game character", "person"],
+    "defaultLLM": "Stable Diffusion"
+  },
+  {
+    "id": "landscape-scene",
+    "name": "Landscape Scene",
+    "description": "Generate beautiful landscape images",
+    "template": "Create a stunning landscape scene of {query}. Photorealistic, high quality, beautiful lighting and composition.",
+    "keywords": ["landscape", "scenery", "nature", "environment", "background", "wallpaper", "outdoor", "vista", "panorama"],
+    "defaultLLM": "DALL-E 3"
+  },
+  {
+    "id": "abstract-art",
+    "name": "Abstract Art",
+    "description": "Create abstract artistic compositions",
+    "template": "Create an abstract artistic composition inspired by {query}. Creative, expressive, and visually striking.",
+    "keywords": ["abstract", "art", "artistic", "creative", "modern art", "contemporary", "painting", "digital art"],
+    "defaultLLM": "Stable Diffusion"
+  },
+  {
+    "id": "illustration",
+    "name": "Illustration",
+    "description": "Generate detailed illustrations",
+    "template": "Create a detailed illustration of {query}. Clean lines, vibrant colors, and professional quality.",
+    "keywords": ["illustration", "drawing", "artwork", "sketch", "graphic", "vector", "digital illustration"],
+    "defaultLLM": "DALL-E 3"
+  },
+  {
+    "id": "interior-design",
+    "name": "Interior Design",
+    "description": "Visualize interior spaces",
+    "template": "Design an interior space for {query}. Modern, stylish, and functional with attention to detail.",
+    "keywords": ["interior", "room", "space", "furniture", "home", "office", "decoration", "decor", "architecture"],
+    "defaultLLM": "Midjourney"
+  },
+  {
+    "id": "poster-design",
+    "name": "Poster Design",
+    "description": "Create eye-catching posters",
+    "template": "Design a visually striking poster for {query}. Bold, attention-grabbing, and professional.",
+    "keywords": ["poster", "flyer", "advertisement", "promotional", "marketing material", "banner", "graphic design"],
+    "defaultLLM": "DALL-E 3"
+  },
+  {
+    "id": "food-photography",
+    "name": "Food Photography",
+    "description": "Generate appetizing food images",
+    "template": "Create professional food photography of {query}. Appetizing presentation, perfect lighting, and mouth-watering appeal.",
+    "keywords": ["food", "cuisine", "dish", "meal", "recipe", "cooking", "restaurant", "culinary", "gastronomy"],
+    "defaultLLM": "Midjourney"
+  },
+  {
+    "id": "fantasy-art",
+    "name": "Fantasy Art",
+    "description": "Create fantastical and imaginative scenes",
+    "template": "Create a fantasy art piece featuring {query}. Imaginative, magical, and richly detailed.",
+    "keywords": ["fantasy", "magical", "mythical", "dragon", "wizard", "medieval", "epic", "adventure", "mystical"],
+    "defaultLLM": "Stable Diffusion"
+  }
+]

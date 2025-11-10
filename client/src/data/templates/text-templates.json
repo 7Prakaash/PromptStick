@@ -1,0 +1,137 @@
+[
+  {
+    "id": "blog-post",
+    "name": "Blog Post Generator",
+    "description": "Create engaging blog posts on any topic",
+    "template": "Write a comprehensive blog post about {query}. Include an engaging introduction, 3-5 main sections with subheadings, practical examples, and a conclusion with actionable takeaways.",
+    "keywords": ["blog", "post", "article", "write", "writing", "content", "publish", "seo", "website", "blogging"],
+    "defaultLLM": "GPT-4",
+    "defaultTone": "professional"
+  },
+  {
+    "id": "social-media",
+    "name": "Social Media Post",
+    "description": "Craft compelling social media content",
+    "template": "Create engaging social media posts about {query}. Each post should be platform-appropriate length, include relevant hashtags, and have a clear call-to-action.",
+    "keywords": ["social", "media", "post", "tweet", "facebook", "instagram", "linkedin", "twitter", "hashtag", "viral", "engagement"],
+    "defaultLLM": "Claude",
+    "defaultTone": "casual"
+  },
+  {
+    "id": "product-description",
+    "name": "Product Description",
+    "description": "Write persuasive product descriptions",
+    "template": "Write a compelling product description for {query}. Highlight key features, benefits, and unique selling points. Include technical specifications if relevant.",
+    "keywords": ["product", "description", "ecommerce", "selling", "features", "benefits", "specifications", "buy", "purchase", "shop"],
+    "defaultLLM": "GPT-4",
+    "defaultTone": "professional"
+  },
+  {
+    "id": "code-review",
+    "name": "Code Review",
+    "description": "Get detailed code reviews and suggestions",
+    "template": "Review the following code related to {query} for best practices, performance, security issues, and maintainability. Provide specific suggestions for improvement.",
+    "keywords": ["code", "review", "programming", "development", "refactor", "optimize", "debug", "best practices", "security", "performance"],
+    "defaultLLM": "GPT-4",
+    "defaultTone": "technical"
+  },
+  {
+    "id": "debug-helper",
+    "name": "Debug Helper",
+    "description": "Identify and fix bugs in your code",
+    "template": "Help me debug this issue: {query}. Explain what's causing the error and provide a fix with detailed explanation.",
+    "keywords": ["debug", "error", "bug", "fix", "troubleshoot", "issue", "problem", "broken", "not working", "crash"],
+    "defaultLLM": "Claude",
+    "defaultTone": "technical"
+  },
+  {
+    "id": "api-documentation",
+    "name": "API Documentation",
+    "description": "Generate clear API documentation",
+    "template": "Create comprehensive API documentation for {query}. Include request/response examples, parameters, error codes, and usage notes.",
+    "keywords": ["api", "documentation", "docs", "endpoint", "rest", "graphql", "swagger", "openapi", "reference", "integration"],
+    "defaultLLM": "GPT-4",
+    "defaultTone": "technical"
+  },
+  {
+    "id": "email-campaign",
+    "name": "Email Campaign",
+    "description": "Craft effective email sequences",
+    "template": "Create an email campaign for {query}. Each email should include: compelling subject line, engaging opening, value proposition, and clear CTA.",
+    "keywords": ["email", "campaign", "newsletter", "marketing", "sequence", "drip", "mailchimp", "send", "subscriber", "outreach"],
+    "defaultLLM": "Claude",
+    "defaultTone": "professional"
+  },
+  {
+    "id": "landing-page-copy",
+    "name": "Landing Page Copy",
+    "description": "Write high-converting landing pages",
+    "template": "Write landing page copy for {query}. Include: attention-grabbing headline, subheadline, benefit-focused sections, social proof elements, objection handling, and persuasive CTA.",
+    "keywords": ["landing page", "sales", "conversion", "copy", "copywriting", "headline", "cta", "marketing", "funnel", "persuasive"],
+    "defaultLLM": "GPT-4",
+    "defaultTone": "professional"
+  },
+  {
+    "id": "press-release",
+    "name": "Press Release",
+    "description": "Professional press releases",
+    "template": "Write a professional press release for {query}. Include: compelling headline, dateline, lead paragraph with key info, quotes from stakeholders, company boilerplate, and contact information.",
+    "keywords": ["press", "release", "announcement", "news", "media", "pr", "public relations", "journalist", "newsworthy"],
+    "defaultLLM": "GPT-4",
+    "defaultTone": "formal"
+  },
+  {
+    "id": "study-guide",
+    "name": "Study Guide",
+    "description": "Create comprehensive study materials",
+    "template": "Create a detailed study guide for {query}. Include: key concepts, definitions, examples, practice questions with answers, and memory aids.",
+    "keywords": ["study", "guide", "learn", "education", "exam", "test", "notes", "review", "studying", "academic"],
+    "defaultLLM": "Claude",
+    "defaultTone": "professional"
+  },
+  {
+    "id": "eli5-explanation",
+    "name": "ELI5 Explanation",
+    "description": "Explain complex topics simply",
+    "template": "Explain {query} like I'm five years old. Use simple analogies, everyday examples, and avoid jargon. Make it engaging and easy to understand while maintaining accuracy.",
+    "keywords": ["explain", "eli5", "simple", "beginner", "basics", "understand", "how does", "what is", "introduction", "concept"],
+    "defaultLLM": "GPT-4",
+    "defaultTone": "friendly"
+  },
+  {
+    "id": "tutorial",
+    "name": "Step-by-Step Tutorial",
+    "description": "Create detailed how-to guides",
+    "template": "Create a step-by-step tutorial for {query}. Include: prerequisites, required materials/tools, numbered steps with clear instructions, tips for common mistakes, and troubleshooting advice.",
+    "keywords": ["tutorial", "how to", "guide", "step by step", "instructions", "learn", "teach", "walkthrough", "lesson"],
+    "defaultLLM": "GPT-4",
+    "defaultTone": "friendly"
+  },
+  {
+    "id": "youtube-script",
+    "name": "YouTube Script",
+    "description": "Create engaging video scripts",
+    "template": "Write a YouTube video script about {query}. Include: hook (first 10 seconds), introduction, main content with timestamps, call-to-action, and outro.",
+    "keywords": ["youtube", "video script", "script", "vlog", "content creator", "youtuber", "filming", "recording"],
+    "defaultLLM": "Claude",
+    "defaultTone": "casual"
+  },
+  {
+    "id": "video-storyboard",
+    "name": "Video Storyboard",
+    "description": "Plan your video shot by shot",
+    "template": "Create a detailed storyboard for a video about {query}. Include: scene descriptions, camera angles, transitions, dialogue/voiceover notes, and visual elements for each shot.",
+    "keywords": ["storyboard", "video plan", "shot list", "scenes", "filming plan", "production", "pre-production"],
+    "defaultLLM": "GPT-4",
+    "defaultTone": "professional"
+  },
+  {
+    "id": "short-video-concept",
+    "name": "Short Video Concept",
+    "description": "Generate TikTok/Reels ideas",
+    "template": "Generate creative short-form video concepts about {query}. Each concept should include: hook, visual style, key moments, text overlays, and trending audio suggestions.",
+    "keywords": ["tiktok", "reels", "shorts", "short video", "viral", "trending", "social video", "instagram reels", "youtube shorts"],
+    "defaultLLM": "GPT-4",
+    "defaultTone": "creative"
+  }
+]

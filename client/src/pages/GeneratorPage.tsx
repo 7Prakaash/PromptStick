@@ -11,6 +11,8 @@ import LimitReachedModal from '@/components/LimitReachedModal';
 import { generateTextPrompt } from '@/utils/textPromptGen';
 import { generateImagePrompt } from '@/utils/imagePromptGen';
 import { generateVideoPrompt } from '@/utils/videoPromptGen';
+import { getTemplatesByType } from '@/utils/templateLoader';
+import { findBestTemplate } from '@/utils/templateMatcher';
 import {
   savePrompt,
   updatePrompt,
@@ -114,24 +116,39 @@ export default function GeneratorPage() {
     setTimeout(() => {
       let prompt = '';
 
+      // Step 1: Load templates for the current generator type
+      const templates = getTemplatesByType(type);
+
+      // Step 2: Find the best matching template based on keywords
+      const matchedTemplate = findBestTemplate(params.query, templates);
+
+      // Log matched template for debugging (optional)
+      if (matchedTemplate) {
+        console.log('Matched template:', matchedTemplate.name, 'with score:', matchedTemplate.score);
+      }
+
+      // Step 3: Generate prompt with template matching + user customization
       if (type === 'text') {
         prompt = generateTextPrompt({
           query: params.query,
           tone: params.tone,
           llm: params.llm,
           style: params.style,
+          matchedTemplate: matchedTemplate,
         });
       } else if (type === 'image') {
         prompt = generateImagePrompt({
           query: params.query,
           llm: params.llm,
           style: params.style,
+          matchedTemplate: matchedTemplate,
         });
       } else if (type === 'video') {
         prompt = generateVideoPrompt({
           query: params.query,
           llm: params.llm,
           style: params.style,
+          matchedTemplate: matchedTemplate,
         });
       }
 
@@ -144,7 +161,9 @@ export default function GeneratorPage() {
 
       toast({
         title: 'Prompt Generated!',
-        description: 'Your optimized prompt is ready',
+        description: matchedTemplate 
+          ? `Using template: ${matchedTemplate.name}` 
+          : 'Your optimized prompt is ready',
       });
     }, 800);
   };

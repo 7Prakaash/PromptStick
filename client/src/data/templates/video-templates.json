@@ -1,0 +1,82 @@
+[
+  {
+    "id": "youtube-video",
+    "name": "YouTube Video Concept",
+    "description": "Plan engaging YouTube videos",
+    "template": "Create a detailed video concept for a YouTube video about {query}. Include hook, main content structure, engagement points, and outro with CTA.",
+    "keywords": ["youtube", "video", "vlog", "content", "creator", "channel", "subscribers", "views", "monetize"],
+    "defaultLLM": "GPT-4"
+  },
+  {
+    "id": "tiktok-concept",
+    "name": "TikTok/Reels Concept",
+    "description": "Generate viral short-form video ideas",
+    "template": "Generate a viral short-form video concept about {query}. Include hook, visual elements, trending sounds, and engagement tactics for maximum reach.",
+    "keywords": ["tiktok", "reels", "shorts", "viral", "trending", "short video", "social media", "instagram", "quick"],
+    "defaultLLM": "Claude"
+  },
+  {
+    "id": "tutorial-video",
+    "name": "Tutorial Video",
+    "description": "Plan educational video content",
+    "template": "Create a tutorial video plan for {query}. Include step-by-step breakdown, visual demonstrations, tips, and common mistakes to avoid.",
+    "keywords": ["tutorial", "how to", "guide", "teaching", "educational", "learn", "instruction", "walkthrough", "lesson"],
+    "defaultLLM": "GPT-4"
+  },
+  {
+    "id": "product-demo",
+    "name": "Product Demo Video",
+    "description": "Showcase products effectively",
+    "template": "Create a product demonstration video plan for {query}. Highlight features, benefits, use cases, and include clear visuals and explanations.",
+    "keywords": ["product", "demo", "demonstration", "showcase", "review", "unboxing", "features", "overview"],
+    "defaultLLM": "GPT-4"
+  },
+  {
+    "id": "explainer-video",
+    "name": "Explainer Video",
+    "description": "Explain concepts clearly on video",
+    "template": "Create an explainer video script for {query}. Break down complex ideas into simple, visual explanations with clear narrative flow.",
+    "keywords": ["explainer", "explain", "animation", "educational", "concept", "understand", "breakdown", "simple"],
+    "defaultLLM": "Claude"
+  },
+  {
+    "id": "promotional-video",
+    "name": "Promotional Video",
+    "description": "Create marketing video content",
+    "template": "Design a promotional video for {query}. Include attention-grabbing opening, key selling points, emotional appeal, and strong call-to-action.",
+    "keywords": ["promotional", "promo", "marketing", "advertisement", "commercial", "sales", "campaign", "brand"],
+    "defaultLLM": "GPT-4"
+  },
+  {
+    "id": "documentary-style",
+    "name": "Documentary Style Video",
+    "description": "Plan documentary-style content",
+    "template": "Create a documentary-style video plan about {query}. Include narrative structure, interview points, B-roll ideas, and storytelling elements.",
+    "keywords": ["documentary", "storytelling", "narrative", "interview", "investigation", "story", "real life", "journalism"],
+    "defaultLLM": "Claude"
+  },
+  {
+    "id": "animation-concept",
+    "name": "Animation Concept",
+    "description": "Develop animated video ideas",
+    "template": "Develop an animation concept for {query}. Include visual style, character designs, key scenes, transitions, and animation techniques.",
+    "keywords": ["animation", "animated", "cartoon", "motion graphics", "2d", "3d", "character animation", "visual effects"],
+    "defaultLLM": "GPT-4"
+  },
+  {
+    "id": "vlog-structure",
+    "name": "Vlog Structure",
+    "description": "Plan personal vlog content",
+    "template": "Create a vlog structure for {query}. Include personal narrative, key moments to capture, transitions, and authentic engagement with audience.",
+    "keywords": ["vlog", "vlogging", "daily", "lifestyle", "personal", "diary", "day in life", "behind the scenes"],
+    "defaultLLM": "Claude"
+  },
+  {
+    "id": "livestream-plan",
+    "name": "Livestream Plan",
+    "description": "Organize live streaming content",
+    "template": "Plan a livestream about {query}. Include talking points, audience interaction ideas, schedule, and engagement strategies for real-time viewers.",
+    "keywords": ["livestream", "live", "streaming", "twitch", "broadcast", "real time", "interactive", "stream"],
+    "defaultLLM": "GPT-4"
+  }
+]

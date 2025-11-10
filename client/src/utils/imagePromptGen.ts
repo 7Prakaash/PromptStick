@@ -3,19 +3,35 @@
  * Generates optimized prompts for image generation models (DALL-E, Midjourney, Stable Diffusion)
  */
 
+export interface MatchedTemplate {
+  id: string;
+  name: string;
+  template: string;
+  defaultLLM?: string;
+}
+
 interface ImagePromptOptions {
   query: string;
   style?: string[];
   llm: string;
+  matchedTemplate?: MatchedTemplate | null;
 }
 
 /**
  * Generate an optimized image generation prompt
  */
 export const generateImagePrompt = (options: ImagePromptOptions): string => {
-  const { query, style = [], llm } = options;
+  const { query, style = [], llm, matchedTemplate } = options;
   
-  let prompt = query;
+  // If a template was matched, use it as the foundation
+  let prompt = '';
+  if (matchedTemplate && matchedTemplate.template) {
+    // Replace {query} placeholder with actual query
+    prompt = matchedTemplate.template.replace(/\{query\}/g, query);
+  } else {
+    // No template matched - use query directly
+    prompt = query;
+  }
   
   // Add style modifiers
   const styleEnhancements: string[] = [];

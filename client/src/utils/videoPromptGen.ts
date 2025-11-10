@@ -3,22 +3,36 @@
  * Generates optimized prompts for video generation and video content planning
  */
 
+export interface MatchedTemplate {
+  id: string;
+  name: string;
+  template: string;
+  defaultLLM?: string;
+}
+
 interface VideoPromptOptions {
   query: string;
   style?: string[];
   llm: string;
+  matchedTemplate?: MatchedTemplate | null;
 }
 
 /**
  * Generate an optimized video prompt or script outline
  */
 export const generateVideoPrompt = (options: VideoPromptOptions): string => {
-  const { query, style = [], llm } = options;
+  const { query, style = [], llm, matchedTemplate } = options;
   
   let prompt = '';
   
-  // Add structural guidance for video content
-  prompt += 'Create a detailed video concept for: ' + query;
+  // If a template was matched, use it as the foundation
+  if (matchedTemplate && matchedTemplate.template) {
+    // Replace {query} placeholder with actual query
+    prompt = matchedTemplate.template.replace(/\{query\}/g, query);
+  } else {
+    // No template matched - use default structure
+    prompt = 'Create a detailed video concept for: ' + query;
+  }
   
   // Add style-specific instructions
   if (style.includes('short-form')) {
