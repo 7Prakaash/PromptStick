@@ -16,6 +16,8 @@ import {
   updatePrompt,
   hasReachedDailyLimit,
   hasReachedMonthlyLimit,
+  incrementUsage,
+  dispatchUsageUpdate,
 } from '@/utils/localStorage';
 import { useToast } from '@/hooks/use-toast';
 import { FileText, Image, Video } from 'lucide-react';
@@ -135,6 +137,10 @@ export default function GeneratorPage() {
 
       setGeneratedPrompt(prompt);
       setIsGenerating(false);
+
+      // Increment usage counter after successful generation
+      incrementUsage();
+      dispatchUsageUpdate();
 
       toast({
         title: 'Prompt Generated!',
