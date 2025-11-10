@@ -20,6 +20,8 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Select,
   SelectContent,
@@ -27,7 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Plus, Search, Grid3x3, List, FileText } from 'lucide-react';
+import { Plus, Search, Grid3x3, List, FileText, Download } from 'lucide-react';
 import {
   getAllPrompts,
   getPromptsByFolder,
@@ -62,6 +64,8 @@ export default function SavedPrompts() {
     llm: '',
   });
   const [activePromptId, setActivePromptId] = useState<string | null>(null);
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [availablePrompts, setAvailablePrompts] = useState<SavedPrompt[]>([]);
   const { toast } = useToast();
 
   const sensors = useSensors(
@@ -150,6 +154,36 @@ export default function SavedPrompts() {
 
   const handleDragCancel = () => {
     setActivePromptId(null);
+  };
+
+  const handleOpenImportModal = () => {
+    // Load all prompts from "All Prompts" folder (folderId === undefined)
+    const allPromptsFromRoot = getPromptsByFolder(undefined);
+    setAvailablePrompts(allPromptsFromRoot);
+    setShowImportModal(true);
+  };
+
+  const handleTogglePromptInFolder = (promptId: string, currentlyInFolder: boolean) => {
+    if (currentlyInFolder) {
+      // Remove from folder (move back to All Prompts)
+      movePromptToFolder(promptId, undefined);
+      toast({
+        title: 'Removed',
+        description: 'Prompt moved back to All Prompts',
+      });
+    } else {
+      // Add to current folder
+      movePromptToFolder(promptId, selectedFolder);
+      toast({
+        title: 'Added',
+        description: 'Prompt added to folder',
+      });
+    }
+    
+    // Refresh both lists
+    loadPrompts();
+    const updatedAvailablePrompts = getPromptsByFolder(undefined);
+    setAvailablePrompts(updatedAvailablePrompts);
   };
 
   const handleAddCustomPrompt = () => {
@@ -244,7 +278,7 @@ export default function SavedPrompts() {
                       data-testid="input-search"
                     />
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 flex-wrap">
                     <Button
                       variant="outline"
                       size="icon"
@@ -263,6 +297,16 @@ export default function SavedPrompts() {
                     >
                       <List className="h-4 w-4" />
                     </Button>
+                    {selectedFolder && (
+                      <Button 
+                        variant="ghost" 
+                        onClick={handleOpenImportModal}
+                        data-testid="button-import-prompts"
+                      >
+                        <Download className="h-4 w-4 mr-2" />
+                        Import from All Prompts
+                      </Button>
+                    )}
                     <Button onClick={() => setShowAddModal(true)} data-testid="button-add-custom">
                       <Plus className="h-4 w-4 mr-2" />
                       Add Custom
@@ -376,6 +420,68 @@ export default function SavedPrompts() {
             </Button>
             <Button onClick={handleAddCustomPrompt} data-testid="button-save">
               Add Prompt
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Import from All Prompts Modal */}
+      <Dialog open={showImportModal} onOpenChange={setShowImportModal}>
+        <DialogContent className="max-w-2xl" data-testid="modal-import-prompts">
+          <DialogHeader>
+            <DialogTitle>Import from All Prompts</DialogTitle>
+            <DialogDescription>
+              Select prompts to add to this folder or deselect to move them back to All Prompts
+            </DialogDescription>
+          </DialogHeader>
+
+          <ScrollArea className="max-h-96">
+            {availablePrompts.length === 0 ? (
+              <div className="py-8 text-center text-muted-foreground">
+                No prompts available in All Prompts
+              </div>
+            ) : (
+              <div className="space-y-3 pr-4">
+                {availablePrompts.map((prompt) => {
+                  const isInCurrentFolder = prompts.some(p => p.id === prompt.id);
+                  
+                  return (
+                    <div
+                      key={prompt.id}
+                      className="flex items-start gap-3 p-3 rounded-md border hover-elevate"
+                      data-testid={`import-prompt-${prompt.id}`}
+                    >
+                      <Checkbox
+                        checked={isInCurrentFolder}
+                        onCheckedChange={() => handleTogglePromptInFolder(prompt.id, isInCurrentFolder)}
+                        data-testid={`checkbox-prompt-${prompt.id}`}
+                      />
+                      <div className="flex-1 min-w-0 space-y-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <Badge className={typeColors[prompt.type]} data-testid={`badge-type-${prompt.id}`}>
+                            {prompt.type}
+                          </Badge>
+                          <span className="text-sm font-medium text-muted-foreground">
+                            {prompt.llm}
+                          </span>
+                        </div>
+                        <p className="text-sm font-medium" data-testid={`text-query-${prompt.id}`}>
+                          {prompt.query}
+                        </p>
+                        <p className="text-xs text-muted-foreground line-clamp-2">
+                          {prompt.generatedPrompt}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </ScrollArea>
+
+          <DialogFooter>
+            <Button onClick={() => setShowImportModal(false)} data-testid="button-close-import">
+              Close
             </Button>
           </DialogFooter>
         </DialogContent>
