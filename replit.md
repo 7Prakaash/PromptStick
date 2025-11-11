@@ -9,9 +9,13 @@ PromptStick is a developer-focused SaaS application for generating, organizing, 
 **Key Features**:
 - Multi-type prompt generation (text, image, video)
 - LLM-specific optimization
+- Style selection toggles for customizing prompt output (detailed, concise, step-by-step, etc.)
+- 70-character input limit with character counter for focused queries
+- Smart error handling - shows dialog when no keyword matches are found
+- Save-once functionality to prevent duplicate saves
 - Folder-based organization system
 - Template library for common use cases
-- Usage tracking and limits (daily/monthly)
+- Usage tracking and limits (daily/monthly) - credits only deducted for successful generations
 - Local storage persistence
 
 ## User Preferences
