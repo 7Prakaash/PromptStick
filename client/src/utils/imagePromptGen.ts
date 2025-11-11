@@ -26,8 +26,8 @@ export const generateImagePrompt = (options: ImagePromptOptions): string => {
   // If a template was matched, use it as the foundation
   let prompt = '';
   if (matchedTemplate && matchedTemplate.template) {
-    // Replace {query} placeholder with actual query
-    prompt = matchedTemplate.template.replace(/\{query\}/g, query);
+    // Keep {query} placeholder as-is for manual replacement
+    prompt = matchedTemplate.template;
   } else {
     // No template matched - use query directly
     prompt = query;
