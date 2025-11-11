@@ -12,7 +12,7 @@ import { generateTextPrompt } from '@/utils/textPromptGen';
 import { generateImagePrompt } from '@/utils/imagePromptGen';
 import { generateVideoPrompt } from '@/utils/videoPromptGen';
 import { getTemplatesByType } from '@/utils/templateLoader';
-import { findBestTemplate } from '@/utils/templateMatcher';
+import { findTemplateMatches } from '@/utils/templateMatcher';
 import {
   savePrompt,
   updatePrompt,
@@ -34,6 +34,8 @@ export default function GeneratorPage() {
   const [lastParams, setLastParams] = useState<GeneratorParams | null>(null);
   const [editPromptId, setEditPromptId] = useState<string | null>(null);
   const [initialFormValues, setInitialFormValues] = useState<Partial<GeneratorParams> | undefined>(undefined);
+  const [lastQueryForCycling, setLastQueryForCycling] = useState<string>('');
+  const [matchIndex, setMatchIndex] = useState<number>(0);
   const { toast } = useToast();
 
   // Check for edit prompt or template in sessionStorage
@@ -112,6 +114,18 @@ export default function GeneratorPage() {
     setIsGenerating(true);
     setLastParams(params);
 
+    // Check if query has changed - reset match index if so
+    let currentMatchIndex = matchIndex;
+    if (params.query !== lastQueryForCycling) {
+      currentMatchIndex = 0;
+      setMatchIndex(0);
+      setLastQueryForCycling(params.query);
+    } else {
+      // Same query - increment to next match
+      currentMatchIndex = matchIndex + 1;
+      setMatchIndex(currentMatchIndex);
+    }
+
     // Simulate generation delay for better UX
     setTimeout(() => {
       let prompt = '';
@@ -119,15 +133,30 @@ export default function GeneratorPage() {
       // Step 1: Load templates for the current generator type
       const templates = getTemplatesByType(type);
 
-      // Step 2: Find the best matching template based on keywords
-      const matchedTemplate = findBestTemplate(params.query, templates);
+      // Step 2: Find all matching templates sorted by score (get up to 10 matches)
+      const allMatches = findTemplateMatches(params.query, templates, 10);
 
-      // Log matched template for debugging (optional)
-      if (matchedTemplate) {
-        console.log('Matched template:', matchedTemplate.name, 'with score:', matchedTemplate.score);
+      // Step 3: Wrap around if index exceeds available matches
+      if (currentMatchIndex >= allMatches.length && allMatches.length > 0) {
+        currentMatchIndex = 0;
+        setMatchIndex(0);
+        console.log('Cycling back to first match');
       }
 
-      // Step 3: Generate prompt with template matching + user customization
+      // Step 4: Select the template at the current match index (or null if no matches)
+      const matchedTemplate = allMatches[currentMatchIndex] || null;
+
+      // Log matched template for debugging
+      if (matchedTemplate) {
+        console.log(
+          `Match #${currentMatchIndex + 1}:`,
+          matchedTemplate.name,
+          'with score:',
+          matchedTemplate.score
+        );
+      }
+
+      // Step 5: Generate prompt with template matching + user customization
       if (type === 'text') {
         prompt = generateTextPrompt({
           query: params.query,
@@ -159,10 +188,14 @@ export default function GeneratorPage() {
       incrementUsage();
       dispatchUsageUpdate();
 
+      // Show which match is being used
+      const matchNumber = currentMatchIndex + 1;
+      const totalMatches = allMatches.length;
+      
       toast({
         title: 'Prompt Generated!',
         description: matchedTemplate 
-          ? `Using template: ${matchedTemplate.name}` 
+          ? `Using template: ${matchedTemplate.name} (Match #${matchNumber} of ${totalMatches})` 
           : 'Your optimized prompt is ready',
       });
     }, 800);
