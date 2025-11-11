@@ -187,6 +187,10 @@ export default function GeneratorPage() {
       // Increment usage counter after successful generation
       incrementUsage();
       dispatchUsageUpdate();
+
+      toast({
+        title: 'Prompt Generated!',
+      });
     }, 800);
   };
 
