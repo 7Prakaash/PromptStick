@@ -187,17 +187,6 @@ export default function GeneratorPage() {
       // Increment usage counter after successful generation
       incrementUsage();
       dispatchUsageUpdate();
-
-      // Show which match is being used
-      const matchNumber = currentMatchIndex + 1;
-      const totalMatches = allMatches.length;
-      
-      toast({
-        title: 'Prompt Generated!',
-        description: matchedTemplate 
-          ? `Using template: ${matchedTemplate.name} (Match #${matchNumber} of ${totalMatches})` 
-          : 'Your optimized prompt is ready',
-      });
     }, 800);
   };
 
