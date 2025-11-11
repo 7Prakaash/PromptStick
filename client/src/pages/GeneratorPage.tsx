@@ -194,6 +194,10 @@ export default function GeneratorPage() {
     }, 800);
   };
 
+  const handleEdit = (editedPrompt: string) => {
+    setGeneratedPrompt(editedPrompt);
+  };
+
   const handleSave = () => {
     if (!generatedPrompt || !lastParams) return;
 
@@ -267,6 +271,7 @@ export default function GeneratorPage() {
               prompt={generatedPrompt}
               onSave={handleSave}
               showSave={!!generatedPrompt}
+              onEdit={handleEdit}
             />
           </div>
         </div>

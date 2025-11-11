@@ -6,22 +6,27 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Copy, Check, Save } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import { Copy, Check, Save, Edit, CheckCheck } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface CodeOutputProps {
   prompt: string;
   onSave?: () => void;
   showSave?: boolean;
+  onEdit?: (editedPrompt: string) => void;
 }
 
-export default function CodeOutput({ prompt, onSave, showSave = true }: CodeOutputProps) {
+export default function CodeOutput({ prompt, onSave, showSave = true, onEdit }: CodeOutputProps) {
   const [copied, setCopied] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedPrompt, setEditedPrompt] = useState(prompt);
   const { toast } = useToast();
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(prompt);
+      const textToCopy = isEditing ? editedPrompt : prompt;
+      await navigator.clipboard.writeText(textToCopy);
       setCopied(true);
       toast({
         title: 'Copied!',
@@ -35,6 +40,22 @@ export default function CodeOutput({ prompt, onSave, showSave = true }: CodeOutp
         variant: 'destructive',
       });
     }
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
+    setEditedPrompt(prompt);
+  };
+
+  const handleDoneEditing = () => {
+    setIsEditing(false);
+    if (onEdit) {
+      onEdit(editedPrompt);
+    }
+    toast({
+      title: 'Changes saved!',
+      description: 'Your edits have been applied',
+    });
   };
 
   if (!prompt) {
@@ -54,6 +75,27 @@ export default function CodeOutput({ prompt, onSave, showSave = true }: CodeOutp
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold" data-testid="text-output-title">Generated Prompt</h3>
         <div className="flex gap-2">
+          {isEditing ? (
+            <Button
+              variant="default"
+              size="sm"
+              onClick={handleDoneEditing}
+              data-testid="button-done-editing"
+            >
+              <CheckCheck className="h-4 w-4 mr-2" />
+              Done
+            </Button>
+          ) : (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleEdit}
+              data-testid="button-edit"
+            >
+              <Edit className="h-4 w-4 mr-2" />
+              Edit
+            </Button>
+          )}
           <Button
             variant="outline"
             size="sm"
@@ -97,9 +139,18 @@ export default function CodeOutput({ prompt, onSave, showSave = true }: CodeOutp
           </div>
         </div>
         <div className="p-6 bg-card">
-          <pre className="font-mono text-sm leading-relaxed whitespace-pre-wrap break-words" data-testid="text-output-content">
-            {prompt}
-          </pre>
+          {isEditing ? (
+            <Textarea
+              value={editedPrompt}
+              onChange={(e) => setEditedPrompt(e.target.value)}
+              className="font-mono text-sm leading-relaxed min-h-64 resize-y"
+              data-testid="textarea-edit-output"
+            />
+          ) : (
+            <pre className="font-mono text-sm leading-relaxed whitespace-pre-wrap break-words" data-testid="text-output-content">
+              {prompt}
+            </pre>
+          )}
         </div>
       </Card>
     </div>
