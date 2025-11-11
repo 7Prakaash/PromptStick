@@ -3,7 +3,7 @@
  * Form for inputting prompt parameters and generating optimized prompts
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, forwardRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -31,131 +31,165 @@ export interface GeneratorParams {
   style: string[];
 }
 
-export default function GeneratorForm({ type, onGenerate, isGenerating = false, initialValues }: GeneratorFormProps) {
-  const [query, setQuery] = useState(initialValues?.query || '');
-  const [llm, setLlm] = useState(initialValues?.llm || '');
-  const [tone, setTone] = useState(initialValues?.tone || 'professional');
-  const [selectedStyles, setSelectedStyles] = useState<string[]>(initialValues?.style || []);
+const GeneratorForm = forwardRef<HTMLTextAreaElement, GeneratorFormProps>(
+  ({ type, onGenerate, isGenerating = false, initialValues }, ref) => {
+    const [query, setQuery] = useState(initialValues?.query || '');
+    const [llm, setLlm] = useState(initialValues?.llm || '');
+    const [tone, setTone] = useState(initialValues?.tone || 'professional');
+    const [selectedStyles, setSelectedStyles] = useState<string[]>(initialValues?.style || []);
 
-  useEffect(() => {
-    if (initialValues) {
-      setQuery(initialValues.query || '');
-      setLlm(initialValues.llm || '');
-      setTone(initialValues.tone || 'professional');
-      setSelectedStyles(initialValues.style || []);
-    }
-  }, [initialValues]);
+    useEffect(() => {
+      if (initialValues) {
+        setQuery(initialValues.query || '');
+        setLlm(initialValues.llm || '');
+        setTone(initialValues.tone || 'professional');
+        setSelectedStyles(initialValues.style || []);
+      }
+    }, [initialValues]);
 
-  // LLM options based on type
-  const llmOptions: Record<string, string[]> = {
-    text: ['GPT-4', 'GPT-3.5 Turbo', 'Claude', 'Claude Instant', 'Gemini Pro'],
-    image: ['DALL-E 3', 'DALL-E 2', 'Midjourney', 'Stable Diffusion', 'Ideogram'],
-    video: ['Runway Gen-2', 'Pika', 'Stable Video', 'GPT-4 (Script)'],
-  };
+    // LLM options based on type
+    const llmOptions: Record<string, string[]> = {
+      text: ['GPT-4', 'GPT-3.5 Turbo', 'Claude', 'Claude Instant', 'Gemini Pro'],
+      image: ['DALL-E 3', 'DALL-E 2', 'Midjourney', 'Stable Diffusion', 'Ideogram'],
+      video: ['Runway Gen-2', 'Pika', 'Stable Video', 'GPT-4 (Script)'],
+    };
 
-  // Style options based on type
-  const styleOptions: Record<string, string[]> = {
-    text: ['detailed', 'concise', 'step-by-step', 'with-examples', 'expert'],
-    image: ['photorealistic', 'artistic', 'minimalist', 'detailed', 'vibrant', 'cinematic'],
-    video: ['short-form', 'long-form', 'tutorial', 'cinematic', 'with-narration'],
-  };
+    // Style options based on type
+    const styleOptions: Record<string, string[]> = {
+      text: ['detailed', 'concise', 'step-by-step', 'with-examples', 'expert'],
+      image: ['photorealistic', 'artistic', 'minimalist', 'detailed', 'vibrant', 'cinematic'],
+      video: ['short-form', 'long-form', 'tutorial', 'cinematic', 'with-narration'],
+    };
 
-  // Tone options (only for text)
-  const toneOptions = ['professional', 'casual', 'creative', 'technical', 'friendly', 'formal'];
+    // Tone options (only for text)
+    const toneOptions = ['professional', 'casual', 'creative', 'technical', 'friendly', 'formal'];
 
-  const handleStyleToggle = (style: string) => {
-    setSelectedStyles(prev =>
-      prev.includes(style)
-        ? prev.filter(s => s !== style)
-        : [...prev, style]
-    );
-  };
+    const handleStyleToggle = (style: string) => {
+      setSelectedStyles(prev =>
+        prev.includes(style)
+          ? prev.filter(s => s !== style)
+          : [...prev, style]
+      );
+    };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!query.trim() || !llm) return;
+    const handleSubmit = (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!query.trim() || !llm) return;
 
-    onGenerate({
-      query: query.trim(),
-      llm,
-      tone: type === 'text' ? tone : undefined,
-      style: selectedStyles,
-    });
-  };
+      onGenerate({
+        query: query.trim(),
+        llm,
+        tone: type === 'text' ? tone : undefined,
+        style: selectedStyles,
+      });
+    };
 
-  return (
-    <form onSubmit={handleSubmit} className="space-y-6" data-testid="form-generator">
-      {/* Query Input */}
-      <div className="space-y-2">
-        <Label htmlFor="query" className="text-base font-semibold">
-          What do you want to create?
-        </Label>
-        <Textarea
-          id="query"
-          placeholder={`Describe your ${type} prompt in detail...`}
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className="min-h-32 resize-y"
-          data-testid="input-query"
-        />
-        <p className="text-xs text-muted-foreground">
-          Be as specific as possible for better results
-        </p>
-      </div>
+    return (
+      <form onSubmit={handleSubmit} className="space-y-6" data-testid="form-generator">
+        {/* Query Input */}
+        <div className="space-y-2">
+          <Label htmlFor="query" className="text-base font-semibold">
+            What do you want to create?
+          </Label>
+          <Textarea
+            ref={ref}
+            id="query"
+            placeholder={`Describe your ${type} prompt in detail...`}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            maxLength={70}
+            className="min-h-32 resize-y"
+            data-testid="input-query"
+          />
+          <p className="text-xs text-muted-foreground">
+            {query.length}/70 characters - Be as specific as possible
+          </p>
+        </div>
 
-      {/* LLM Selection */}
-      <div className="space-y-2">
-        <Label htmlFor="llm" className="text-base font-semibold">
-          Target Model
-        </Label>
-        <Select value={llm} onValueChange={setLlm}>
-          <SelectTrigger id="llm" data-testid="select-llm">
-            <SelectValue placeholder="Select an AI model" />
-          </SelectTrigger>
-          <SelectContent>
-            {llmOptions[type].map((model) => (
-              <SelectItem key={model} value={model} data-testid={`option-llm-${model.toLowerCase().replace(/\s+/g, '-')}`}>
-                {model}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+        {/* LLM Selection */}
+        <div className="space-y-2">
+          <Label htmlFor="llm" className="text-base font-semibold">
+            Target Model
+          </Label>
+          <Select value={llm} onValueChange={setLlm}>
+            <SelectTrigger id="llm" data-testid="select-llm">
+              <SelectValue placeholder="Select an AI model" />
+            </SelectTrigger>
+            <SelectContent>
+              {llmOptions[type].map((model) => (
+                <SelectItem key={model} value={model} data-testid={`option-llm-${model.toLowerCase().replace(/\s+/g, '-')}`}>
+                  {model}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
-      {/* Tone Selection (text only) */}
-      {type === 'text' && (
+        {/* Tone Selection (text only) */}
+        {type === 'text' && (
+          <div className="space-y-2">
+            <Label className="text-base font-semibold">
+              Tone
+            </Label>
+            <div className="flex flex-wrap gap-2">
+              {toneOptions.map((t) => (
+                <Button
+                  key={t}
+                  type="button"
+                  variant={tone === t ? 'default' : 'outline'}
+                  className="px-4"
+                  onClick={() => setTone(t)}
+                  data-testid={`button-tone-${t}`}
+                >
+                  {t.charAt(0).toUpperCase() + t.slice(1)}
+                </Button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Style Selection */}
         <div className="space-y-2">
           <Label className="text-base font-semibold">
-            Tone
+            Style {selectedStyles.length > 0 && `(${selectedStyles.length})`}
           </Label>
           <div className="flex flex-wrap gap-2">
-            {toneOptions.map((t) => (
-              <Button
-                key={t}
-                type="button"
-                variant={tone === t ? 'default' : 'outline'}
-                className="px-4"
-                onClick={() => setTone(t)}
-                data-testid={`button-tone-${t}`}
+            {styleOptions[type].map((style) => (
+              <Badge
+                key={style}
+                variant={selectedStyles.includes(style) ? 'default' : 'outline'}
+                className="cursor-pointer px-3 py-1.5"
+                onClick={() => handleStyleToggle(style)}
+                data-testid={`badge-style-${style}`}
               >
-                {t.charAt(0).toUpperCase() + t.slice(1)}
-              </Button>
+                {style}
+                {selectedStyles.includes(style) && (
+                  <X className="ml-1 h-3 w-3" />
+                )}
+              </Badge>
             ))}
           </div>
+          <p className="text-xs text-muted-foreground">
+            Click to toggle styles (optional)
+          </p>
         </div>
-      )}
 
-      {/* Generate Button */}
-      <Button
-        type="submit"
-        className="w-full"
-        size="lg"
-        disabled={!query.trim() || !llm || isGenerating}
-        data-testid="button-generate"
-      >
-        <Sparkles className="mr-2 h-5 w-5" />
-        {isGenerating ? 'Generating...' : 'Generate Prompt'}
-      </Button>
-    </form>
-  );
-}
+        {/* Generate Button */}
+        <Button
+          type="submit"
+          className="w-full"
+          size="lg"
+          disabled={!query.trim() || !llm || isGenerating}
+          data-testid="button-generate"
+        >
+          <Sparkles className="mr-2 h-5 w-5" />
+          {isGenerating ? 'Generating...' : 'Generate Prompt'}
+        </Button>
+      </form>
+    );
+  }
+);
+
+GeneratorForm.displayName = 'GeneratorForm';
+
+export default GeneratorForm;

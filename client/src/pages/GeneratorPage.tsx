@@ -3,11 +3,12 @@
  * Unified generator page for text, image, and video prompts
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRoute } from 'wouter';
 import GeneratorForm, { GeneratorParams } from '@/components/GeneratorForm';
 import CodeOutput from '@/components/CodeOutput';
 import LimitReachedModal from '@/components/LimitReachedModal';
+import NoMatchDialog from '@/components/NoMatchDialog';
 import { generateTextPrompt } from '@/utils/textPromptGen';
 import { generateImagePrompt } from '@/utils/imagePromptGen';
 import { generateVideoPrompt } from '@/utils/videoPromptGen';
@@ -30,12 +31,15 @@ export default function GeneratorPage() {
   const [generatedPrompt, setGeneratedPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [showLimitModal, setShowLimitModal] = useState(false);
+  const [showNoMatchDialog, setShowNoMatchDialog] = useState(false);
   const [limitType, setLimitType] = useState<'daily' | 'monthly'>('daily');
   const [lastParams, setLastParams] = useState<GeneratorParams | null>(null);
   const [editPromptId, setEditPromptId] = useState<string | null>(null);
   const [initialFormValues, setInitialFormValues] = useState<Partial<GeneratorParams> | undefined>(undefined);
   const [lastQueryForCycling, setLastQueryForCycling] = useState<string>('');
   const [matchIndex, setMatchIndex] = useState<number>(0);
+  const [isSaved, setIsSaved] = useState(false);
+  const queryInputRef = useRef<HTMLTextAreaElement>(null);
   const { toast } = useToast();
 
   // Check for edit prompt or template in sessionStorage
@@ -146,15 +150,20 @@ export default function GeneratorPage() {
       // Step 4: Select the template at the current match index (or null if no matches)
       const matchedTemplate = allMatches[currentMatchIndex] || null;
 
-      // Log matched template for debugging
-      if (matchedTemplate) {
-        console.log(
-          `Match #${currentMatchIndex + 1}:`,
-          matchedTemplate.name,
-          'with score:',
-          matchedTemplate.score
-        );
+      // Check if no match found
+      if (!matchedTemplate) {
+        setIsGenerating(false);
+        setShowNoMatchDialog(true);
+        return;
       }
+
+      // Log matched template for debugging
+      console.log(
+        `Match #${currentMatchIndex + 1}:`,
+        matchedTemplate.name,
+        'with score:',
+        matchedTemplate.score
+      );
 
       // Step 5: Generate prompt with template matching + user customization
       if (type === 'text') {
@@ -183,8 +192,9 @@ export default function GeneratorPage() {
 
       setGeneratedPrompt(prompt);
       setIsGenerating(false);
+      setIsSaved(false);
 
-      // Increment usage counter after successful generation
+      // Only increment usage counter after successful generation with valid match
       incrementUsage();
       dispatchUsageUpdate();
 
@@ -196,10 +206,19 @@ export default function GeneratorPage() {
 
   const handleEdit = (editedPrompt: string) => {
     setGeneratedPrompt(editedPrompt);
+    setIsSaved(false);
   };
 
   const handleSave = () => {
     if (!generatedPrompt || !lastParams) return;
+
+    if (isSaved) {
+      toast({
+        title: 'Already saved!',
+        description: 'This prompt is already in your library',
+      });
+      return;
+    }
 
     if (editPromptId) {
       // Update existing prompt
@@ -216,6 +235,7 @@ export default function GeneratorPage() {
         description: 'Prompt updated in your library',
       });
       setEditPromptId(null);
+      setIsSaved(true);
     } else {
       // Save new prompt
       savePrompt({
@@ -232,7 +252,12 @@ export default function GeneratorPage() {
         title: 'Saved!',
         description: 'Prompt saved to your library',
       });
+      setIsSaved(true);
     }
+  };
+
+  const handleRetryAfterNoMatch = () => {
+    queryInputRef.current?.focus();
   };
 
   return (
@@ -258,6 +283,7 @@ export default function GeneratorPage() {
           {/* Left Column: Form */}
           <div className="bg-card rounded-lg border p-6">
             <GeneratorForm
+              ref={queryInputRef}
               type={type}
               onGenerate={handleGenerate}
               isGenerating={isGenerating}
@@ -282,6 +308,13 @@ export default function GeneratorPage() {
         isOpen={showLimitModal}
         onClose={() => setShowLimitModal(false)}
         limitType={limitType}
+      />
+
+      {/* No Match Dialog */}
+      <NoMatchDialog
+        isOpen={showNoMatchDialog}
+        onClose={() => setShowNoMatchDialog(false)}
+        onRetry={handleRetryAfterNoMatch}
       />
     </div>
   );
