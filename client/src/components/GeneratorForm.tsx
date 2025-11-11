@@ -151,7 +151,7 @@ const GeneratorForm = forwardRef<HTMLTextAreaElement, GeneratorFormProps>(
         {/* Style Selection */}
         <div className="space-y-2">
           <Label className="text-base font-semibold">
-            Style {selectedStyles.length > 0 && `(${selectedStyles.length})`}
+            Style
           </Label>
           <div className="flex flex-wrap gap-2">
             {styleOptions[type].map((style) => (

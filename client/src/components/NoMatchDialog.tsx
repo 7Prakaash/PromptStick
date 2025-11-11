@@ -32,7 +32,7 @@ export default function NoMatchDialog({ isOpen, onClose, onRetry }: NoMatchDialo
             <AlertDialogTitle data-testid="text-dialog-title">Oops! Prompt Generation Failed</AlertDialogTitle>
           </div>
           <AlertDialogDescription className="text-base" data-testid="text-dialog-description">
-            We couldn't find a matching template for your query.{' '}
+            Hmm… couldn’t generate that one.{' '}
             <button
               onClick={handleRetry}
               className="text-primary hover:underline font-medium"
