@@ -6,7 +6,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Folder, FolderOpen, Plus, ChevronRight, ChevronDown, MoreVertical } from 'lucide-react';
+import { Folder, FolderOpen, Plus, ChevronRight, ChevronDown, MoreVertical, Copy } from 'lucide-react';
 import { Folder as FolderType, getAllFolders, createFolder, deleteFolder, updateFolder, getPromptsByFolder } from '@/utils/localStorage';
 import {
   DropdownMenu,
@@ -57,6 +57,57 @@ function DroppableFolderWrapper({
   );
 }
 
+function PromptListItem({ 
+  prompt, 
+  onPromptClick 
+}: { 
+  prompt: any; 
+  onPromptClick?: (promptId: string) => void;
+}) {
+  const [isPromptHovered, setIsPromptHovered] = useState(false);
+  
+  const truncateText = (text: string, maxLength: number = 20) => {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+  };
+  
+  const handleCopyPrompt = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      await navigator.clipboard.writeText(prompt.generatedPrompt);
+    } catch (err) {
+      console.error('Failed to copy prompt:', err);
+    }
+  };
+
+  return (
+    <div
+      className="text-sm text-muted-foreground py-1 px-2 hover-elevate rounded-md cursor-pointer flex items-center justify-between group"
+      onMouseEnter={() => setIsPromptHovered(true)}
+      onMouseLeave={() => setIsPromptHovered(false)}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (onPromptClick) {
+          onPromptClick(prompt.id);
+        }
+      }}
+      data-testid={`prompt-item-${prompt.id}`}
+      title={prompt.query}
+    >
+      <span className="truncate">{truncateText(prompt.query)}</span>
+      <Button
+        variant="ghost"
+        size="icon"
+        className={`h-5 w-5 flex-shrink-0 transition-opacity ${isPromptHovered ? 'opacity-100' : 'opacity-0'}`}
+        onClick={handleCopyPrompt}
+        data-testid={`button-copy-${prompt.id}`}
+      >
+        <Copy className="h-3 w-3" />
+      </Button>
+    </div>
+  );
+}
+
 function FolderItem({
   folder,
   selectedFolderId,
@@ -75,11 +126,6 @@ function FolderItem({
   const [isHovered, setIsHovered] = useState(false);
   const isExpanded = expandedFolders.has(folder.id);
   const prompts = getPromptsByFolder(folder.id);
-
-  const truncateText = (text: string, maxLength: number = 40) => {
-    if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength) + '...';
-  };
 
   return (
     <div className="space-y-1">
@@ -113,6 +159,7 @@ function FolderItem({
               }}
               onBlur={() => onSaveRename(folder.id)}
               autoFocus
+              maxLength={20}
               className="h-7 flex-1"
               data-testid={`input-rename-${folder.id}`}
             />
@@ -167,20 +214,11 @@ function FolderItem({
           data-testid={`prompt-list-${folder.id}`}
         >
           {prompts.map((prompt) => (
-            <div
-              key={prompt.id}
-              className="text-sm text-muted-foreground py-1 px-2 hover-elevate rounded-md cursor-pointer"
-              onClick={(e) => {
-                e.stopPropagation();
-                if (onPromptClick) {
-                  onPromptClick(prompt.id);
-                }
-              }}
-              data-testid={`prompt-item-${prompt.id}`}
-              title={prompt.query}
-            >
-              {truncateText(prompt.query)}
-            </div>
+            <PromptListItem 
+              key={prompt.id} 
+              prompt={prompt} 
+              onPromptClick={onPromptClick}
+            />
           ))}
         </div>
       )}
@@ -199,7 +237,8 @@ export default function FolderTree({ onSelectFolder, selectedFolderId, onPromptC
   const handleCreateFolder = () => {
     if (!newFolderName.trim()) return;
     
-    const folder = createFolder(newFolderName.trim());
+    const trimmedName = newFolderName.trim().substring(0, 20);
+    const folder = createFolder(trimmedName);
     setFolders(getAllFolders());
     setNewFolderName('');
     setIsAdding(false);
@@ -237,7 +276,8 @@ export default function FolderTree({ onSelectFolder, selectedFolderId, onPromptC
       return;
     }
     
-    updateFolder(folderId, { name: editingName.trim() });
+    const trimmedName = editingName.trim().substring(0, 20);
+    updateFolder(folderId, { name: trimmedName });
     setFolders(getAllFolders());
     setEditingFolderId(null);
     setEditingName('');
@@ -317,6 +357,7 @@ export default function FolderTree({ onSelectFolder, selectedFolderId, onPromptC
               }
             }}
             autoFocus
+            maxLength={20}
             className="flex-1"
             data-testid="input-folder-name"
           />
