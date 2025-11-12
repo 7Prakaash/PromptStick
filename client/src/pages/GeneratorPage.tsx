@@ -4,7 +4,6 @@
  */
 
 import { useState, useEffect, useRef } from 'react';
-import { useRoute } from 'wouter';
 import GeneratorForm, { GeneratorParams } from '@/components/GeneratorForm';
 import CodeOutput from '@/components/CodeOutput';
 import LimitReachedModal from '@/components/LimitReachedModal';
@@ -25,9 +24,11 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { FileText, Image, Video } from 'lucide-react';
 
-export default function GeneratorPage() {
-  const [, params] = useRoute('/generator/:type');
-  const type = params?.type as 'text' | 'image' | 'video';
+interface GeneratorPageProps {
+  type: 'text' | 'image' | 'video';
+}
+
+export default function GeneratorPage({ type }: GeneratorPageProps) {
   const [generatedPrompt, setGeneratedPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [showLimitModal, setShowLimitModal] = useState(false);

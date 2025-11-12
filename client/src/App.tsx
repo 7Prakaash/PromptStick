@@ -1,4 +1,4 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, Redirect } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -10,16 +10,41 @@ import GeneratorSelection from "@/pages/GeneratorSelection";
 import GeneratorPage from "@/pages/GeneratorPage";
 import SavedPrompts from "@/pages/SavedPrompts";
 import Templates from "@/pages/Templates";
+import TemplateDetail from "@/pages/TemplateDetail";
 import NotFound from "@/pages/not-found";
+import { getGeneratorPath } from "@/lib/routes";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={LandingPage} />
       <Route path="/generators" component={GeneratorSelection} />
-      <Route path="/generator/:type" component={GeneratorPage} />
+      
+      {/* New generator routes */}
+      <Route path="/text-prompt-generator">
+        {() => <GeneratorPage type="text" />}
+      </Route>
+      <Route path="/image-prompt-generator">
+        {() => <GeneratorPage type="image" />}
+      </Route>
+      <Route path="/video-prompt-generator">
+        {() => <GeneratorPage type="video" />}
+      </Route>
+      
+      {/* Legacy redirects */}
+      <Route path="/generator/text">
+        {() => <Redirect to={getGeneratorPath('text')} />}
+      </Route>
+      <Route path="/generator/image">
+        {() => <Redirect to={getGeneratorPath('image')} />}
+      </Route>
+      <Route path="/generator/video">
+        {() => <Redirect to={getGeneratorPath('video')} />}
+      </Route>
+      
       <Route path="/saved" component={SavedPrompts} />
       <Route path="/templates" component={Templates} />
+      <Route path="/templates/:categoryId" component={TemplateDetail} />
       <Route component={NotFound} />
     </Switch>
   );
