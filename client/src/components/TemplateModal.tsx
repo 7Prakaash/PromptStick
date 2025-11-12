@@ -15,6 +15,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Template } from '@/data/templates';
 import { useLocation } from 'wouter';
+import { getGeneratorPath } from '@/lib/routes';
 
 interface TemplateModalProps {
   isOpen: boolean;
@@ -29,17 +30,10 @@ export default function TemplateModal({ isOpen, onClose, templates, categoryName
   const handleUseTemplate = (template: Template) => {
     console.log('Using template:', template);
     
-    // Navigate to appropriate generator with template data
-    const typeMap: Record<string, string> = {
-      text: '/generator/text',
-      image: '/generator/image',
-      video: '/generator/video',
-    };
-    
     // Store template in sessionStorage for the generator to pick up
     sessionStorage.setItem('template', JSON.stringify(template));
     
-    setLocation(typeMap[template.type]);
+    setLocation(getGeneratorPath(template.type));
     onClose();
   };
 

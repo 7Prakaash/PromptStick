@@ -64,7 +64,10 @@ export default function Header() {
           </nav>
 
           {/* Usage Counter - Only on generator pages */}
-          {location.startsWith('/generator/') && (
+          {(location.startsWith('/generator/') || 
+            location === '/text-prompt-generator' ||
+            location === '/image-prompt-generator' ||
+            location === '/video-prompt-generator') && (
             <div className="hidden md:flex items-center gap-3">
               <div className="flex flex-col items-end gap-1" data-testid="usage-counter">
                 <div className="flex items-center gap-2">
@@ -127,7 +130,10 @@ export default function Header() {
                 {link.label}
               </Link>
             ))}
-            {location.startsWith('/generator/') && (
+            {(location.startsWith('/generator/') ||
+              location === '/text-prompt-generator' ||
+              location === '/image-prompt-generator' ||
+              location === '/video-prompt-generator') && (
               <div className="px-4 py-2 space-y-1" data-testid="usage-counter-mobile">
                 <div className="text-xs text-muted-foreground">
                   Daily: {stats.daily.count}/{dailyLimit}

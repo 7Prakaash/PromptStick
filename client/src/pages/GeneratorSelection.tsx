@@ -7,32 +7,33 @@ import { Link } from 'wouter';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileText, Image, Video, ArrowRight } from 'lucide-react';
+import { getGeneratorPath } from '@/lib/routes';
 
 export default function GeneratorSelection() {
   const generators = [
     {
-      type: 'text',
+      type: 'text' as const,
       icon: FileText,
       title: 'Text Prompts',
       description: 'Generate optimized prompts for GPT, Claude, and other text-based AI models',
       features: ['Tone selection', 'Style customization', 'Multiple LLM support'],
-      path: '/generator/text',
+      path: getGeneratorPath('text'),
     },
     {
-      type: 'image',
+      type: 'image' as const,
       icon: Image,
       title: 'Image Prompts',
       description: 'Create detailed prompts for DALL-E, Midjourney, Stable Diffusion and more',
       features: ['Art style presets', 'Quality enhancers', 'Model-specific optimization'],
-      path: '/generator/image',
+      path: getGeneratorPath('image'),
     },
     {
-      type: 'video',
+      type: 'video' as const,
       icon: Video,
       title: 'Video Prompts',
       description: 'Plan video content with structured prompts for scripts and storyboards',
       features: ['Format templates', 'Scene descriptions', 'Production notes'],
-      path: '/generator/video',
+      path: getGeneratorPath('video'),
     },
   ];
 

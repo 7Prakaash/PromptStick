@@ -3,21 +3,17 @@
  * Browse and use pre-built prompt templates
  */
 
-import { useState } from 'react';
+import { useLocation } from 'wouter';
 import { Card } from '@/components/ui/card';
-import TemplateModal from '@/components/TemplateModal';
 import { templateCategories } from '@/data/templates';
+import { getTemplatePath } from '@/lib/routes';
 import * as LucideIcons from 'lucide-react';
 
 export default function Templates() {
-  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  const [, setLocation] = useLocation();
 
-  const handleCategoryClick = (index: number) => {
-    setSelectedCategory(index);
-  };
-
-  const handleCloseModal = () => {
-    setSelectedCategory(null);
+  const handleCategoryClick = (categoryId: string) => {
+    setLocation(getTemplatePath(categoryId));
   };
 
   return (
@@ -36,7 +32,7 @@ export default function Templates() {
 
           {/* Categories Grid */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {templateCategories.map((category, index) => {
+            {templateCategories.map((category) => {
               // Dynamically get the icon component
               const IconComponent = (LucideIcons as any)[category.icon] || LucideIcons.FileText;
               
@@ -44,7 +40,7 @@ export default function Templates() {
                 <Card
                   key={category.id}
                   className="p-6 hover-elevate active-elevate-2 cursor-pointer transition-all"
-                  onClick={() => handleCategoryClick(index)}
+                  onClick={() => handleCategoryClick(category.id)}
                   data-testid={`card-category-${category.id}`}
                 >
                   <div className="space-y-4">
@@ -71,16 +67,6 @@ export default function Templates() {
           </div>
         </div>
       </div>
-
-      {/* Template Modal */}
-      {selectedCategory !== null && (
-        <TemplateModal
-          isOpen={true}
-          onClose={handleCloseModal}
-          templates={templateCategories[selectedCategory].templates}
-          categoryName={templateCategories[selectedCategory].name}
-        />
-      )}
     </div>
   );
 }

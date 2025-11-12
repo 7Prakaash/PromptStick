@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import FeatureCard from '@/components/FeatureCard';
 import { Sparkles, FileText, Image, Video, FolderOpen, BarChart3, BookTemplate } from 'lucide-react';
 import heroImage from '@assets/generated_images/AI_prompt_generation_hero_64865157.png';
+import { getGeneratorPath } from '@/lib/routes';
 
 export default function LandingPage() {
   const features = [
@@ -86,7 +87,7 @@ export default function LandingPage() {
               </p>
               
               <div className="flex flex-wrap gap-4 pt-4">
-                <Link href="/generator/text">
+                <Link href={getGeneratorPath('text')}>
                   <Button size="lg" className="text-lg px-8" data-testid="button-cta-primary">
                     <Sparkles className="mr-2 h-5 w-5" />
                     Start Generating
