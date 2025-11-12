@@ -2,20 +2,20 @@
 
 ## Recent Changes
 
-### November 12, 2025 - Folder UI Improvements
-- **Removed drag-and-drop functionality** from folders in Saved Prompts section
-  - Removed GripVertical (::) drag icon from folder items
-  - Cleaned up all @dnd-kit dependencies for folders (prompts still support drag-and-drop)
+### November 12, 2025 - Folder UI Improvements & Drag-and-Drop Restoration
+- **Simplified folder UI** - Removed GripVertical (::) drag icon from folder items for cleaner appearance
 - **Enhanced folder menu interaction**
   - Replaced visible delete button with three-dot menu (⋯) that appears on hover
   - Added dropdown menu with "Rename Folder" and "Delete Folder" options
 - **Added prompt preview in folders**
-  - When clicking the chevron (>) to expand a folder, displays list of all saved prompts in that folder
+  - Click the chevron (>) to expand a folder and see all saved prompts in that folder
   - Each prompt shows its query name for quick identification
   - Prompts are clickable and styled with hover effects
-- **Simplified folder navigation**
-  - Cleaner UI without drag handles
-  - More intuitive menu-based actions
+- **Drag-and-drop for prompts**
+  - Fully functional drag-and-drop system to move prompts between folders
+  - Visual feedback (blue ring) shows valid drop zones when dragging
+  - Drag prompts into folders or back to "All Prompts" section
+  - Drop zones work seamlessly with the new folder UI
 
 ### November 12, 2025 - URL Routing Update
 - Updated generator routes from `/generator/:type` to dedicated URLs:
