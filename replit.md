@@ -1,5 +1,16 @@
 # PromptStick - AI Prompt Generator
 
+## Recent Changes
+
+### November 12, 2025 - URL Routing Update
+- Updated generator routes from `/generator/:type` to dedicated URLs:
+  - `/text-prompt-generator`
+  - `/image-prompt-generator`
+  - `/video-prompt-generator`
+- Changed template navigation from modal popup to dedicated detail pages at `/templates/:categoryId`
+- Added legacy redirects for backwards compatibility
+- Created centralized routing utilities in `client/src/lib/routes.ts`
+
 ## Overview
 
 PromptStick is a developer-focused SaaS application for generating, organizing, and managing AI prompts across multiple model types (text, image, and video). The application provides an intuitive interface for creating optimized prompts tailored to specific LLMs (GPT, Claude, DALL-E, Midjourney, etc.), with features for saving, categorizing, and tracking usage.
@@ -29,8 +40,17 @@ Preferred communication style: Simple, everyday language.
 **Framework**: React 18 with TypeScript using Vite as the build tool
 
 **Routing**: Wouter for lightweight client-side routing
-- Main routes: Landing (`/`), Generator (`/generator/:type`), Saved Prompts (`/saved`), Templates (`/templates`)
-- Type-safe route parameters for generator pages (text/image/video)
+- Main routes: 
+  - Landing: `/`
+  - Generator Selection: `/generators`
+  - Text Generator: `/text-prompt-generator`
+  - Image Generator: `/image-prompt-generator`
+  - Video Generator: `/video-prompt-generator`
+  - Templates Library: `/templates`
+  - Template Detail: `/templates/:categoryId` (e.g., `/templates/content-writing`)
+  - Saved Prompts: `/saved`
+- Legacy redirects from `/generator/:type` to new dedicated routes for backwards compatibility
+- Centralized routing utilities in `client/src/lib/routes.ts` for consistent URL generation
 
 **State Management**: 
 - React hooks for local component state
