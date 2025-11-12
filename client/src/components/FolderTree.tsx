@@ -20,6 +20,7 @@ interface FolderTreeProps {
   onSelectFolder: (folderId?: string) => void;
   selectedFolderId?: string;
   onPromptDrop?: (promptId: string, folderId?: string) => void;
+  onPromptClick?: (promptId: string) => void;
 }
 
 interface FolderItemProps {
@@ -35,6 +36,7 @@ interface FolderItemProps {
   onSaveRename: (folderId: string) => void;
   onCancelRename: () => void;
   setEditingName: (name: string) => void;
+  onPromptClick?: (promptId: string) => void;
 }
 
 function DroppableFolderWrapper({ 
@@ -68,10 +70,16 @@ function FolderItem({
   onSaveRename,
   onCancelRename,
   setEditingName,
+  onPromptClick,
 }: FolderItemProps) {
   const [isHovered, setIsHovered] = useState(false);
   const isExpanded = expandedFolders.has(folder.id);
   const prompts = getPromptsByFolder(folder.id);
+
+  const truncateText = (text: string, maxLength: number = 40) => {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+  };
 
   return (
     <div className="space-y-1">
@@ -154,15 +162,24 @@ function FolderItem({
       </div>
       
       {isExpanded && prompts.length > 0 && (
-        <div className="ml-8 space-y-1" data-testid={`prompt-list-${folder.id}`}>
+        <div 
+          className={`ml-8 space-y-1 ${prompts.length > 5 ? 'max-h-[200px] overflow-y-auto' : ''}`}
+          data-testid={`prompt-list-${folder.id}`}
+        >
           {prompts.map((prompt) => (
             <div
               key={prompt.id}
-              className="text-sm text-muted-foreground py-1 px-2 hover-elevate rounded-md cursor-pointer truncate"
-              onClick={() => onSelect(folder.id)}
+              className="text-sm text-muted-foreground py-1 px-2 hover-elevate rounded-md cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (onPromptClick) {
+                  onPromptClick(prompt.id);
+                }
+              }}
               data-testid={`prompt-item-${prompt.id}`}
+              title={prompt.query}
             >
-              {prompt.query}
+              {truncateText(prompt.query)}
             </div>
           ))}
         </div>
@@ -171,7 +188,7 @@ function FolderItem({
   );
 }
 
-export default function FolderTree({ onSelectFolder, selectedFolderId }: FolderTreeProps) {
+export default function FolderTree({ onSelectFolder, selectedFolderId, onPromptClick }: FolderTreeProps) {
   const [folders, setFolders] = useState<FolderType[]>(getAllFolders());
   const [isAdding, setIsAdding] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
@@ -274,6 +291,7 @@ export default function FolderTree({ onSelectFolder, selectedFolderId }: FolderT
             onSaveRename={handleSaveRename}
             onCancelRename={handleCancelRename}
             setEditingName={setEditingName}
+            onPromptClick={onPromptClick}
           />
         </DroppableFolderWrapper>
       ))}

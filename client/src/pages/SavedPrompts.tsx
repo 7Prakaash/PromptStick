@@ -33,6 +33,7 @@ import { Plus, Search, Grid3x3, List, FileText, Download } from 'lucide-react';
 import {
   getAllPrompts,
   getPromptsByFolder,
+  getPromptById,
   deletePrompt,
   toggleFavorite,
   movePromptToFolder,
@@ -40,6 +41,7 @@ import {
   savePrompt as savePromptToStorage,
   updatePrompt,
 } from '@/utils/localStorage';
+import PromptDialog from '@/components/PromptDialog';
 import { useToast } from '@/hooks/use-toast';
 import {
   DndContext,
@@ -66,6 +68,7 @@ export default function SavedPrompts() {
   const [activePromptId, setActivePromptId] = useState<string | null>(null);
   const [showImportModal, setShowImportModal] = useState(false);
   const [availablePrompts, setAvailablePrompts] = useState<SavedPrompt[]>([]);
+  const [selectedPromptId, setSelectedPromptId] = useState<string | null>(null);
   const { toast } = useToast();
 
   const sensors = useSensors(
@@ -79,6 +82,17 @@ export default function SavedPrompts() {
   useEffect(() => {
     loadPrompts();
   }, [selectedFolder]);
+
+  useEffect(() => {
+    if (selectedPromptId && !getPromptById(selectedPromptId)) {
+      setSelectedPromptId(null);
+      toast({
+        title: 'Prompt removed',
+        description: 'The selected prompt was deleted',
+        variant: 'destructive',
+      });
+    }
+  }, [selectedPromptId, prompts]);
 
   const loadPrompts = () => {
     // Always use getPromptsByFolder - when selectedFolder is undefined,
@@ -136,6 +150,25 @@ export default function SavedPrompts() {
       description: `Prompt moved to ${folderId ? 'folder' : 'All Prompts'}`,
     });
   };
+
+  const handlePromptClick = (promptId: string) => {
+    const prompt = getPromptById(promptId);
+    if (!prompt) {
+      toast({
+        title: 'Prompt not found',
+        description: 'This prompt may have been deleted',
+        variant: 'destructive',
+      });
+      return;
+    }
+    setSelectedPromptId(promptId);
+  };
+
+  const handleClosePromptDialog = () => {
+    setSelectedPromptId(null);
+  };
+
+  const selectedPrompt = selectedPromptId ? getPromptById(selectedPromptId) : null;
 
   const handleDragStart = (event: DragStartEvent) => {
     setActivePromptId(event.active.id as string);
@@ -279,6 +312,7 @@ export default function SavedPrompts() {
                   <FolderTree
                     onSelectFolder={setSelectedFolder}
                     selectedFolderId={selectedFolder}
+                    onPromptClick={handlePromptClick}
                   />
                 </Card>
               </aside>
@@ -522,6 +556,25 @@ export default function SavedPrompts() {
           </div>
         ) : null}
       </DragOverlay>
+
+      {/* Shared Prompt Dialog */}
+      {selectedPrompt && (
+        <PromptDialog
+          prompt={selectedPrompt}
+          open={selectedPromptId !== null}
+          onOpenChange={(open) => {
+            if (!open) {
+              handleClosePromptDialog();
+            }
+          }}
+          onCopy={handleCopy}
+          onDelete={(id) => {
+            handleDelete(id);
+            handleClosePromptDialog();
+          }}
+          onSaveEdit={handleSaveEdit}
+        />
+      )}
     </DndContext>
   );
 }
