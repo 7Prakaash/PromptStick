@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PromptStick Test Data Instructions</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #333;
+        }
+        .code-block {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        pre {
+            margin: 0;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+        }
+        .step {
+            background: #e8f5e9;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid #4caf50;
+        }
+        .step h3 {
+            margin-top: 0;
+        }
+        button {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>📝 PromptStick Test Data Setup</h1>
+    
+    <p>Follow these steps to add test data and verify the new folder features:</p>
+
+    <div class="step">
+        <h3>Step 1: Open Browser Console</h3>
+        <p>Press <strong>F12</strong> (or right-click → Inspect → Console tab)</p>
+    </div>
+
+    <div class="step">
+        <h3>Step 2: Copy and Run This Script</h3>
+        <p>Copy the code below and paste it into the browser console, then press Enter:</p>
+    </div>
+
+    <div class="code-block">
+        <pre id="testData">// Add test folders and prompts
+localStorage.setItem('promptstick_folders', JSON.stringify([
+  {
+    id: 'folder-1',
+    name: 'Marketing Prompts',
+    createdAt: Date.now(),
+    order: 0
+  },
+  {
+    id: 'folder-2',
+    name: 'Development Ideas',
+    createdAt: Date.now(),
+    order: 1
+  },
+  {
+    id: 'folder-3',
+    name: 'Content Writing',
+    createdAt: Date.now(),
+    order: 2
+  }
+]));
+
+localStorage.setItem('promptstick_prompts', JSON.stringify([
+  {
+    id: 'prompt-1',
+    type: 'text',
+    query: 'Write a blog post about AI',
+    generatedPrompt: 'Create an engaging blog post about artificial intelligence...',
+    llm: 'GPT-4',
+    timestamp: Date.now(),
+    folderId: 'folder-1',
+    isFavorite: false
+  },
+  {
+    id: 'prompt-2',
+    type: 'text',
+    query: 'Create social media content',
+    generatedPrompt: 'Generate compelling social media posts...',
+    llm: 'Claude',
+    timestamp: Date.now(),
+    folderId: 'folder-1',
+    isFavorite: true
+  },
+  {
+    id: 'prompt-3',
+    type: 'text',
+    query: 'Email campaign ideas',
+    generatedPrompt: 'Develop creative email marketing campaigns...',
+    llm: 'GPT-4',
+    timestamp: Date.now(),
+    folderId: 'folder-1',
+    isFavorite: false
+  },
+  {
+    id: 'prompt-4',
+    type: 'text',
+    query: 'Design a REST API',
+    generatedPrompt: 'Design a RESTful API with the following endpoints...',
+    llm: 'GPT-4',
+    timestamp: Date.now(),
+    folderId: 'folder-2',
+    isFavorite: false
+  },
+  {
+    id: 'prompt-5',
+    type: 'text',
+    query: 'Database schema design',
+    generatedPrompt: 'Create a normalized database schema for...',
+    llm: 'Claude',
+    timestamp: Date.now(),
+    folderId: 'folder-2',
+    isFavorite: true
+  },
+  {
+    id: 'prompt-6',
+    type: 'text',
+    query: 'Write technical documentation',
+    generatedPrompt: 'Create comprehensive technical documentation...',
+    llm: 'GPT-4',
+    timestamp: Date.now(),
+    folderId: 'folder-3',
+    isFavorite: false
+  },
+  {
+    id: 'prompt-7',
+    type: 'text',
+    query: 'Product description',
+    generatedPrompt: 'Write compelling product descriptions that...',
+    llm: 'Claude',
+    timestamp: Date.now(),
+    folderId: undefined,
+    isFavorite: false
+  }
+]));
+
+console.log('✅ Test data loaded successfully!');
+console.log('📁 Created 3 folders with prompts');
+console.log('📝 Created 7 prompts (6 in folders, 1 in All Prompts)');
+console.log('🔄 Refresh the page to see the changes');</pre>
+    </div>
+
+    <button onclick="copyCode()">📋 Copy Code to Clipboard</button>
+
+    <div class="step">
+        <h3>Step 3: Refresh the Page</h3>
+        <p>Press <strong>F5</strong> or <strong>Ctrl+R</strong> (Cmd+R on Mac) to reload the page</p>
+    </div>
+
+    <div class="step">
+        <h3>Step 4: Test the New Features</h3>
+        <ul>
+            <li><strong>Chevron Expansion:</strong> Click the <strong>chevron (>)</strong> next to each folder to expand and see the list of prompts</li>
+            <li><strong>Three-Dot Menu:</strong> Hover over a folder to see the <strong>three-dot menu (⋯)</strong> appear, then click it to access Rename/Delete options</li>
+            <li><strong>Drag and Drop:</strong> Drag a prompt card and drop it onto a folder to move it there, or onto "All Prompts" to remove it from folders</li>
+        </ul>
+    </div>
+
+    <div class="step">
+        <h3>Expected Behavior</h3>
+        <ul>
+            <li>You should see 3 folders: "Marketing Prompts", "Development Ideas", and "Content Writing"</li>
+            <li>Clicking the chevron should expand/collapse the folder to show/hide prompts</li>
+            <li>The chevron changes from <strong>></strong> (collapsed) to <strong>⌄</strong> (expanded)</li>
+            <li>When expanded, you see prompt names like "Write a blog post about AI", etc.</li>
+            <li>Dragging prompts shows visual feedback (blue ring) on drop zones</li>
+        </ul>
+    </div>
+
+    <script>
+        function copyCode() {
+            const code = document.getElementById('testData').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                alert('✅ Code copied! Paste it into your browser console.');
+            }).catch(err => {
+                alert('❌ Failed to copy. Please copy manually.');
+            });
+        }
+    </script>
+</body>
+</html>
