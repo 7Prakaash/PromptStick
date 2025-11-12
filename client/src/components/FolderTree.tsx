@@ -14,6 +14,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useDroppable } from '@dnd-kit/core';
 
 interface FolderTreeProps {
   onSelectFolder: (folderId?: string) => void;
@@ -36,6 +37,23 @@ interface FolderItemProps {
   setEditingName: (name: string) => void;
 }
 
+function DroppableFolderWrapper({ 
+  folder, 
+  children 
+}: { 
+  folder: FolderType; 
+  children: React.ReactNode;
+}) {
+  const { setNodeRef, isOver } = useDroppable({
+    id: folder.id,
+  });
+
+  return (
+    <div ref={setNodeRef} className={isOver ? 'bg-primary/10 ring-2 ring-primary rounded-md' : ''}>
+      {children}
+    </div>
+  );
+}
 
 function FolderItem({
   folder,
@@ -213,37 +231,51 @@ export default function FolderTree({ onSelectFolder, selectedFolderId }: FolderT
     setEditingName('');
   };
 
+  const AllPromptsDropZone = () => {
+    const { setNodeRef, isOver } = useDroppable({
+      id: 'all-prompts',
+    });
+
+    return (
+      <div ref={setNodeRef}>
+        <Button
+          variant={selectedFolderId === undefined ? 'default' : 'ghost'}
+          className={`w-full justify-start transition-colors ${
+            isOver ? 'bg-primary/10 ring-2 ring-primary' : ''
+          }`}
+          onClick={() => onSelectFolder(undefined)}
+          data-testid="button-folder-all"
+        >
+          <FolderOpen className="h-4 w-4 mr-2" />
+          All Prompts
+        </Button>
+      </div>
+    );
+  };
 
   return (
     <div className="space-y-2" data-testid="container-folder-tree">
       {/* All Prompts */}
-      <Button
-        variant={selectedFolderId === undefined ? 'default' : 'ghost'}
-        className="w-full justify-start"
-        onClick={() => onSelectFolder(undefined)}
-        data-testid="button-folder-all"
-      >
-        <FolderOpen className="h-4 w-4 mr-2" />
-        All Prompts
-      </Button>
+      <AllPromptsDropZone />
 
       {/* Folder List */}
       {folders.map((folder) => (
-        <FolderItem
-          key={folder.id}
-          folder={folder}
-          selectedFolderId={selectedFolderId}
-          expandedFolders={expandedFolders}
-          editingFolderId={editingFolderId}
-          editingName={editingName}
-          onSelect={onSelectFolder}
-          onToggle={toggleFolder}
-          onDelete={handleDeleteFolder}
-          onStartRename={handleStartRename}
-          onSaveRename={handleSaveRename}
-          onCancelRename={handleCancelRename}
-          setEditingName={setEditingName}
-        />
+        <DroppableFolderWrapper key={folder.id} folder={folder}>
+          <FolderItem
+            folder={folder}
+            selectedFolderId={selectedFolderId}
+            expandedFolders={expandedFolders}
+            editingFolderId={editingFolderId}
+            editingName={editingName}
+            onSelect={onSelectFolder}
+            onToggle={toggleFolder}
+            onDelete={handleDeleteFolder}
+            onStartRename={handleStartRename}
+            onSaveRename={handleSaveRename}
+            onCancelRename={handleCancelRename}
+            setEditingName={setEditingName}
+          />
+        </DroppableFolderWrapper>
       ))}
 
       {/* Add Folder */}
