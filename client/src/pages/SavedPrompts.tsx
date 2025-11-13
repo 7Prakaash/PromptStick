@@ -317,89 +317,89 @@ export default function SavedPrompts() {
                 </Card>
               </aside>
 
-            {/* Main Content */}
-            <main className="space-y-6">
-              {/* Toolbar */}
-              <Card className="p-4">
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search prompts..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10"
-                      data-testid="input-search"
-                    />
-                  </div>
-                  <div className="flex gap-2 flex-wrap">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => setViewMode('grid')}
-                      className={viewMode === 'grid' ? 'bg-accent' : ''}
-                      data-testid="button-view-grid"
-                    >
-                      <Grid3x3 className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => setViewMode('list')}
-                      className={viewMode === 'list' ? 'bg-accent' : ''}
-                      data-testid="button-view-list"
-                    >
-                      <List className="h-4 w-4" />
-                    </Button>
-                    {selectedFolder && (
-                      <Button 
-                        variant="ghost" 
-                        onClick={handleOpenImportModal}
-                        data-testid="button-import-prompts"
+              {/* Main Content */}
+              <main className="space-y-6 max-h-[calc(100vh-12rem)] overflow-y-auto">
+                {/* Toolbar */}
+                <Card className="p-4">
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <div className="relative flex-1">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Search prompts..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-10"
+                        data-testid="input-search"
+                      />
+                    </div>
+                    <div className="flex gap-2 flex-wrap">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => setViewMode('grid')}
+                        className={viewMode === 'grid' ? 'bg-accent' : ''}
+                        data-testid="button-view-grid"
                       >
-                        <Download className="h-4 w-4 mr-2" />
-                        Import from All Prompts
+                        <Grid3x3 className="h-4 w-4" />
                       </Button>
-                    )}
-                    <Button onClick={() => setShowAddModal(true)} data-testid="button-add-custom">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Custom
-                    </Button>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => setViewMode('list')}
+                        className={viewMode === 'list' ? 'bg-accent' : ''}
+                        data-testid="button-view-list"
+                      >
+                        <List className="h-4 w-4" />
+                      </Button>
+                      {selectedFolder && (
+                        <Button 
+                          variant="ghost" 
+                          onClick={handleOpenImportModal}
+                          data-testid="button-import-prompts"
+                        >
+                          <Download className="h-4 w-4 mr-2" />
+                          Import from All Prompts
+                        </Button>
+                      )}
+                      <Button onClick={() => setShowAddModal(true)} data-testid="button-add-custom">
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add Custom
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              </Card>
-
-              {/* Prompts Grid/List */}
-              {filteredPrompts.length === 0 ? (
-                <Card className="p-12 text-center" data-testid="card-empty-state">
-                  <p className="text-muted-foreground mb-4">No prompts found</p>
-                  <Button onClick={() => setShowAddModal(true)}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Your First Prompt
-                  </Button>
                 </Card>
-              ) : (
-                <div
-                  className={
-                    viewMode === 'grid'
-                      ? 'grid md:grid-cols-2 gap-4'
-                      : 'space-y-4'
-                  }
-                  data-testid="container-prompts"
-                >
-                  {filteredPrompts.map((prompt) => (
-                    <PromptCard
-                      key={prompt.id}
-                      prompt={prompt}
-                      onCopy={handleCopy}
-                      onDelete={handleDelete}
-                      onToggleFavorite={handleToggleFavorite}
-                      onSaveEdit={handleSaveEdit}
-                    />
-                  ))}
-                </div>
-              )}
-            </main>
+
+                {/* Prompts Grid/List */}
+                {filteredPrompts.length === 0 ? (
+                  <Card className="p-12 text-center" data-testid="card-empty-state">
+                    <p className="text-muted-foreground mb-4">No prompts found</p>
+                    <Button onClick={() => setShowAddModal(true)}>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Your First Prompt
+                    </Button>
+                  </Card>
+                ) : (
+                  <div
+                    className={
+                      viewMode === 'grid'
+                        ? 'grid md:grid-cols-2 gap-4'
+                        : 'space-y-4'
+                    }
+                    data-testid="container-prompts"
+                  >
+                    {filteredPrompts.map((prompt) => (
+                      <PromptCard
+                        key={prompt.id}
+                        prompt={prompt}
+                        onCopy={handleCopy}
+                        onDelete={handleDelete}
+                        onToggleFavorite={handleToggleFavorite}
+                        onSaveEdit={handleSaveEdit}
+                      />
+                    ))}
+                  </div>
+                )}
+              </main>
           </div>
         </div>
       </div>
