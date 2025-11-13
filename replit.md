@@ -2,6 +2,12 @@
 
 ## Recent Changes
 
+### November 13, 2025 - Independent Scrolling for Saved Prompts Page
+- **Enhanced scrolling behavior** - Both the folder sidebar and main prompts section now scroll independently
+- **Contained layout** - Applied `max-h-[calc(100vh-12rem)] overflow-y-auto` to both sections to prevent page expansion
+- **Improved UX** - Users can now scroll through long lists of folders without affecting the prompts view, and vice versa
+- **Grid structure preserved** - Proper indentation ensures both columns remain within the grid container for correct layout
+
 ### November 12, 2025 - Folder UI Improvements & Drag-and-Drop Restoration
 - **Simplified folder UI** - Removed GripVertical (::) drag icon from folder items for cleaner appearance
 - **Enhanced folder menu interaction**
