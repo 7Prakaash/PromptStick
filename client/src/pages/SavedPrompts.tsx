@@ -306,8 +306,25 @@ export default function SavedPrompts() {
             {/* Layout */}
             <div className="grid lg:grid-cols-[250px,1fr] gap-6">
               {/* Sidebar */}
-              <aside className="space-y-4">
-                <Card className="p-4 max-h-[calc(100vh-12rem)] overflow-y-auto">
+              <aside className="space-y-6">
+                {/* 
+                  AD PLACEHOLDER SPACE
+                  This Card is sized to match the toolbar height on the right side.
+                  Replace the content below with your ad code/component.
+                  The p-4 padding matches the toolbar for proper alignment.
+                */}
+                <Card className="p-4" data-testid="card-ad-placeholder">
+                  <div className="flex items-center justify-center h-full min-h-[3rem] text-muted-foreground text-sm">
+                    Ad Space - Replace with your ad content
+                  </div>
+                </Card>
+
+                {/* 
+                  FOLDERS CARD
+                  Starts at the same vertical position as the prompts area.
+                  Height is adjusted to account for the ad space above (reduces max-height by ~6.5rem).
+                */}
+                <Card className="p-4 max-h-[calc(100vh-19rem)] overflow-y-auto">
                   <h3 className="font-semibold mb-3">Folders</h3>
                   <FolderTree
                     onSelectFolder={setSelectedFolder}
