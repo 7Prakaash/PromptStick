@@ -14,7 +14,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useDroppable } from '@dnd-kit/core';
+import { useDroppable, useDraggable } from '@dnd-kit/core';
+import { CSS } from '@dnd-kit/utilities';
 
 interface FolderTreeProps {
   onSelectFolder: (folderId?: string) => void;
@@ -66,6 +67,15 @@ function PromptListItem({
 }) {
   const [isPromptHovered, setIsPromptHovered] = useState(false);
   
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: prompt.id,
+    data: prompt,
+  });
+  
+  const style = {
+    transform: CSS.Translate.toString(transform),
+  };
+  
   const truncateText = (text: string, maxLength: number = 20) => {
     if (text.length <= maxLength) return text;
     return text.substring(0, maxLength) + '...';
@@ -82,7 +92,13 @@ function PromptListItem({
 
   return (
     <div
-      className="text-sm text-muted-foreground py-1 px-2 hover-elevate rounded-md cursor-pointer flex items-center justify-between group"
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className={`text-sm text-muted-foreground py-1 px-2 hover-elevate rounded-md cursor-grab active:cursor-grabbing flex items-center justify-between group ${
+        isDragging ? 'opacity-50' : ''
+      }`}
       onMouseEnter={() => setIsPromptHovered(true)}
       onMouseLeave={() => setIsPromptHovered(false)}
       onClick={(e) => {

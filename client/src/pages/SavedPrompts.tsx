@@ -307,7 +307,7 @@ export default function SavedPrompts() {
             <div className="grid lg:grid-cols-[250px,1fr] gap-6">
               {/* Sidebar */}
               <aside className="space-y-4">
-                <Card className="p-4">
+                <Card className="p-4 max-h-[calc(100vh-12rem)] overflow-y-auto">
                   <h3 className="font-semibold mb-3">Folders</h3>
                   <FolderTree
                     onSelectFolder={setSelectedFolder}
