@@ -121,7 +121,7 @@ export default function PromptDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChangeInternal}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto" data-testid="dialog-prompt-details">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto overflow-x-hidden" data-testid="dialog-prompt-details">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 flex-wrap">
             <Badge className={typeColors[prompt.type]} data-testid="badge-type-modal">
@@ -136,9 +136,9 @@ export default function PromptDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 mt-4">
+        <div className="space-y-4 mt-4 w-full">
           {/* Query */}
-          <div>
+          <div className="w-full">
             <div className="flex items-center gap-2 mb-2 group">
               <p className="text-sm font-medium text-muted-foreground">Query:</p>
               {!isEditing && !isEditingQuery && (
@@ -174,14 +174,14 @@ export default function PromptDialog({
                 autoFocus
               />
             ) : (
-              <p className="text-sm break-words" data-testid="text-query-modal">
+              <p className="text-sm break-all min-w-0" data-testid="text-query-modal">
                 {prompt.query}
               </p>
             )}
           </div>
 
           {/* Generated Prompt */}
-          <div>
+          <div className="w-full">
             <p className="text-sm font-medium text-muted-foreground mb-2">Generated Prompt:</p>
             {isEditing ? (
               <Textarea
@@ -192,7 +192,7 @@ export default function PromptDialog({
               />
             ) : (
               <p
-                className="text-sm font-mono bg-muted/50 p-4 rounded whitespace-pre-wrap break-words"
+                className="text-sm font-mono bg-muted/50 p-4 rounded whitespace-pre-wrap break-all min-w-0"
                 data-testid="text-prompt-full"
               >
                 {prompt.generatedPrompt}
