@@ -345,7 +345,7 @@ export default function SavedPrompts() {
 
                 {/* Bottom row on mobile, inline on desktop */}
                 <div className="flex gap-3 items-center w-full md:w-auto md:flex-1">
-                  {/* Expandable Search - 70% max width when expanded on desktop */}
+                  {/* Expandable Search - Always open on mobile, expandable on desktop */}
                   <div 
                     ref={searchRef}
                     className={`transition-all duration-300 ease-in-out flex-1 ${
@@ -353,28 +353,29 @@ export default function SavedPrompts() {
                     }`}
                     style={isSearchExpanded ? { maxWidth: '70%' } : undefined}
                   >
-                    {isSearchExpanded ? (
-                      <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          placeholder="Search prompts..."
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          className="pl-10"
-                          data-testid="input-search"
-                          autoFocus
-                        />
-                      </div>
-                    ) : (
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => setIsSearchExpanded(true)}
-                        data-testid="button-search-expand"
-                      >
-                        <Search className="h-4 w-4" />
-                      </Button>
-                    )}
+                    {/* Search Input - Always visible on mobile, conditional on desktop */}
+                    <div className={`relative ${isSearchExpanded ? 'block' : 'block md:hidden'}`}>
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Search prompts..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-10"
+                        data-testid="input-search"
+                        autoFocus={isSearchExpanded}
+                      />
+                    </div>
+                    
+                    {/* Search Icon Button - Hidden on mobile, visible when collapsed on desktop */}
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => setIsSearchExpanded(true)}
+                      data-testid="button-search-expand"
+                      className={`${isSearchExpanded ? 'hidden' : 'hidden md:flex'}`}
+                    >
+                      <Search className="h-4 w-4" />
+                    </Button>
                   </div>
 
                   {/* Action Buttons */}
