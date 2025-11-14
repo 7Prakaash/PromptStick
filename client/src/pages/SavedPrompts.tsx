@@ -380,11 +380,12 @@ export default function SavedPrompts() {
                   {selectedFolder && (
                     <Button 
                       variant="ghost" 
+                      size="icon"
                       onClick={handleOpenImportModal}
                       data-testid="button-import-prompts"
+                      aria-label="Import from All Prompts"
                     >
-                      <Download className="h-4 w-4 mr-2" />
-                      Import from All Prompts
+                      <Download className="h-4 w-4" />
                     </Button>
                   )}
                   <Button 
