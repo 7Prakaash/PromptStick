@@ -3,7 +3,7 @@
  * View, organize, and manage saved prompts with folders
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
@@ -29,7 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Plus, Search, Grid3x3, List, FileText, Download } from 'lucide-react';
+import { Plus, Search, FileText, Download } from 'lucide-react';
 import {
   getAllPrompts,
   getPromptsByFolder,
@@ -57,8 +57,9 @@ export default function SavedPrompts() {
   const [prompts, setPrompts] = useState<SavedPrompt[]>([]);
   const [selectedFolder, setSelectedFolder] = useState<string | undefined>();
   const [searchQuery, setSearchQuery] = useState('');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
   const [newPrompt, setNewPrompt] = useState({
     type: 'text' as 'text' | 'image' | 'video',
     query: '',
@@ -93,6 +94,20 @@ export default function SavedPrompts() {
       });
     }
   }, [selectedPromptId, prompts]);
+
+  // Handle click outside to collapse search if empty
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        if (searchQuery === '' && isSearchExpanded) {
+          setIsSearchExpanded(false);
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [searchQuery, isSearchExpanded]);
 
   const loadPrompts = () => {
     // Always use getPromptsByFolder - when selectedFolder is undefined,
@@ -308,23 +323,10 @@ export default function SavedPrompts() {
               {/* Sidebar */}
               <aside className="space-y-6">
                 {/* 
-                  AD PLACEHOLDER SPACE
-                  This Card is sized to match the toolbar height on the right side.
-                  Replace the content below with your ad code/component.
-                  The p-4 padding matches the toolbar for proper alignment.
-                */}
-                <Card className="p-4" data-testid="card-ad-placeholder">
-                  <div className="flex items-center justify-center h-full min-h-[3rem] text-muted-foreground text-sm">
-                    Ad Space - Replace with your ad content
-                  </div>
-                </Card>
-
-                {/* 
                   FOLDERS CARD
-                  Starts at the same vertical position as the prompts area.
-                  Height is adjusted to account for the ad space above (reduces max-height by ~6.5rem).
+                  Full height sidebar for folder navigation
                 */}
-                <Card className="p-4 max-h-[calc(100vh-19rem)] overflow-y-auto">
+                <Card className="p-4 max-h-[calc(100vh-12rem)] overflow-y-auto">
                   <h3 className="font-semibold mb-3">Folders</h3>
                   <FolderTree
                     onSelectFolder={setSelectedFolder}
@@ -336,38 +338,52 @@ export default function SavedPrompts() {
 
               {/* Main Content */}
               <main className="space-y-6 max-h-[calc(100vh-12rem)] overflow-y-auto">
-                {/* Toolbar */}
+                {/* Toolbar with Ad-Space and Expandable Search */}
                 <Card className="p-4">
-                  <div className="flex flex-col sm:flex-row gap-4">
-                    <div className="relative flex-1">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        placeholder="Search prompts..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-10"
-                        data-testid="input-search"
-                      />
+                  <div className="flex gap-3 items-center">
+                    {/* Ad Space - Resizes smoothly when search expands */}
+                    <div 
+                      className={`flex items-center justify-center bg-accent/20 rounded-md px-4 py-2 text-muted-foreground text-sm transition-all duration-300 ease-in-out ${
+                        isSearchExpanded ? 'flex-1' : 'flex-[2]'
+                      }`}
+                      data-testid="card-ad-placeholder"
+                    >
+                      adspace
                     </div>
+
+                    {/* Expandable Search */}
+                    <div 
+                      ref={searchRef}
+                      className={`transition-all duration-300 ease-in-out ${
+                        isSearchExpanded ? 'flex-1' : 'flex-none'
+                      }`}
+                    >
+                      {isSearchExpanded ? (
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            placeholder="Search prompts..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="pl-10"
+                            data-testid="input-search"
+                            autoFocus
+                          />
+                        </div>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => setIsSearchExpanded(true)}
+                          data-testid="button-search-expand"
+                        >
+                          <Search className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+
+                    {/* Action Buttons */}
                     <div className="flex gap-2 flex-wrap">
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => setViewMode('grid')}
-                        className={viewMode === 'grid' ? 'bg-accent' : ''}
-                        data-testid="button-view-grid"
-                      >
-                        <Grid3x3 className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => setViewMode('list')}
-                        className={viewMode === 'list' ? 'bg-accent' : ''}
-                        data-testid="button-view-list"
-                      >
-                        <List className="h-4 w-4" />
-                      </Button>
                       {selectedFolder && (
                         <Button 
                           variant="ghost" 
@@ -386,7 +402,7 @@ export default function SavedPrompts() {
                   </div>
                 </Card>
 
-                {/* Prompts Grid/List */}
+                {/* Prompts Grid - Always Grid View */}
                 {filteredPrompts.length === 0 ? (
                   <Card className="p-12 text-center" data-testid="card-empty-state">
                     <p className="text-muted-foreground mb-4">No prompts found</p>
@@ -397,11 +413,7 @@ export default function SavedPrompts() {
                   </Card>
                 ) : (
                   <div
-                    className={
-                      viewMode === 'grid'
-                        ? 'grid md:grid-cols-2 gap-4'
-                        : 'space-y-4'
-                    }
+                    className="grid md:grid-cols-2 gap-4"
                     data-testid="container-prompts"
                   >
                     {filteredPrompts.map((prompt) => (
