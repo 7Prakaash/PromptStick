@@ -109,6 +109,18 @@ export default function SavedPrompts() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [searchQuery, isSearchExpanded]);
 
+  // Handle scroll to collapse search if empty
+  useEffect(() => {
+    const handleScroll = () => {
+      if (searchQuery === '' && isSearchExpanded) {
+        setIsSearchExpanded(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, true);
+    return () => window.removeEventListener('scroll', handleScroll, true);
+  }, [searchQuery, isSearchExpanded]);
+
   const loadPrompts = () => {
     // Always use getPromptsByFolder - when selectedFolder is undefined,
     // it returns prompts with no folderId (i.e., prompts in "All Prompts")
@@ -318,7 +330,71 @@ export default function SavedPrompts() {
               </p>
             </div>
 
-            {/* Layout */}
+            {/* Toolbar - Sits above everything */}
+            <Card className="p-4 mb-6">
+              <div className="flex gap-3 items-center flex-wrap">
+                {/* Ad Space - Expands when search collapses */}
+                <div 
+                  className={`flex items-center justify-center bg-accent/20 rounded-md px-4 py-2 text-muted-foreground text-sm transition-all duration-300 ease-in-out ${
+                    isSearchExpanded ? 'flex-[2]' : 'flex-[3]'
+                  }`}
+                  data-testid="card-ad-placeholder"
+                >
+                  adspace
+                </div>
+
+                {/* Expandable Search - 70% max width when expanded */}
+                <div 
+                  ref={searchRef}
+                  className={`transition-all duration-300 ease-in-out ${
+                    isSearchExpanded ? 'flex-1' : 'flex-none'
+                  }`}
+                  style={isSearchExpanded ? { maxWidth: '70%' } : undefined}
+                >
+                  {isSearchExpanded ? (
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Search prompts..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-10"
+                        data-testid="input-search"
+                        autoFocus
+                      />
+                    </div>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => setIsSearchExpanded(true)}
+                      data-testid="button-search-expand"
+                    >
+                      <Search className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-2 flex-wrap">
+                  {selectedFolder && (
+                    <Button 
+                      variant="ghost" 
+                      onClick={handleOpenImportModal}
+                      data-testid="button-import-prompts"
+                    >
+                      <Download className="h-4 w-4 mr-2" />
+                      Import from All Prompts
+                    </Button>
+                  )}
+                  <Button onClick={() => setShowAddModal(true)} data-testid="button-add-custom">
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </Card>
+
+            {/* Layout - Folders and Prompts side by side */}
             <div className="grid lg:grid-cols-[250px,1fr] gap-6">
               {/* Sidebar */}
               <aside className="space-y-6">
@@ -326,7 +402,7 @@ export default function SavedPrompts() {
                   FOLDERS CARD
                   Full height sidebar for folder navigation
                 */}
-                <Card className="p-4 max-h-[calc(100vh-12rem)] overflow-y-auto">
+                <Card className="p-4 max-h-[calc(100vh-16rem)] overflow-y-auto">
                   <h3 className="font-semibold mb-3">Folders</h3>
                   <FolderTree
                     onSelectFolder={setSelectedFolder}
@@ -337,71 +413,7 @@ export default function SavedPrompts() {
               </aside>
 
               {/* Main Content */}
-              <main className="space-y-6 max-h-[calc(100vh-12rem)] overflow-y-auto">
-                {/* Toolbar with Ad-Space and Expandable Search */}
-                <Card className="p-4">
-                  <div className="flex gap-3 items-center">
-                    {/* Ad Space - Resizes smoothly when search expands */}
-                    <div 
-                      className={`flex items-center justify-center bg-accent/20 rounded-md px-4 py-2 text-muted-foreground text-sm transition-all duration-300 ease-in-out ${
-                        isSearchExpanded ? 'flex-1' : 'flex-[2]'
-                      }`}
-                      data-testid="card-ad-placeholder"
-                    >
-                      adspace
-                    </div>
-
-                    {/* Expandable Search */}
-                    <div 
-                      ref={searchRef}
-                      className={`transition-all duration-300 ease-in-out ${
-                        isSearchExpanded ? 'flex-1' : 'flex-none'
-                      }`}
-                    >
-                      {isSearchExpanded ? (
-                        <div className="relative">
-                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                          <Input
-                            placeholder="Search prompts..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-10"
-                            data-testid="input-search"
-                            autoFocus
-                          />
-                        </div>
-                      ) : (
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => setIsSearchExpanded(true)}
-                          data-testid="button-search-expand"
-                        >
-                          <Search className="h-4 w-4" />
-                        </Button>
-                      )}
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex gap-2 flex-wrap">
-                      {selectedFolder && (
-                        <Button 
-                          variant="ghost" 
-                          onClick={handleOpenImportModal}
-                          data-testid="button-import-prompts"
-                        >
-                          <Download className="h-4 w-4 mr-2" />
-                          Import from All Prompts
-                        </Button>
-                      )}
-                      <Button onClick={() => setShowAddModal(true)} data-testid="button-add-custom">
-                        <Plus className="h-4 w-4 mr-2" />
-                        Add Custom
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
-
+              <main className="space-y-6 max-h-[calc(100vh-16rem)] overflow-y-auto">
                 {/* Prompts Grid - Always Grid View */}
                 {filteredPrompts.length === 0 ? (
                   <Card className="p-12 text-center" data-testid="card-empty-state">
