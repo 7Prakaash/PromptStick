@@ -387,7 +387,11 @@ export default function SavedPrompts() {
                       Import from All Prompts
                     </Button>
                   )}
-                  <Button onClick={() => setShowAddModal(true)} data-testid="button-add-custom">
+                  <Button 
+                    onClick={() => setShowAddModal(true)} 
+                    data-testid="button-add-custom"
+                    aria-label="Add custom prompt"
+                  >
                     <Plus className="h-4 w-4" />
                   </Button>
                 </div>
