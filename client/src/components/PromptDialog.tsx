@@ -174,7 +174,7 @@ export default function PromptDialog({
                 autoFocus
               />
             ) : (
-              <p className="text-sm" data-testid="text-query-modal">
+              <p className="text-sm break-words" data-testid="text-query-modal">
                 {prompt.query}
               </p>
             )}
@@ -192,7 +192,7 @@ export default function PromptDialog({
               />
             ) : (
               <p
-                className="text-sm font-mono bg-muted/50 p-4 rounded whitespace-pre-wrap"
+                className="text-sm font-mono bg-muted/50 p-4 rounded whitespace-pre-wrap break-words"
                 data-testid="text-prompt-full"
               >
                 {prompt.generatedPrompt}
