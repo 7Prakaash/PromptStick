@@ -174,7 +174,11 @@ export default function PromptDialog({
                 autoFocus
               />
             ) : (
-              <p className="text-sm break-all min-w-0" data-testid="text-query-modal">
+              <p 
+                className="text-sm min-w-0" 
+                style={{ overflowWrap: 'anywhere' }}
+                data-testid="text-query-modal"
+              >
                 {prompt.query}
               </p>
             )}
@@ -192,7 +196,8 @@ export default function PromptDialog({
               />
             ) : (
               <p
-                className="text-sm font-mono bg-muted/50 p-4 rounded whitespace-pre-wrap break-all min-w-0"
+                className="text-sm font-mono bg-muted/50 p-4 rounded whitespace-pre-wrap min-w-0"
+                style={{ overflowWrap: 'anywhere' }}
                 data-testid="text-prompt-full"
               >
                 {prompt.generatedPrompt}
