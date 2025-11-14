@@ -332,69 +332,72 @@ export default function SavedPrompts() {
 
             {/* Toolbar - Sits above everything */}
             <Card className="p-4 mb-6">
-              <div className="flex gap-3 items-center flex-wrap">
-                {/* Ad Space - Expands when search collapses */}
+              <div className="flex flex-col md:flex-row gap-3">
+                {/* Ad Space - Full width on mobile, flexible on desktop */}
                 <div 
-                  className={`flex items-center justify-center bg-accent/20 rounded-md px-4 py-2 text-muted-foreground text-sm transition-all duration-300 ease-in-out ${
-                    isSearchExpanded ? 'flex-[2]' : 'flex-[3]'
+                  className={`flex items-center justify-center bg-accent/20 rounded-md px-4 py-2 text-muted-foreground text-sm transition-all duration-300 ease-in-out w-full md:w-auto ${
+                    isSearchExpanded ? 'md:flex-[2]' : 'md:flex-[3]'
                   }`}
                   data-testid="card-ad-placeholder"
                 >
                   adspace
                 </div>
 
-                {/* Expandable Search - 70% max width when expanded */}
-                <div 
-                  ref={searchRef}
-                  className={`transition-all duration-300 ease-in-out ${
-                    isSearchExpanded ? 'flex-1' : 'flex-none'
-                  }`}
-                  style={isSearchExpanded ? { maxWidth: '70%' } : undefined}
-                >
-                  {isSearchExpanded ? (
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        placeholder="Search prompts..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-10"
-                        data-testid="input-search"
-                        autoFocus
-                      />
-                    </div>
-                  ) : (
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => setIsSearchExpanded(true)}
-                      data-testid="button-search-expand"
-                    >
-                      <Search className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex gap-2 flex-wrap">
-                  {selectedFolder && (
-                    <Button 
-                      variant="ghost" 
-                      size="icon"
-                      onClick={handleOpenImportModal}
-                      data-testid="button-import-prompts"
-                      aria-label="Import from All Prompts"
-                    >
-                      <Download className="h-4 w-4" />
-                    </Button>
-                  )}
-                  <Button 
-                    onClick={() => setShowAddModal(true)} 
-                    data-testid="button-add-custom"
-                    aria-label="Add custom prompt"
+                {/* Bottom row on mobile, inline on desktop */}
+                <div className="flex gap-3 items-center w-full md:w-auto md:flex-1">
+                  {/* Expandable Search - 70% max width when expanded on desktop */}
+                  <div 
+                    ref={searchRef}
+                    className={`transition-all duration-300 ease-in-out flex-1 ${
+                      isSearchExpanded ? 'md:flex-1' : 'md:flex-none'
+                    }`}
+                    style={isSearchExpanded ? { maxWidth: '70%' } : undefined}
                   >
-                    <Plus className="h-4 w-4" />
-                  </Button>
+                    {isSearchExpanded ? (
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          placeholder="Search prompts..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="pl-10"
+                          data-testid="input-search"
+                          autoFocus
+                        />
+                      </div>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => setIsSearchExpanded(true)}
+                        data-testid="button-search-expand"
+                      >
+                        <Search className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-2">
+                    {selectedFolder && (
+                      <Button 
+                        variant="ghost" 
+                        size="icon"
+                        onClick={handleOpenImportModal}
+                        data-testid="button-import-prompts"
+                        aria-label="Import from All Prompts"
+                      >
+                        <Download className="h-4 w-4" />
+                      </Button>
+                    )}
+                    <Button 
+                      onClick={() => setShowAddModal(true)} 
+                      data-testid="button-add-custom"
+                      aria-label="Add custom prompt"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             </Card>
