@@ -62,10 +62,16 @@ export default function SavedPrompts() {
   const searchRef = useRef<HTMLDivElement>(null);
   const [newPrompt, setNewPrompt] = useState({
     type: 'text' as 'text' | 'image' | 'video',
-    query: '',
     prompt: '',
     llm: '',
   });
+
+  // AI Model options based on type
+  const llmOptions: Record<string, string[]> = {
+    text: ['GPT-4', 'GPT-3.5 Turbo', 'Claude', 'Claude Instant', 'Gemini Pro'],
+    image: ['DALL-E 3', 'DALL-E 2', 'Midjourney', 'Stable Diffusion', 'Ideogram'],
+    video: ['Runway Gen-2', 'Pika', 'Stable Video', 'GPT-4 (Script)'],
+  };
   const [activePromptId, setActivePromptId] = useState<string | null>(null);
   const [showImportModal, setShowImportModal] = useState(false);
   const [availablePrompts, setAvailablePrompts] = useState<SavedPrompt[]>([]);
@@ -267,7 +273,7 @@ export default function SavedPrompts() {
   };
 
   const handleAddCustomPrompt = () => {
-    if (!newPrompt.query || !newPrompt.prompt || !newPrompt.llm) {
+    if (!newPrompt.prompt || !newPrompt.llm) {
       toast({
         title: 'Missing fields',
         description: 'Please fill in all required fields',
@@ -278,14 +284,14 @@ export default function SavedPrompts() {
 
     savePromptToStorage({
       type: newPrompt.type,
-      query: newPrompt.query,
+      query: `Custom ${newPrompt.type} prompt`,
       generatedPrompt: newPrompt.prompt,
       llm: newPrompt.llm,
       folderId: selectedFolder,
       isFavorite: false,
     });
 
-    setNewPrompt({ type: 'text', query: '', prompt: '', llm: '' });
+    setNewPrompt({ type: 'text', prompt: '', llm: '' });
     setShowAddModal(false);
     loadPrompts();
     
@@ -470,7 +476,9 @@ export default function SavedPrompts() {
               <Label htmlFor="type">Type</Label>
               <Select
                 value={newPrompt.type}
-                onValueChange={(value: any) => setNewPrompt({ ...newPrompt, type: value })}
+                onValueChange={(value: any) => {
+                  setNewPrompt({ ...newPrompt, type: value, llm: '' });
+                }}
               >
                 <SelectTrigger id="type" data-testid="select-type">
                   <SelectValue />
@@ -484,25 +492,22 @@ export default function SavedPrompts() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="query">Query/Description</Label>
-              <Input
-                id="query"
-                placeholder="What was this prompt for?"
-                value={newPrompt.query}
-                onChange={(e) => setNewPrompt({ ...newPrompt, query: e.target.value })}
-                data-testid="input-query"
-              />
-            </div>
-
-            <div className="space-y-2">
               <Label htmlFor="llm">AI Model</Label>
-              <Input
-                id="llm"
-                placeholder="e.g., GPT-4, DALL-E 3"
+              <Select
                 value={newPrompt.llm}
-                onChange={(e) => setNewPrompt({ ...newPrompt, llm: e.target.value })}
-                data-testid="input-llm"
-              />
+                onValueChange={(value) => setNewPrompt({ ...newPrompt, llm: value })}
+              >
+                <SelectTrigger id="llm" data-testid="select-llm">
+                  <SelectValue placeholder="Select an AI model" />
+                </SelectTrigger>
+                <SelectContent>
+                  {llmOptions[newPrompt.type].map((model) => (
+                    <SelectItem key={model} value={model} data-testid={`option-llm-${model.toLowerCase().replace(/\s+/g, '-')}`}>
+                      {model}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-2">
