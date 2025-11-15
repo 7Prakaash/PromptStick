@@ -1,9 +1,11 @@
 /**
  * FolderTree component
  * Displays folder hierarchy with drag-and-drop support
+ * Mobile/Tablet: Horizontal scrolling folder icons with long-press menu
+ * Desktop: Traditional vertical list
  */
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Folder, FolderOpen, Plus, ChevronRight, ChevronDown, MoreVertical, Copy } from 'lucide-react';
@@ -14,6 +16,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { useDroppable, useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 
@@ -38,6 +48,14 @@ interface FolderItemProps {
   onCancelRename: () => void;
   setEditingName: (name: string) => void;
   onPromptClick?: (promptId: string) => void;
+}
+
+interface FolderIconProps {
+  folder: FolderType;
+  isSelected: boolean;
+  onSelect: (folderId: string) => void;
+  onDelete: (folderId: string) => void;
+  onStartRename: (folder: FolderType) => void;
 }
 
 function DroppableFolderWrapper({ 
@@ -121,6 +139,115 @@ function PromptListItem({
         <Copy className="h-3 w-3" />
       </Button>
     </div>
+  );
+}
+
+function FolderIcon({ folder, isSelected, onSelect, onDelete, onStartRename }: FolderIconProps) {
+  const [showMenu, setShowMenu] = useState(false);
+  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const touchStartPos = useRef<{ x: number; y: number } | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    touchStartPos.current = { x: touch.clientX, y: touch.clientY };
+    
+    longPressTimer.current = setTimeout(() => {
+      setShowMenu(true);
+    }, 500); // 500ms for long press
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchStartPos.current || !longPressTimer.current) return;
+    
+    const touch = e.touches[0];
+    const deltaX = Math.abs(touch.clientX - touchStartPos.current.x);
+    const deltaY = Math.abs(touch.clientY - touchStartPos.current.y);
+    
+    // Cancel long press if finger moves too much
+    if (deltaX > 10 || deltaY > 10) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+    touchStartPos.current = null;
+  };
+
+  const handleClick = () => {
+    if (!showMenu) {
+      onSelect(folder.id);
+    }
+  };
+
+  const handleRename = () => {
+    setShowMenu(false);
+    onStartRename(folder);
+  };
+
+  const handleDelete = () => {
+    setShowMenu(false);
+    onDelete(folder.id);
+  };
+
+  return (
+    <>
+      <div
+        className="flex flex-col items-center gap-1 flex-shrink-0 cursor-pointer"
+        onClick={handleClick}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        data-testid={`folder-icon-${folder.id}`}
+      >
+        <div
+          className={`w-16 h-16 flex items-center justify-center rounded-md transition-colors ${
+            isSelected
+              ? 'bg-primary text-primary-foreground'
+              : 'bg-muted hover-elevate'
+          }`}
+        >
+          <Folder className="h-8 w-8" />
+        </div>
+        <span className="text-xs text-center max-w-[80px] truncate" data-testid={`text-folder-name-${folder.id}`}>
+          {folder.name}
+        </span>
+      </div>
+
+      <Dialog open={showMenu} onOpenChange={setShowMenu}>
+        <DialogContent data-testid={`dialog-folder-menu-${folder.id}`}>
+          <DialogHeader>
+            <DialogTitle>{folder.name}</DialogTitle>
+            <DialogDescription>Choose an action for this folder</DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-2 py-4">
+            <Button
+              variant="outline"
+              onClick={handleRename}
+              data-testid={`menu-rename-${folder.id}`}
+            >
+              Rename Folder
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleDelete}
+              data-testid={`menu-delete-${folder.id}`}
+            >
+              Delete Folder
+            </Button>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setShowMenu(false)}>
+              Cancel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 
@@ -327,71 +454,170 @@ export default function FolderTree({ onSelectFolder, selectedFolderId, onPromptC
   };
 
   return (
-    <div className="space-y-2" data-testid="container-folder-tree">
-      {/* All Prompts */}
-      <AllPromptsDropZone />
+    <>
+      {/* Desktop View (lg and above) */}
+      <div className="hidden lg:block space-y-2" data-testid="container-folder-tree">
+        <AllPromptsDropZone />
 
-      {/* Folder List */}
-      {folders.map((folder) => (
-        <DroppableFolderWrapper key={folder.id} folder={folder}>
-          <FolderItem
-            folder={folder}
-            selectedFolderId={selectedFolderId}
-            expandedFolders={expandedFolders}
-            editingFolderId={editingFolderId}
-            editingName={editingName}
-            onSelect={onSelectFolder}
-            onToggle={toggleFolder}
-            onDelete={handleDeleteFolder}
-            onStartRename={handleStartRename}
-            onSaveRename={handleSaveRename}
-            onCancelRename={handleCancelRename}
-            setEditingName={setEditingName}
-            onPromptClick={onPromptClick}
-          />
-        </DroppableFolderWrapper>
-      ))}
+        {folders.map((folder) => (
+          <DroppableFolderWrapper key={folder.id} folder={folder}>
+            <FolderItem
+              folder={folder}
+              selectedFolderId={selectedFolderId}
+              expandedFolders={expandedFolders}
+              editingFolderId={editingFolderId}
+              editingName={editingName}
+              onSelect={onSelectFolder}
+              onToggle={toggleFolder}
+              onDelete={handleDeleteFolder}
+              onStartRename={handleStartRename}
+              onSaveRename={handleSaveRename}
+              onCancelRename={handleCancelRename}
+              setEditingName={setEditingName}
+              onPromptClick={onPromptClick}
+            />
+          </DroppableFolderWrapper>
+        ))}
 
-      {/* Add Folder */}
-      {isAdding ? (
-        <div className="flex gap-2">
-          <Input
-            placeholder="Folder name"
-            value={newFolderName}
-            onChange={(e) => setNewFolderName(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') handleCreateFolder();
-              if (e.key === 'Escape') {
-                setIsAdding(false);
-                setNewFolderName('');
-              }
-            }}
-            onBlur={() => {
-              if (!newFolderName.trim()) {
-                setIsAdding(false);
-                setNewFolderName('');
-              }
-            }}
-            autoFocus
-            maxLength={20}
-            className="flex-1"
-            data-testid="input-folder-name"
-          />
-          <Button size="sm" onClick={handleCreateFolder} data-testid="button-save-folder">
-            Add
+        {isAdding ? (
+          <div className="flex gap-2">
+            <Input
+              placeholder="Folder name"
+              value={newFolderName}
+              onChange={(e) => setNewFolderName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleCreateFolder();
+                if (e.key === 'Escape') {
+                  setIsAdding(false);
+                  setNewFolderName('');
+                }
+              }}
+              onBlur={() => {
+                if (!newFolderName.trim()) {
+                  setIsAdding(false);
+                  setNewFolderName('');
+                }
+              }}
+              autoFocus
+              maxLength={20}
+              className="flex-1"
+              data-testid="input-folder-name"
+            />
+            <Button size="sm" onClick={handleCreateFolder} data-testid="button-save-folder">
+              Add
+            </Button>
+          </div>
+        ) : (
+          <Button
+            variant="ghost"
+            className="w-full justify-start text-muted-foreground"
+            onClick={() => setIsAdding(true)}
+            data-testid="button-add-folder"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            New Folder
           </Button>
-        </div>
-      ) : (
+        )}
+      </div>
+
+      {/* Mobile/Tablet View (below lg) */}
+      <div className="lg:hidden space-y-4" data-testid="container-folder-tree-mobile">
+        {/* All Prompts Button */}
         <Button
-          variant="ghost"
-          className="w-full justify-start text-muted-foreground"
-          onClick={() => setIsAdding(true)}
-          data-testid="button-add-folder"
+          variant={selectedFolderId === undefined ? 'default' : 'outline'}
+          className="w-full justify-start"
+          onClick={() => onSelectFolder(undefined)}
+          data-testid="button-folder-all-mobile"
         >
-          <Plus className="h-4 w-4 mr-2" />
-          New Folder
+          <FolderOpen className="h-4 w-4 mr-2" />
+          All Prompts
         </Button>
-      )}
-    </div>
+
+        {/* Horizontal Scrolling Folders */}
+        <div className="space-y-2">
+          <h3 className="text-sm font-semibold">Folders</h3>
+          <div className="overflow-x-auto pb-2" data-testid="container-folders-scroll">
+            <div className="flex gap-4 min-w-min">
+              {/* Folder Icons */}
+              {folders.map((folder) => (
+                editingFolderId === folder.id ? (
+                  <div key={folder.id} className="flex flex-col items-center gap-1 flex-shrink-0">
+                    <div className="w-16 h-16 flex items-center justify-center rounded-md bg-muted">
+                      <Folder className="h-8 w-8" />
+                    </div>
+                    <Input
+                      value={editingName}
+                      onChange={(e) => setEditingName(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleSaveRename(folder.id);
+                        if (e.key === 'Escape') handleCancelRename();
+                      }}
+                      onBlur={() => handleSaveRename(folder.id)}
+                      autoFocus
+                      maxLength={20}
+                      className="w-20 h-7 text-xs"
+                      data-testid={`input-rename-mobile-${folder.id}`}
+                    />
+                  </div>
+                ) : (
+                  <FolderIcon
+                    key={folder.id}
+                    folder={folder}
+                    isSelected={selectedFolderId === folder.id}
+                    onSelect={onSelectFolder}
+                    onDelete={handleDeleteFolder}
+                    onStartRename={handleStartRename}
+                  />
+                )
+              ))}
+
+              {/* Add Folder Icon */}
+              {isAdding ? (
+                <div className="flex flex-col items-center gap-1 flex-shrink-0">
+                  <div className="w-16 h-16 flex items-center justify-center rounded-md bg-muted">
+                    <Plus className="h-8 w-8" />
+                  </div>
+                  <Input
+                    placeholder="Name"
+                    value={newFolderName}
+                    onChange={(e) => setNewFolderName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleCreateFolder();
+                      if (e.key === 'Escape') {
+                        setIsAdding(false);
+                        setNewFolderName('');
+                      }
+                    }}
+                    onBlur={() => {
+                      if (newFolderName.trim()) {
+                        handleCreateFolder();
+                      } else {
+                        setIsAdding(false);
+                        setNewFolderName('');
+                      }
+                    }}
+                    autoFocus
+                    maxLength={20}
+                    className="w-20 h-7 text-xs"
+                    data-testid="input-folder-name-mobile"
+                  />
+                </div>
+              ) : (
+                <div
+                  className="flex flex-col items-center gap-1 flex-shrink-0 cursor-pointer"
+                  onClick={() => setIsAdding(true)}
+                  data-testid="button-add-folder-mobile"
+                >
+                  <div className="w-16 h-16 flex items-center justify-center rounded-md bg-muted hover-elevate">
+                    <Plus className="h-8 w-8" />
+                  </div>
+                  <span className="text-xs text-center text-muted-foreground">New</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
