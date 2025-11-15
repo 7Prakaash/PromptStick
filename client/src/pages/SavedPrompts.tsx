@@ -411,7 +411,7 @@ export default function SavedPrompts() {
                   FOLDERS CARD
                   Full height sidebar for folder navigation
                 */}
-                <Card className="p-4 max-h-[calc(100vh-16rem)] overflow-y-auto">
+                <Card className="p-4 max-h-[calc(100vh-16rem)] overflow-y-auto w-full overflow-x-hidden">
                   <h3 className="font-semibold mb-3">Folders</h3>
                   <FolderTree
                     onSelectFolder={setSelectedFolder}
