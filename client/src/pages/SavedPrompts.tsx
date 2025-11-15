@@ -404,14 +404,14 @@ export default function SavedPrompts() {
             </Card>
 
             {/* Layout - Folders and Prompts side by side */}
-            <div className="grid lg:grid-cols-[250px,1fr] gap-6">
+            <div className="grid lg:grid-cols-[250px,1fr] gap-6 min-w-0">
               {/* Sidebar */}
-              <aside className="space-y-6">
+              <aside className="space-y-6 min-w-0">
                 {/* 
                   FOLDERS CARD
                   Full height sidebar for folder navigation
                 */}
-                <Card className="p-4 max-h-[calc(100vh-16rem)] overflow-y-auto w-full overflow-x-hidden">
+                <Card className="p-4 max-h-[calc(100vh-16rem)] overflow-y-auto w-full overflow-x-hidden min-w-0">
                   <h3 className="font-semibold mb-3">Folders</h3>
                   <FolderTree
                     onSelectFolder={setSelectedFolder}
