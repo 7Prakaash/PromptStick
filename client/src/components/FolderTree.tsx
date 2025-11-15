@@ -534,10 +534,9 @@ export default function FolderTree({ onSelectFolder, selectedFolderId, onPromptC
         </Button>
 
         {/* Horizontal Scrolling Folders */}
-        <div className="space-y-2">
-          <h3 className="text-sm font-semibold">Folders</h3>
+        <div className="w-full overflow-hidden">
           <div className="overflow-x-auto pb-2" data-testid="container-folders-scroll">
-            <div className="flex gap-4 min-w-min">
+            <div className="flex gap-4">
               {/* Folder Icons */}
               {folders.map((folder) => (
                 editingFolderId === folder.id ? (
