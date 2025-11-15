@@ -68,14 +68,6 @@ export default function PromptCard({ prompt, onCopy, onDelete, onToggleFavorite,
             </Button>
           </div>
 
-          {/* Query Preview */}
-          <div>
-            <p className="text-sm text-muted-foreground mb-1">Query:</p>
-            <p className="text-sm font-medium line-clamp-2" data-testid="text-query">
-              {prompt.query}
-            </p>
-          </div>
-
           {/* Generated Prompt Preview */}
           <div>
             <p className="text-sm text-muted-foreground mb-1">Generated:</p>
