@@ -338,11 +338,11 @@ export default function SavedPrompts() {
 
             {/* Toolbar - Sits above everything */}
             <Card className="p-4 mb-6">
-              <div className="flex flex-col md:flex-row gap-3">
-                {/* Ad Space - Full width on mobile, flexible on desktop */}
+              <div className="flex flex-col md:flex-row gap-3 md:items-center">
+                {/* Ad Space - Full width on mobile, maximum expansion on desktop */}
                 <div 
-                  className={`flex items-center justify-center bg-accent/20 rounded-md px-4 py-2 text-muted-foreground text-sm transition-all duration-300 ease-in-out w-full md:w-auto ${
-                    isSearchExpanded ? 'md:flex-[2]' : 'md:flex-[3]'
+                  className={`flex items-center justify-center bg-accent/20 rounded-md px-4 py-2 text-muted-foreground text-sm transition-all duration-300 ease-in-out w-full md:flex-1 ${
+                    isSearchExpanded ? 'md:flex-[2]' : 'md:flex-[5]'
                   }`}
                   data-testid="card-ad-placeholder"
                 >
@@ -350,14 +350,13 @@ export default function SavedPrompts() {
                 </div>
 
                 {/* Bottom row on mobile, inline on desktop */}
-                <div className="flex gap-3 items-center w-full md:w-auto md:flex-1">
+                <div className="flex gap-3 items-center w-full md:w-auto">
                   {/* Expandable Search - Always open on mobile, expandable on desktop */}
                   <div 
                     ref={searchRef}
                     className={`transition-all duration-300 ease-in-out flex-1 ${
-                      isSearchExpanded ? 'md:flex-1' : 'md:flex-none'
+                      isSearchExpanded ? 'md:flex-1 md:max-w-xs' : 'md:flex-none'
                     }`}
-                    style={isSearchExpanded ? { maxWidth: '70%' } : undefined}
                   >
                     {/* Search Input - Always visible on mobile, conditional on desktop */}
                     <div className={`relative ${isSearchExpanded ? 'block' : 'block md:hidden'}`}>
@@ -385,7 +384,7 @@ export default function SavedPrompts() {
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 md:flex-shrink-0">
                     {selectedFolder && (
                       <Button 
                         variant="ghost" 
