@@ -121,7 +121,7 @@ export default function PromptDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChangeInternal}>
-      <DialogContent className="max-w-3xl max-h-[90vh]" data-testid="dialog-prompt-details">
+      <DialogContent className="max-w-3xl max-h-[90vh] w-[95vw] sm:w-full p-4 sm:p-6" data-testid="dialog-prompt-details">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 flex-wrap">
             <Badge className={typeColors[prompt.type]} data-testid="badge-type-modal">
@@ -195,9 +195,9 @@ export default function PromptDialog({
                 data-testid="textarea-edit-prompt"
               />
             ) : (
-              <div className="max-h-96 overflow-y-auto scrollbar-hide">
+              <div className="max-h-64 sm:max-h-96 overflow-y-auto scrollbar-hide">
                 <p
-                  className="text-sm font-mono bg-muted/50 p-4 rounded whitespace-pre-wrap min-w-0"
+                  className="text-sm font-mono bg-muted/50 p-3 sm:p-4 rounded whitespace-pre-wrap min-w-0"
                   style={{ overflowWrap: 'anywhere' }}
                   data-testid="text-prompt-full"
                 >
