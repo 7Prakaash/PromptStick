@@ -6,7 +6,6 @@
 import { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import {
   Dialog,
@@ -15,7 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Copy, Trash2, Edit, Save, X, Pencil } from 'lucide-react';
+import { Copy, Trash2, Edit, Save, X } from 'lucide-react';
 import { SavedPrompt } from '@/utils/localStorage';
 import { format } from 'date-fns';
 
@@ -37,8 +36,6 @@ export default function PromptDialog({
   onSaveEdit,
 }: PromptDialogProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [isEditingQuery, setIsEditingQuery] = useState(false);
-  const [editedQuery, setEditedQuery] = useState(prompt.query);
   const [editedPrompt, setEditedPrompt] = useState(prompt.generatedPrompt);
 
   const typeColors: Record<string, string> = {
@@ -48,36 +45,23 @@ export default function PromptDialog({
   };
 
   useEffect(() => {
-    setEditedQuery(prompt.query);
     setEditedPrompt(prompt.generatedPrompt);
   }, [prompt]);
 
   const handleStartEdit = () => {
     setIsEditing(true);
-    setEditedQuery(prompt.query);
     setEditedPrompt(prompt.generatedPrompt);
   };
 
   const handleSave = () => {
-    const updates: { query?: string; generatedPrompt?: string } = {};
-    
-    if (editedQuery.trim() && editedQuery !== prompt.query) {
-      updates.query = editedQuery.trim();
-    }
-    
     if (editedPrompt.trim() && editedPrompt !== prompt.generatedPrompt) {
-      updates.generatedPrompt = editedPrompt.trim();
-    }
-    
-    if (Object.keys(updates).length > 0) {
-      onSaveEdit(prompt.id, updates);
+      onSaveEdit(prompt.id, { generatedPrompt: editedPrompt.trim() });
     }
     
     setIsEditing(false);
   };
 
   const handleCancel = () => {
-    setEditedQuery(prompt.query);
     setEditedPrompt(prompt.generatedPrompt);
     setIsEditing(false);
   };
@@ -91,31 +75,7 @@ export default function PromptDialog({
     onOpenChange(newOpen);
     if (!newOpen) {
       setIsEditing(false);
-      setIsEditingQuery(false);
-      setEditedQuery(prompt.query);
       setEditedPrompt(prompt.generatedPrompt);
-    }
-  };
-
-  const handleStartQueryEdit = () => {
-    setIsEditingQuery(true);
-    setEditedQuery(prompt.query);
-  };
-
-  const handleSaveQueryEdit = () => {
-    if (editedQuery.trim() && editedQuery !== prompt.query) {
-      onSaveEdit(prompt.id, { query: editedQuery.trim() });
-    }
-    setIsEditingQuery(false);
-  };
-
-  const handleQueryKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleSaveQueryEdit();
-    } else if (e.key === 'Escape') {
-      setEditedQuery(prompt.query);
-      setIsEditingQuery(false);
     }
   };
 
@@ -137,53 +97,6 @@ export default function PromptDialog({
         </DialogHeader>
 
         <div className="space-y-4 mt-4 w-full">
-          {/* Query */}
-          <div className="w-full">
-            <div className="flex items-center gap-2 mb-2 group">
-              <p className="text-sm font-medium text-muted-foreground">Query:</p>
-              {!isEditing && !isEditingQuery && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleStartQueryEdit();
-                  }}
-                  data-testid="button-edit-query"
-                >
-                  <Pencil className="h-3 w-3" />
-                </Button>
-              )}
-            </div>
-            {isEditing ? (
-              <Textarea
-                value={editedQuery}
-                onChange={(e) => setEditedQuery(e.target.value)}
-                className="min-h-20 text-sm resize-y"
-                data-testid="textarea-edit-query"
-              />
-            ) : isEditingQuery ? (
-              <Input
-                value={editedQuery}
-                onChange={(e) => setEditedQuery(e.target.value)}
-                onBlur={handleSaveQueryEdit}
-                onKeyDown={handleQueryKeyDown}
-                className="text-sm"
-                data-testid="input-edit-query"
-                autoFocus
-              />
-            ) : (
-              <p 
-                className="text-sm min-w-0" 
-                style={{ overflowWrap: 'anywhere' }}
-                data-testid="text-query-modal"
-              >
-                {prompt.query}
-              </p>
-            )}
-          </div>
-
           {/* Generated Prompt */}
           <div className="w-full">
             <p className="text-sm font-medium text-muted-foreground mb-2">Generated Prompt:</p>
