@@ -29,7 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Plus, Search, FileText, Download } from 'lucide-react';
+import { Plus, Search, FileText, Download, Sparkles } from 'lucide-react';
 import {
   getAllPrompts,
   getPromptsByFolder,
@@ -445,12 +445,20 @@ export default function SavedPrompts() {
               </aside>
 
               {/* Main Content */}
-              <main className="space-y-6 max-h-[calc(100vh-16rem)] overflow-y-auto">
+              <main className="space-y-6 h-[calc(100vh-16rem)] overflow-y-auto">
                 {/* Prompts Grid - Always Grid View */}
                 {filteredPrompts.length === 0 ? (
-                  <Card className="p-8 text-center" data-testid="card-empty-state">
-                    <div className="space-y-4">
-                      <p className="text-muted-foreground text-base">No prompts found</p>
+                  <Card className="h-full flex items-center justify-center p-12" data-testid="card-empty-state">
+                    <div className="flex flex-col items-center space-y-6 max-w-md">
+                      <div className="rounded-full bg-primary/10 p-6">
+                        <Sparkles className="h-12 w-12 text-primary" />
+                      </div>
+                      <div className="space-y-2 text-center">
+                        <h3 className="text-lg font-semibold">No prompts found</h3>
+                        <p className="text-sm text-muted-foreground">
+                          Start building your prompt library by adding your first prompt
+                        </p>
+                      </div>
                       <Button onClick={() => setShowAddModal(true)} data-testid="button-add-first">
                         <Plus className="h-4 w-4 mr-2" />
                         Add Your First Prompt
