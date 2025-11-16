@@ -75,6 +75,7 @@ export default function SavedPrompts() {
   const [activePromptId, setActivePromptId] = useState<string | null>(null);
   const [showImportModal, setShowImportModal] = useState(false);
   const [availablePrompts, setAvailablePrompts] = useState<SavedPrompt[]>([]);
+  const [initialPromptOrder, setInitialPromptOrder] = useState<string[]>([]);
   const [selectedPromptId, setSelectedPromptId] = useState<string | null>(null);
   const { toast } = useToast();
 
@@ -236,6 +237,8 @@ export default function SavedPrompts() {
       }
     });
     
+    // Store the initial order of prompt IDs
+    setInitialPromptOrder(combinedPrompts.map(p => p.id));
     setAvailablePrompts(combinedPrompts);
     setShowImportModal(true);
   };
@@ -269,7 +272,24 @@ export default function SavedPrompts() {
         combinedPrompts.push(p);
       }
     });
-    setAvailablePrompts(combinedPrompts);
+    
+    // Sort according to initial order to maintain stable positions
+    // Handle edge case: if a prompt isn't in the initial order, keep it at the end
+    const sortedPrompts = [...combinedPrompts].sort((a, b) => {
+      const indexA = initialPromptOrder.indexOf(a.id);
+      const indexB = initialPromptOrder.indexOf(b.id);
+      
+      // If both are not in initial order, maintain their relative order
+      if (indexA === -1 && indexB === -1) return 0;
+      // If only A is not in initial order, put it at the end
+      if (indexA === -1) return 1;
+      // If only B is not in initial order, put it at the end
+      if (indexB === -1) return -1;
+      
+      return indexA - indexB;
+    });
+    
+    setAvailablePrompts(sortedPrompts);
   };
 
   const handleAddCustomPrompt = () => {
