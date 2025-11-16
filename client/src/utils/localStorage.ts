@@ -165,14 +165,28 @@ export const deleteFolder = (id: string): void => {
   const folders = getAllFolders();
   const prompts = getAllPrompts();
   
-  // Remove folder
-  const filteredFolders = folders.filter(f => f.id !== id && f.parentId !== id);
+  // Recursively find all descendant folder IDs
+  const getAllDescendantIds = (folderId: string): string[] => {
+    const childIds = folders
+      .filter(f => f.parentId === folderId)
+      .map(f => f.id);
+    
+    const descendantIds = [folderId];
+    childIds.forEach(childId => {
+      descendantIds.push(...getAllDescendantIds(childId));
+    });
+    
+    return descendantIds;
+  };
+  
+  const folderIdsToDelete = getAllDescendantIds(id);
+  
+  // Remove folder and all descendants
+  const filteredFolders = folders.filter(f => !folderIdsToDelete.includes(f.id));
   localStorage.setItem(STORAGE_KEYS.FOLDERS, JSON.stringify(filteredFolders));
   
-  // Move prompts in deleted folder to root
-  const updatedPrompts = prompts.map(p => 
-    p.folderId === id ? { ...p, folderId: undefined } : p
-  );
+  // Delete all prompts in the folder and its descendants (cascade delete)
+  const updatedPrompts = prompts.filter(p => !p.folderId || !folderIdsToDelete.includes(p.folderId));
   localStorage.setItem(STORAGE_KEYS.PROMPTS, JSON.stringify(updatedPrompts));
 };
 
