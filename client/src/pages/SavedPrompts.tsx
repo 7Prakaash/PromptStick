@@ -62,6 +62,7 @@ export default function SavedPrompts() {
   const searchRef = useRef<HTMLDivElement>(null);
   const [newPrompt, setNewPrompt] = useState({
     type: 'text' as 'text' | 'image' | 'video',
+    name: '',
     prompt: '',
     llm: '',
   });
@@ -302,6 +303,7 @@ export default function SavedPrompts() {
 
     savePromptToStorage({
       type: newPrompt.type,
+      name: newPrompt.name || undefined,
       query: `Custom ${newPrompt.type} prompt`,
       generatedPrompt: newPrompt.prompt,
       llm: newPrompt.llm,
@@ -309,7 +311,7 @@ export default function SavedPrompts() {
       isFavorite: false,
     });
 
-    setNewPrompt({ type: 'text', prompt: '', llm: '' });
+    setNewPrompt({ type: 'text', name: '', prompt: '', llm: '' });
     setShowAddModal(false);
     loadPrompts();
     
@@ -521,6 +523,17 @@ export default function SavedPrompts() {
                   <SelectItem value="video">Video</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="name">Name (optional)</Label>
+              <Input
+                id="name"
+                placeholder="e.g., Blog Post Generator"
+                value={newPrompt.name}
+                onChange={(e) => setNewPrompt({ ...newPrompt, name: e.target.value })}
+                data-testid="input-name"
+              />
             </div>
 
             <div className="space-y-2">
