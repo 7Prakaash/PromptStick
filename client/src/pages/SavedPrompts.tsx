@@ -448,12 +448,14 @@ export default function SavedPrompts() {
               <main className="space-y-6 max-h-[calc(100vh-16rem)] overflow-y-auto">
                 {/* Prompts Grid - Always Grid View */}
                 {filteredPrompts.length === 0 ? (
-                  <Card className="p-12 text-center" data-testid="card-empty-state">
-                    <p className="text-muted-foreground mb-4">No prompts found</p>
-                    <Button onClick={() => setShowAddModal(true)}>
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Your First Prompt
-                    </Button>
+                  <Card className="p-8 text-center" data-testid="card-empty-state">
+                    <div className="space-y-4">
+                      <p className="text-muted-foreground text-base">No prompts found</p>
+                      <Button onClick={() => setShowAddModal(true)} data-testid="button-add-first">
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add Your First Prompt
+                      </Button>
+                    </div>
                   </Card>
                 ) : (
                   <div
