@@ -402,7 +402,7 @@ export default function SavedPrompts() {
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="flex gap-2 md:flex-shrink-0">
+                  <div className="flex gap-2 md:flex-shrink-0 md:ml-auto">
                     {selectedFolder && (
                       <Button 
                         variant="ghost" 
