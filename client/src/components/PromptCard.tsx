@@ -70,6 +70,11 @@ export default function PromptCard({ prompt, onCopy, onDelete, onToggleFavorite,
 
           {/* Generated Prompt Preview */}
           <div>
+            {prompt.name && (
+              <p className="text-sm font-semibold mb-1" data-testid="text-prompt-name">
+                {prompt.name}
+              </p>
+            )}
             <p className="text-sm text-muted-foreground mb-1">Generated:</p>
             <p
               className="text-sm font-mono bg-muted/50 p-2 rounded line-clamp-3"
