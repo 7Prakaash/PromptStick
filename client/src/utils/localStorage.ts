@@ -6,6 +6,7 @@
 export interface SavedPrompt {
   id: string;
   type: 'text' | 'image' | 'video';
+  name?: string;
   query: string;
   generatedPrompt: string;
   llm: string;
