@@ -24,6 +24,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { useDroppable, useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 
@@ -376,6 +386,7 @@ export default function FolderTree({ onSelectFolder, selectedFolderId, onPromptC
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
   const [editingFolderId, setEditingFolderId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
+  const [folderToDelete, setFolderToDelete] = useState<{ id: string; promptCount: number } | null>(null);
 
   const handleCreateFolder = () => {
     if (!newFolderName.trim()) return;
@@ -387,14 +398,20 @@ export default function FolderTree({ onSelectFolder, selectedFolderId, onPromptC
     setIsAdding(false);
   };
 
-  const handleDeleteFolder = (id: string) => {
-    if (confirm('Delete this folder? Prompts inside will be moved to "All Prompts".')) {
-      deleteFolder(id);
-      setFolders(getAllFolders());
-      if (selectedFolderId === id) {
-        onSelectFolder(undefined);
-      }
+  const handleDeleteFolderClick = (id: string) => {
+    const prompts = getPromptsByFolder(id);
+    setFolderToDelete({ id, promptCount: prompts.length });
+  };
+
+  const handleConfirmDeleteFolder = () => {
+    if (!folderToDelete) return;
+    
+    deleteFolder(folderToDelete.id);
+    setFolders(getAllFolders());
+    if (selectedFolderId === folderToDelete.id) {
+      onSelectFolder(undefined);
     }
+    setFolderToDelete(null);
   };
 
   const toggleFolder = (id: string) => {
@@ -469,7 +486,7 @@ export default function FolderTree({ onSelectFolder, selectedFolderId, onPromptC
               editingName={editingName}
               onSelect={onSelectFolder}
               onToggle={toggleFolder}
-              onDelete={handleDeleteFolder}
+              onDelete={handleDeleteFolderClick}
               onStartRename={handleStartRename}
               onSaveRename={handleSaveRename}
               onCancelRename={handleCancelRename}
@@ -564,7 +581,7 @@ export default function FolderTree({ onSelectFolder, selectedFolderId, onPromptC
                     folder={folder}
                     isSelected={selectedFolderId === folder.id}
                     onSelect={onSelectFolder}
-                    onDelete={handleDeleteFolder}
+                    onDelete={handleDeleteFolderClick}
                     onStartRename={handleStartRename}
                   />
                 )
@@ -617,6 +634,31 @@ export default function FolderTree({ onSelectFolder, selectedFolderId, onPromptC
           </div>
         </div>
       </div>
+
+      {/* Delete Folder Confirmation Alert */}
+      <AlertDialog open={!!folderToDelete} onOpenChange={(open) => !open && setFolderToDelete(null)}>
+        <AlertDialogContent data-testid="alert-delete-folder">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Folder?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the folder
+              {folderToDelete && folderToDelete.promptCount > 0 && (
+                <> and all <strong>{folderToDelete.promptCount}</strong> prompt{folderToDelete.promptCount !== 1 ? 's' : ''} inside it</>
+              )}.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel data-testid="button-cancel-delete-folder">Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleConfirmDeleteFolder}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              data-testid="button-confirm-delete-folder"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
