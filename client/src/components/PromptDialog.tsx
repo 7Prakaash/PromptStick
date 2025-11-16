@@ -14,6 +14,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Copy, Trash2, Edit, Save, X } from 'lucide-react';
 import { SavedPrompt } from '@/utils/localStorage';
 import { format } from 'date-fns';
@@ -37,6 +47,7 @@ export default function PromptDialog({
 }: PromptDialogProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedPrompt, setEditedPrompt] = useState(prompt.generatedPrompt);
+  const [showDeleteAlert, setShowDeleteAlert] = useState(false);
 
   const typeColors: Record<string, string> = {
     text: 'bg-primary/10 text-primary',
@@ -66,8 +77,13 @@ export default function PromptDialog({
     setIsEditing(false);
   };
 
-  const handleDelete = () => {
+  const handleDeleteClick = () => {
+    setShowDeleteAlert(true);
+  };
+
+  const handleConfirmDelete = () => {
     onDelete(prompt.id);
+    setShowDeleteAlert(false);
     onOpenChange(false);
   };
 
@@ -161,7 +177,7 @@ export default function PromptDialog({
                 </Button>
                 <Button
                   variant="destructive"
-                  onClick={handleDelete}
+                  onClick={handleDeleteClick}
                   data-testid="button-delete"
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
@@ -172,6 +188,28 @@ export default function PromptDialog({
           </div>
         </div>
       </DialogContent>
+
+      {/* Delete Confirmation Alert */}
+      <AlertDialog open={showDeleteAlert} onOpenChange={setShowDeleteAlert}>
+        <AlertDialogContent data-testid="alert-delete-prompt">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Prompt?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the prompt.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel data-testid="button-cancel-delete">Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleConfirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              data-testid="button-confirm-delete"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 }

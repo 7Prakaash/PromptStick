@@ -152,14 +152,12 @@ export default function SavedPrompts() {
   };
 
   const handleDelete = (id: string) => {
-    if (confirm('Delete this prompt?')) {
-      deletePrompt(id);
-      loadPrompts();
-      toast({
-        title: 'Deleted',
-        description: 'Prompt removed from library',
-      });
-    }
+    deletePrompt(id);
+    loadPrompts();
+    toast({
+      title: 'Deleted',
+      description: 'Prompt removed from library',
+    });
   };
 
   const handleToggleFavorite = (id: string) => {
