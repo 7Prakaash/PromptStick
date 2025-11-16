@@ -442,6 +442,11 @@ export default function SavedPrompts() {
                     onPromptClick={handlePromptClick}
                   />
                 </Card>
+
+                {/* Video Ad Box - Desktop only */}
+                <Card className="hidden lg:flex items-center justify-center w-full aspect-[2/3] bg-accent/20" data-testid="card-video-ad">
+                  <span className="text-muted-foreground text-sm">Video Ad Space</span>
+                </Card>
               </aside>
 
               {/* Main Content */}
