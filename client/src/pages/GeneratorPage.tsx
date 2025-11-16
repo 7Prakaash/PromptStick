@@ -40,8 +40,9 @@ export default function GeneratorPage({ type }: GeneratorPageProps) {
   const [lastQueryForCycling, setLastQueryForCycling] = useState<string>('');
   const [matchIndex, setMatchIndex] = useState<number>(0);
   const [isSaved, setIsSaved] = useState(false);
+  const [lastTemplateName, setLastTemplateName] = useState<string | undefined>(undefined);
   const queryInputRef = useRef<HTMLTextAreaElement>(null);
-  const { toast } = useToast();
+  const { toast} = useToast();
 
   // Check for edit prompt or template in sessionStorage
   useEffect(() => {
@@ -192,6 +193,7 @@ export default function GeneratorPage({ type }: GeneratorPageProps) {
       }
 
       setGeneratedPrompt(prompt);
+      setLastTemplateName(matchedTemplate.name);
       setIsGenerating(false);
       setIsSaved(false);
 
@@ -241,6 +243,7 @@ export default function GeneratorPage({ type }: GeneratorPageProps) {
       // Save new prompt
       savePrompt({
         type,
+        name: lastTemplateName,
         query: lastParams.query,
         generatedPrompt,
         llm: lastParams.llm,
