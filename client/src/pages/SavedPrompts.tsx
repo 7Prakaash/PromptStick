@@ -302,7 +302,7 @@ export default function SavedPrompts() {
   };
 
   const handleAddCustomPrompt = () => {
-    if (!newPrompt.prompt || !newPrompt.llm) {
+    if (!newPrompt.name.trim() || !newPrompt.prompt || !newPrompt.llm) {
       toast({
         title: 'Missing fields',
         description: 'Please fill in all required fields',
@@ -313,7 +313,7 @@ export default function SavedPrompts() {
 
     savePromptToStorage({
       type: newPrompt.type,
-      name: newPrompt.name || undefined,
+      name: newPrompt.name.trim(),
       query: `Custom ${newPrompt.type} prompt`,
       generatedPrompt: newPrompt.prompt,
       llm: newPrompt.llm,
@@ -553,13 +553,14 @@ export default function SavedPrompts() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="name">Name (optional)</Label>
+              <Label htmlFor="name">Name</Label>
               <Input
                 id="name"
                 placeholder="e.g., Blog Post Generator"
                 value={newPrompt.name}
                 onChange={(e) => setNewPrompt({ ...newPrompt, name: e.target.value })}
                 data-testid="input-name"
+                required
               />
             </div>
 
