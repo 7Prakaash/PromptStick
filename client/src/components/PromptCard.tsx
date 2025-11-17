@@ -18,7 +18,7 @@ interface PromptCardProps {
   onCopy: (prompt: SavedPrompt) => void;
   onDelete: (id: string) => void;
   onToggleFavorite: (id: string) => void;
-  onSaveEdit: (id: string, updates: { query?: string; generatedPrompt?: string }) => void;
+  onSaveEdit: (id: string, updates: { query?: string; generatedPrompt?: string; name?: string }) => void;
 }
 
 export default function PromptCard({ prompt, onCopy, onDelete, onToggleFavorite, onSaveEdit }: PromptCardProps) {

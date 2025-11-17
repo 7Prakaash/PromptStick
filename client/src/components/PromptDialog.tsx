@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import {
   Dialog,
   DialogContent,
@@ -34,7 +35,7 @@ interface PromptDialogProps {
   onOpenChange: (open: boolean) => void;
   onCopy: (prompt: SavedPrompt) => void;
   onDelete: (id: string) => void;
-  onSaveEdit: (id: string, updates: { query?: string; generatedPrompt?: string }) => void;
+  onSaveEdit: (id: string, updates: { query?: string; generatedPrompt?: string; name?: string }) => void;
 }
 
 export default function PromptDialog({
@@ -47,6 +48,7 @@ export default function PromptDialog({
 }: PromptDialogProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedPrompt, setEditedPrompt] = useState(prompt.generatedPrompt);
+  const [editedName, setEditedName] = useState(prompt.name || '');
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
 
   const typeColors: Record<string, string> = {
@@ -57,16 +59,28 @@ export default function PromptDialog({
 
   useEffect(() => {
     setEditedPrompt(prompt.generatedPrompt);
+    setEditedName(prompt.name || '');
   }, [prompt]);
 
   const handleStartEdit = () => {
     setIsEditing(true);
     setEditedPrompt(prompt.generatedPrompt);
+    setEditedName(prompt.name || '');
   };
 
   const handleSave = () => {
+    const updates: { generatedPrompt?: string; name?: string } = {};
+    
     if (editedPrompt.trim() && editedPrompt !== prompt.generatedPrompt) {
-      onSaveEdit(prompt.id, { generatedPrompt: editedPrompt.trim() });
+      updates.generatedPrompt = editedPrompt.trim();
+    }
+    
+    if (editedName.trim() !== (prompt.name || '')) {
+      updates.name = editedName.trim();
+    }
+    
+    if (Object.keys(updates).length > 0) {
+      onSaveEdit(prompt.id, updates);
     }
     
     setIsEditing(false);
@@ -74,6 +88,7 @@ export default function PromptDialog({
 
   const handleCancel = () => {
     setEditedPrompt(prompt.generatedPrompt);
+    setEditedName(prompt.name || '');
     setIsEditing(false);
   };
 
@@ -92,6 +107,7 @@ export default function PromptDialog({
     if (!newOpen) {
       setIsEditing(false);
       setEditedPrompt(prompt.generatedPrompt);
+      setEditedName(prompt.name || '');
     }
   };
 
@@ -113,6 +129,24 @@ export default function PromptDialog({
         </DialogHeader>
 
         <div className="space-y-4 mt-4 w-full">
+          {/* Name Field */}
+          <div className="w-full">
+            <p className="text-sm font-medium text-muted-foreground mb-2">Name:</p>
+            {isEditing ? (
+              <Input
+                value={editedName}
+                onChange={(e) => setEditedName(e.target.value)}
+                placeholder="Enter a name for this prompt..."
+                className="text-sm"
+                data-testid="input-edit-name"
+              />
+            ) : (
+              <p className="text-sm font-semibold" data-testid="text-name-display">
+                {prompt.name || 'Untitled'}
+              </p>
+            )}
+          </div>
+
           {/* Generated Prompt */}
           <div className="w-full">
             <p className="text-sm font-medium text-muted-foreground mb-2">Generated Prompt:</p>

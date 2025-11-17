@@ -166,7 +166,7 @@ export default function SavedPrompts() {
     loadPrompts();
   };
 
-  const handleSaveEdit = (id: string, updates: { query?: string; generatedPrompt?: string }) => {
+  const handleSaveEdit = (id: string, updates: { query?: string; generatedPrompt?: string; name?: string }) => {
     updatePrompt(id, updates);
     loadPrompts();
     toast({
