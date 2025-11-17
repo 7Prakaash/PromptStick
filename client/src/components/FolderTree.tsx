@@ -136,9 +136,9 @@ function PromptListItem({
         }
       }}
       data-testid={`prompt-item-${prompt.id}`}
-      title={prompt.query}
+      title={prompt.name || 'Untitled'}
     >
-      <span className="truncate">{truncateText(prompt.query)}</span>
+      <span className="truncate">{truncateText(prompt.name || 'Untitled')}</span>
       <Button
         variant="ghost"
         size="icon"
