@@ -623,8 +623,8 @@ export default function SavedPrompts() {
                             {prompt.llm}
                           </span>
                         </div>
-                        <p className="text-sm font-medium" data-testid={`text-query-${prompt.id}`}>
-                          {prompt.query}
+                        <p className="text-sm font-medium" data-testid={`text-name-${prompt.id}`}>
+                          {prompt.name || 'Untitled'}
                         </p>
                         <p className="text-xs text-muted-foreground line-clamp-2">
                           {prompt.generatedPrompt}
