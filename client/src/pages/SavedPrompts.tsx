@@ -51,6 +51,7 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
+  useDroppable,
 } from '@dnd-kit/core';
 
 export default function SavedPrompts() {
@@ -211,9 +212,18 @@ export default function SavedPrompts() {
     const { active, over } = event;
     setActivePromptId(null);
 
-    if (over && active.id !== over.id) {
+    if (over) {
       const promptId = active.id as string;
-      const targetFolderId = over.id === 'all-prompts' ? undefined : (over.id as string);
+      let targetFolderId: string | undefined;
+      
+      if (over.id === 'all-prompts') {
+        targetFolderId = undefined;
+      } else if (over.id === 'main-content-area') {
+        targetFolderId = selectedFolder;
+      } else {
+        targetFolderId = over.id as string;
+      }
+      
       handlePromptDrop(promptId, targetFolderId);
     }
   };
@@ -336,6 +346,21 @@ export default function SavedPrompts() {
     video: 'bg-chart-5/10 text-chart-5',
   };
 
+  const MainContentDropZone = ({ children }: { children: React.ReactNode }) => {
+    const { setNodeRef, isOver } = useDroppable({
+      id: 'main-content-area',
+    });
+
+    return (
+      <div 
+        ref={setNodeRef} 
+        className={`transition-colors rounded-md ${isOver ? 'ring-2 ring-primary ring-offset-2' : ''}`}
+      >
+        {children}
+      </div>
+    );
+  };
+
   return (
     <DndContext
       sensors={sensors}
@@ -453,42 +478,44 @@ export default function SavedPrompts() {
 
               {/* Main Content */}
               <main className="space-y-6 h-[calc(100vh-16rem)] overflow-y-auto">
-                {/* Prompts Grid - Always Grid View */}
-                {filteredPrompts.length === 0 ? (
-                  <Card className="h-full flex items-center justify-center p-12" data-testid="card-empty-state">
-                    <div className="flex flex-col items-center space-y-6 max-w-md">
-                      <div className="rounded-full bg-primary/10 p-6">
-                        <Sparkles className="h-12 w-12 text-primary" />
+                <MainContentDropZone>
+                  {/* Prompts Grid - Always Grid View */}
+                  {filteredPrompts.length === 0 ? (
+                    <Card className="h-full flex items-center justify-center p-12" data-testid="card-empty-state">
+                      <div className="flex flex-col items-center space-y-6 max-w-md">
+                        <div className="rounded-full bg-primary/10 p-6">
+                          <Sparkles className="h-12 w-12 text-primary" />
+                        </div>
+                        <div className="space-y-2 text-center">
+                          <h3 className="text-lg font-semibold">No prompts found</h3>
+                          <p className="text-sm text-muted-foreground">
+                            Start building your prompt library by adding your first prompt
+                          </p>
+                        </div>
+                        <Button onClick={() => setShowAddModal(true)} data-testid="button-add-first">
+                          <Plus className="h-4 w-4 mr-2" />
+                          Add Your First Prompt
+                        </Button>
                       </div>
-                      <div className="space-y-2 text-center">
-                        <h3 className="text-lg font-semibold">No prompts found</h3>
-                        <p className="text-sm text-muted-foreground">
-                          Start building your prompt library by adding your first prompt
-                        </p>
-                      </div>
-                      <Button onClick={() => setShowAddModal(true)} data-testid="button-add-first">
-                        <Plus className="h-4 w-4 mr-2" />
-                        Add Your First Prompt
-                      </Button>
+                    </Card>
+                  ) : (
+                    <div
+                      className="grid md:grid-cols-2 gap-4"
+                      data-testid="container-prompts"
+                    >
+                      {filteredPrompts.map((prompt) => (
+                        <PromptCard
+                          key={prompt.id}
+                          prompt={prompt}
+                          onCopy={handleCopy}
+                          onDelete={handleDelete}
+                          onToggleFavorite={handleToggleFavorite}
+                          onSaveEdit={handleSaveEdit}
+                        />
+                      ))}
                     </div>
-                  </Card>
-                ) : (
-                  <div
-                    className="grid md:grid-cols-2 gap-4"
-                    data-testid="container-prompts"
-                  >
-                    {filteredPrompts.map((prompt) => (
-                      <PromptCard
-                        key={prompt.id}
-                        prompt={prompt}
-                        onCopy={handleCopy}
-                        onDelete={handleDelete}
-                        onToggleFavorite={handleToggleFavorite}
-                        onSaveEdit={handleSaveEdit}
-                      />
-                    ))}
-                  </div>
-                )}
+                  )}
+                </MainContentDropZone>
               </main>
           </div>
         </div>
