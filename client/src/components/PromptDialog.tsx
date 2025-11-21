@@ -26,7 +26,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Copy, Trash2, Edit, Save, X } from 'lucide-react';
-import { SavedPrompt } from '@/utils/localStorage';
+import type { SavedPrompt } from '@/types';
 import { format } from 'date-fns';
 
 interface PromptDialogProps {

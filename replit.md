@@ -2,6 +2,18 @@
 
 ## Recent Changes
 
+### November 21, 2025 - Migrated to Frontend-Only Architecture
+- **Removed backend server** - Eliminated Express.js server and all backend infrastructure
+- **Deleted server/ and shared/ directories** - Cleaned up unused backend code
+- **Centralized types** - Moved all TypeScript interfaces to `client/src/types.ts` for consistency
+- **Updated Vite configuration** - Configured standalone Vite dev server on port 5000 (host: 0.0.0.0)
+- **Simplified package scripts** - Updated to run Vite directly: `npm run dev`, `npm run build`, `npm run preview`
+- **Removed backend dependencies** - Cleaned up Express, Drizzle ORM, PostgreSQL, Passport, and related packages
+- **Streamlined queryClient** - Removed unused API request functions, kept QueryClient for future Supabase integration
+- **Updated deployment** - Configured for static site deployment
+- **All functionality preserved** - Application continues to use localStorage for data persistence
+- **Ready for Supabase** - Clean foundation prepared for future authentication and database integration
+
 ### November 13, 2025 - Independent Scrolling for Saved Prompts Page
 - **Enhanced scrolling behavior** - Both the folder sidebar and main prompts section now scroll independently
 - **Contained layout** - Applied `max-h-[calc(100vh-12rem)] overflow-y-auto` to both sections to prevent page expansion
@@ -98,30 +110,18 @@ Preferred communication style: Simple, everyday language.
 
 ### Backend Architecture
 
-**Server Framework**: Express.js with TypeScript
+**Current State**: Frontend-only application (as of November 21, 2025)
+- No backend server - application runs entirely in the browser
+- All data stored in browser localStorage
+- Vite serves the static frontend on port 5000
+- Deployed as static site
 
-**Current State**: Minimal backend implementation
-- Basic Express server setup with route registration structure
-- Placeholder storage interface (in-memory implementation)
-- Request logging middleware with JSON response capture
-- CORS and body parsing configured
-
-**Database Layer**: 
-- Drizzle ORM configured for PostgreSQL
-- Schema defined for users table (username/password authentication planned)
-- Migration system configured (`drizzle-kit`)
-- Currently using Neon serverless driver for PostgreSQL connections
-
-**Storage Strategy**:
-- Current: In-memory storage via `MemStorage` class implementing `IStorage` interface
-- Designed for database integration: Interface includes CRUD methods for users
-- Frontend uses LocalStorage for all prompt/folder/usage data persistence
-- Clear separation between storage interface and implementation allows easy swap to database
-
-**API Design**:
-- Routes prefixed with `/api`
-- RESTful structure intended (not yet implemented)
-- Server-side rendering support via Vite middleware in development
+**Future Plans**: Supabase integration
+- Authentication (user signup/login)
+- PostgreSQL database for cloud storage of prompts and folders
+- Real-time sync across devices
+- Usage tracking in cloud database
+- Type definitions already centralized in `client/src/types.ts` ready for Supabase schemas
 
 ### Data Architecture
 
@@ -140,10 +140,11 @@ Preferred communication style: Simple, everyday language.
    - Enforced limits: 50 daily, 500 monthly
    - Resets handled client-side based on date comparison
 
-**Database Schema** (Configured but minimal use):
-- Users table with UUID primary keys, username (unique), password
-- Drizzle schema with PostgreSQL dialect
-- Zod validation schemas generated from Drizzle schemas
+**Type Definitions** (`client/src/types.ts`):
+- SavedPrompt: All prompt data (id, type, query, generatedPrompt, llm, tone, style, timestamp, folderId, isFavorite)
+- Folder: Folder hierarchy (id, name, parentId, createdAt, order)
+- UsageStats: Usage tracking (daily, monthly counts with date tracking)
+- Centralized for consistency and ready for Supabase schema generation
 
 ### Prompt Generation Logic
 
@@ -164,28 +165,23 @@ Preferred communication style: Simple, everyday language.
 
 ### Authentication & Authorization
 
-**Planned but Not Implemented**:
-- User schema exists in database
-- Insert/select methods defined in storage interface
-- No authentication middleware or session management currently active
-- `connect-pg-simple` included for session storage (unused)
+**Current State**: No authentication (frontend-only app)
+- All features available without login
+- Data stored locally in browser
+- No user accounts or cloud storage
 
-**Current State**: No user authentication; all features available without login
+**Future State** (with Supabase):
+- User registration and login
+- Row-level security for user data
+- Cloud sync of prompts and folders across devices
 
 ## External Dependencies
 
 ### Core Framework Dependencies
 - **React 18**: UI framework
-- **Express.js**: Backend server
-- **TypeScript**: Type safety across full stack
+- **TypeScript**: Type safety
 - **Vite**: Build tool and development server
 - **Wouter**: Lightweight routing library
-
-### Database & ORM
-- **Drizzle ORM** (`drizzle-orm`): Type-safe database queries
-- **Drizzle Kit** (`drizzle-kit`): Schema management and migrations
-- **Neon Serverless** (`@neondatabase/serverless`): PostgreSQL serverless driver
-- **PostgreSQL**: Database dialect (requires `DATABASE_URL` environment variable)
 
 ### UI Component Libraries
 - **Radix UI**: Headless component primitives (@radix-ui/react-*)
@@ -218,12 +214,12 @@ Preferred communication style: Simple, everyday language.
 - **embla-carousel-react**: Carousel component
 
 ### Build & Deployment
-- **esbuild**: Server-side bundling for production
-- **tsx**: TypeScript execution for development server
-- Environment-based configuration (NODE_ENV, DATABASE_URL, REPL_ID)
+- **Vite**: Build tool and production bundler
+- Static site deployment configuration
+- Port 5000 for both development and preview
 
 ### Notable Configurations
-- **Path Aliases**: `@/*` → client/src, `@shared/*` → shared, `@assets/*` → attached_assets
-- **Database**: Requires `DATABASE_URL` environment variable; throws error if missing
-- **Session Storage**: `connect-pg-simple` included but not actively used
+- **Path Aliases**: `@/*` → client/src, `@assets/*` → attached_assets
+- **Development Server**: Vite dev server on 0.0.0.0:5000 with HMR
 - **Font Loading**: Google Fonts (Inter, JetBrains Mono via CDN in index.html)
+- **Build Output**: Compiled to `dist/` directory

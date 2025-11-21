@@ -8,7 +8,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Star } from 'lucide-react';
-import { SavedPrompt } from '@/utils/localStorage';
+import type { SavedPrompt } from '@/types';
 import { format } from 'date-fns';
 import { useDraggable } from '@dnd-kit/core';
 import PromptDialog from '@/components/PromptDialog';
