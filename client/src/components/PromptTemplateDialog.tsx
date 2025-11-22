@@ -17,6 +17,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Copy, Edit3, Check, Save, Lightbulb } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { Template } from '@/data/templates';
+import { savePrompt as savePromptToStorage, getAllPrompts } from '@/utils/localStorage';
 
 interface PromptTemplateDialogProps {
   open: boolean;
@@ -28,6 +29,7 @@ interface PromptTemplateDialogProps {
 interface PlaceholderSegment {
   type: 'text' | 'placeholder';
   content: string;
+  originalContent?: string; // Track original placeholder value
   id: string;
 }
 
@@ -73,10 +75,11 @@ export function PromptTemplateDialog({
         });
       }
 
-      // Add placeholder
+      // Add placeholder with original content tracked
       segments.push({
         type: 'placeholder',
         content: match[0],
+        originalContent: match[0], // Store original for restoration
         id: `placeholder-${idCounter++}`,
       });
 
@@ -95,9 +98,20 @@ export function PromptTemplateDialog({
     return segments;
   };
 
-  // Get full prompt text from segments
-  const getPromptText = (): string => {
-    return segments.map((seg) => seg.content).join('');
+  // Get full prompt text from segments, restoring original placeholders if empty
+  const getPromptText = (restoreEmptyPlaceholders: boolean = false): string => {
+    return segments
+      .map((seg) => {
+        if (restoreEmptyPlaceholders && seg.type === 'placeholder') {
+          // If placeholder is empty or just whitespace, restore original
+          const trimmed = seg.content.trim();
+          if (!trimmed || trimmed === '') {
+            return seg.originalContent || seg.content;
+          }
+        }
+        return seg.content;
+      })
+      .join('');
   };
 
   // Handle customize button click
@@ -149,7 +163,10 @@ export function PromptTemplateDialog({
 
   // Handle save with validation
   const handleSave = () => {
-    const textToSave = getPromptText();
+    if (!template) return;
+
+    // Get prompt text and restore any empty placeholders to defaults
+    const textToSave = getPromptText(true);
 
     if (!textToSave.trim()) {
       toast({
@@ -160,9 +177,9 @@ export function PromptTemplateDialog({
       return;
     }
 
-    // Check for duplicates in localStorage
-    const savedPrompts = JSON.parse(localStorage.getItem('savedPrompts') || '[]');
-    const isDuplicate = savedPrompts.some((p: any) => p.prompt === textToSave);
+    // Check for duplicates using centralized storage
+    const savedPrompts = getAllPrompts();
+    const isDuplicate = savedPrompts.some((p) => p.generatedPrompt === textToSave);
 
     if (isDuplicate) {
       toast({
@@ -172,6 +189,17 @@ export function PromptTemplateDialog({
       return;
     }
 
+    // Save using centralized storage utility
+    savePromptToStorage({
+      type: template.type,
+      name: template.name,
+      query: template.name, // Use template name as query
+      generatedPrompt: textToSave,
+      llm: template.llm || 'GPT-4',
+      isFavorite: false,
+    });
+
+    // Call onSave callback if provided
     if (onSave) {
       onSave(textToSave);
     }
@@ -229,7 +257,7 @@ export function PromptTemplateDialog({
           </div>
         </DialogHeader>
 
-        <ScrollArea className="flex-1 px-6 py-4">
+        <ScrollArea className="flex-1 px-6 py-4 max-h-[calc(90vh-200px)] overflow-y-auto scroll-smooth">
           <div className="space-y-6">
             {/* Prompt Editor */}
             <div className="space-y-3">
