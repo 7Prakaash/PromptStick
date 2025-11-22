@@ -16,6 +16,12 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 import { Copy, Edit3, Check, Save, Lightbulb } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { Template } from '@/data/templates';
