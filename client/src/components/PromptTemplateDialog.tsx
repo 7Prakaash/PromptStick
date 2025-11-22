@@ -367,7 +367,7 @@ export function PromptTemplateDialog({
               </div>
 
               <div
-                className={`bg-muted/30 p-4 rounded-lg border-2 min-h-[200px] font-mono text-sm leading-relaxed whitespace-pre-wrap ${
+                className={`bg-muted/30 p-4 rounded-lg border-2 min-h-[200px] max-h-[400px] overflow-y-auto font-mono text-sm leading-relaxed whitespace-pre-wrap ${
                   isEditable
                     ? 'border-primary focus-within:ring-2 focus-within:ring-primary/20'
                     : 'border-transparent'
@@ -407,9 +407,9 @@ export function PromptTemplateDialog({
                         onBlur={(e) =>
                           handleSegmentChange(segment.id, e.currentTarget.textContent || '')
                         }
-                        className={`bg-primary/15 text-primary px-1.5 py-0.5 rounded border border-primary/30 font-semibold transition-all ${
+                        className={`bg-accent text-accent-foreground px-1.5 py-0.5 rounded border border-accent-foreground/30 font-semibold transition-all ${
                           isEditable
-                            ? 'cursor-pointer hover:bg-primary/25 hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2'
+                            ? 'cursor-pointer hover:bg-accent/80 hover:border-accent-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2'
                             : ''
                         }`}
                         data-testid={`placeholder-segment-${segment.id}`}
