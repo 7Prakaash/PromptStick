@@ -281,10 +281,38 @@ export function PromptTemplateDialog({
     );
   };
 
+  // Handle dialog close - reset to original state
+  const handleOpenChange = (newOpen: boolean) => {
+    if (!newOpen && template) {
+      // Reset to original template prompt when closing
+      const parsed = parsePromptIntoSegments(template.prompt);
+      setSegments(parsed);
+      
+      // Reset placeholder values
+      const uniquePlaceholders = new Map<string, string>();
+      parsed.forEach(seg => {
+        if (seg.type === 'placeholder') {
+          const cleanKey = seg.content.replace(/[\[\]{}]/g, '');
+          if (!uniquePlaceholders.has(cleanKey)) {
+            uniquePlaceholders.set(cleanKey, '');
+          }
+        }
+      });
+      setPlaceholderValues(uniquePlaceholders);
+      
+      // Reset UI state
+      setIsEditable(false);
+      setCopied(false);
+      setSaved(false);
+    }
+    
+    onOpenChange(newOpen);
+  };
+
   if (!template) return null;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] p-0 gap-0" data-testid="dialog-prompt-template">
         <DialogHeader className="p-6 pb-4 border-b">
           <div className="flex items-start justify-between gap-4">
