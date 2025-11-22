@@ -422,52 +422,8 @@ export function PromptTemplateDialog({
               </div>
             </div>
 
-            {/* Guide Section */}
-            <div className="space-y-3 bg-primary/5 p-4 rounded-lg border border-primary/10" data-testid="section-guide">
-              <div className="flex items-center gap-2">
-                <Lightbulb className="h-5 w-5 text-primary" />
-                <h3 className="font-semibold text-primary">How to Use This Prompt</h3>
-              </div>
-
-              <div className="space-y-3 text-sm">
-                <div className="space-y-1">
-                  <p className="font-medium">Understanding Placeholders:</p>
-                  <p className="text-muted-foreground">
-                    Placeholders are marked with{' '}
-                    <code className="px-1.5 py-0.5 bg-primary/10 rounded text-primary font-mono text-xs">
-                      [BRACKETS]
-                    </code>{' '}
-                    or{' '}
-                    <code className="px-1.5 py-0.5 bg-primary/10 rounded text-primary font-mono text-xs">
-                      &#123;curly braces&#125;
-                    </code>
-                    . These are variables you need to replace with your specific information.
-                  </p>
-                </div>
-
-                <div className="space-y-1">
-                  <p className="font-medium">Quick Tips:</p>
-                  <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-2">
-                    <li>Click <strong>Customize</strong> to edit the prompt and placeholders</li>
-                    <li>Click any highlighted placeholder to replace it with your own text</li>
-                    <li>Use <strong>Copy</strong> to copy the entire prompt to your clipboard</li>
-                    <li>Click <strong>Save</strong> to store your customized version</li>
-                  </ul>
-                </div>
-
-                <div className="space-y-1">
-                  <p className="font-medium">Pro Tips:</p>
-                  <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-2">
-                    <li>Be specific when replacing placeholders - the more detail, the better the AI response</li>
-                    <li>You can modify the entire prompt structure, not just the placeholders</li>
-                    <li>Try different variations to see what works best for your use case</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            {/* Placeholder Input Fields Section */}
-            {placeholderValues.size > 0 && (
+            {/* Placeholder Input Fields Section - Only shown in Customize mode */}
+            {isEditable && placeholderValues.size > 0 && (
               <div className="space-y-3 bg-muted/30 p-4 rounded-lg border border-muted" data-testid="section-placeholder-inputs">
                 <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
                   Quick Fill Placeholders
@@ -491,6 +447,57 @@ export function PromptTemplateDialog({
                 </div>
               </div>
             )}
+
+            {/* Guide Section - Collapsible */}
+            <div className="bg-primary/5 rounded-lg border border-primary/10" data-testid="section-guide">
+              <Accordion type="single" collapsible className="w-full" defaultValue="guide">
+                <AccordionItem value="guide" className="border-0">
+                  <AccordionTrigger className="px-4 py-3 hover:no-underline" data-testid="button-toggle-guide">
+                    <div className="flex items-center gap-2">
+                      <Lightbulb className="h-5 w-5 text-primary" />
+                      <h3 className="font-semibold text-primary">How to Use This Prompt</h3>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-4 pb-4">
+                    <div className="space-y-3 text-sm">
+                      <div className="space-y-1">
+                        <p className="font-medium">Understanding Placeholders:</p>
+                        <p className="text-muted-foreground">
+                          Placeholders are marked with{' '}
+                          <code className="px-1.5 py-0.5 bg-primary/10 rounded text-primary font-mono text-xs">
+                            [BRACKETS]
+                          </code>{' '}
+                          or{' '}
+                          <code className="px-1.5 py-0.5 bg-primary/10 rounded text-primary font-mono text-xs">
+                            &#123;curly braces&#125;
+                          </code>
+                          . These are variables you need to replace with your specific information.
+                        </p>
+                      </div>
+
+                      <div className="space-y-1">
+                        <p className="font-medium">Quick Tips:</p>
+                        <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-2">
+                          <li>Click <strong>Customize</strong> to edit the prompt and placeholders</li>
+                          <li>Click any highlighted placeholder to replace it with your own text</li>
+                          <li>Use <strong>Copy</strong> to copy the entire prompt to your clipboard</li>
+                          <li>Click <strong>Save</strong> to store your customized version</li>
+                        </ul>
+                      </div>
+
+                      <div className="space-y-1">
+                        <p className="font-medium">Pro Tips:</p>
+                        <ul className="list-disc list-inside space-y-1 text-muted-foreground ml-2">
+                          <li>Be specific when replacing placeholders - the more detail, the better the AI response</li>
+                          <li>You can modify the entire prompt structure, not just the placeholders</li>
+                          <li>Try different variations to see what works best for your use case</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </div>
           </div>
         </ScrollArea>
       </DialogContent>
