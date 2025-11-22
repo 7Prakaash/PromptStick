@@ -424,33 +424,41 @@ export function PromptTemplateDialog({
 
             {/* Placeholder Input Fields Section - Only shown in Customize mode */}
             {isEditable && placeholderValues.size > 0 && (
-              <div className="space-y-3 bg-muted/30 p-4 rounded-lg border border-muted" data-testid="section-placeholder-inputs">
-                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                  Quick Fill Placeholders
-                </h3>
-                <div className="flex items-center gap-3 flex-wrap">
-                  {Array.from(placeholderValues.entries()).map(([key, value]) => (
-                    <div key={key} className="flex-1 min-w-[200px]">
-                      <Label htmlFor={`input-${key}`} className="text-xs mb-1.5 block" data-testid={`label-${key}`}>
-                        {key}
-                      </Label>
-                      <Input
-                        id={`input-${key}`}
-                        value={value}
-                        onChange={(e) => handleInputFieldChange(key, e.target.value)}
-                        placeholder={`Enter ${key.toLowerCase()}...`}
-                        className="h-9"
-                        data-testid={`input-placeholder-${key}`}
-                      />
-                    </div>
-                  ))}
-                </div>
+              <div className="bg-muted/30 rounded-lg border border-muted" data-testid="section-placeholder-inputs">
+                <Accordion type="single" collapsible className="w-full">
+                  <AccordionItem value="quick-edit" className="border-0">
+                    <AccordionTrigger className="px-4 py-3 hover:no-underline" data-testid="button-toggle-quick-edit">
+                      <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+                        Quick Edit
+                      </h3>
+                    </AccordionTrigger>
+                    <AccordionContent className="px-4 pb-4">
+                      <div className="flex items-center gap-3 flex-wrap">
+                        {Array.from(placeholderValues.entries()).map(([key, value]) => (
+                          <div key={key} className="flex-1 min-w-[200px]">
+                            <Label htmlFor={`input-${key}`} className="text-xs mb-1.5 block" data-testid={`label-${key}`}>
+                              {key}
+                            </Label>
+                            <Input
+                              id={`input-${key}`}
+                              value={value}
+                              onChange={(e) => handleInputFieldChange(key, e.target.value)}
+                              placeholder={`Enter ${key.toLowerCase()}...`}
+                              className="h-9"
+                              data-testid={`input-placeholder-${key}`}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
               </div>
             )}
 
             {/* Guide Section - Collapsible */}
             <div className="bg-primary/5 rounded-lg border border-primary/10" data-testid="section-guide">
-              <Accordion type="single" collapsible className="w-full" defaultValue="guide">
+              <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="guide" className="border-0">
                   <AccordionTrigger className="px-4 py-3 hover:no-underline" data-testid="button-toggle-guide">
                     <div className="flex items-center gap-2">
