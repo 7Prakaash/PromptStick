@@ -14,6 +14,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Copy, Edit3, Check, Save, Lightbulb } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { Template } from '@/data/templates';
@@ -30,6 +32,7 @@ interface PlaceholderSegment {
   type: 'text' | 'placeholder';
   content: string;
   originalContent?: string; // Track original placeholder value
+  placeholderKey?: string; // Track the clean key (without brackets) for matching
   id: string;
 }
 
@@ -41,6 +44,7 @@ export function PromptTemplateDialog({
 }: PromptTemplateDialogProps) {
   const [isEditable, setIsEditable] = useState(false);
   const [segments, setSegments] = useState<PlaceholderSegment[]>([]);
+  const [placeholderValues, setPlaceholderValues] = useState<Map<string, string>>(new Map());
   const [copied, setCopied] = useState(false);
   const [saved, setSaved] = useState(false);
   const placeholderInputRefs = useRef<Map<string, HTMLSpanElement>>(new Map());
@@ -51,6 +55,19 @@ export function PromptTemplateDialog({
     if (template) {
       const parsed = parsePromptIntoSegments(template.prompt);
       setSegments(parsed);
+      
+      // Extract unique placeholders and initialize values
+      const uniquePlaceholders = new Map<string, string>();
+      parsed.forEach(seg => {
+        if (seg.type === 'placeholder') {
+          const cleanKey = seg.content.replace(/[\[\]{}]/g, '');
+          if (!uniquePlaceholders.has(cleanKey)) {
+            uniquePlaceholders.set(cleanKey, '');
+          }
+        }
+      });
+      setPlaceholderValues(uniquePlaceholders);
+      
       setIsEditable(false);
       setCopied(false);
       setSaved(false);
@@ -75,11 +92,15 @@ export function PromptTemplateDialog({
         });
       }
 
+      // Extract the clean key without brackets
+      const cleanKey = match[0].replace(/[\[\]{}]/g, '');
+      
       // Add placeholder with original content tracked
       segments.push({
         type: 'placeholder',
         content: match[0],
         originalContent: match[0], // Store original for restoration
+        placeholderKey: cleanKey, // Store clean key for matching
         id: `placeholder-${idCounter++}`,
       });
 
@@ -227,6 +248,31 @@ export function PromptTemplateDialog({
         selection?.addRange(range);
       }
     }
+  };
+
+  // Handle input field change for placeholders
+  const handleInputFieldChange = (key: string, value: string) => {
+    // Update the placeholder values map
+    setPlaceholderValues(prev => {
+      const newMap = new Map(prev);
+      newMap.set(key, value);
+      return newMap;
+    });
+
+    // Update all matching segments in the prompt using the immutable placeholderKey
+    setSegments(prev =>
+      prev.map(seg => {
+        if (seg.type === 'placeholder' && seg.placeholderKey === key) {
+          // If value is empty, restore the original placeholder
+          if (value.trim() === '') {
+            return { ...seg, content: seg.originalContent || seg.content };
+          }
+          // Otherwise, update with the new value
+          return { ...seg, content: value };
+        }
+        return seg;
+      })
+    );
   };
 
   if (!template) return null;
@@ -413,6 +459,32 @@ export function PromptTemplateDialog({
                 </div>
               </div>
             </div>
+
+            {/* Placeholder Input Fields Section */}
+            {placeholderValues.size > 0 && (
+              <div className="space-y-3 bg-muted/30 p-4 rounded-lg border border-muted" data-testid="section-placeholder-inputs">
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+                  Quick Fill Placeholders
+                </h3>
+                <div className="flex items-center gap-3 flex-wrap">
+                  {Array.from(placeholderValues.entries()).map(([key, value]) => (
+                    <div key={key} className="flex-1 min-w-[200px]">
+                      <Label htmlFor={`input-${key}`} className="text-xs mb-1.5 block" data-testid={`label-${key}`}>
+                        {key}
+                      </Label>
+                      <Input
+                        id={`input-${key}`}
+                        value={value}
+                        onChange={(e) => handleInputFieldChange(key, e.target.value)}
+                        placeholder={`Enter ${key.toLowerCase()}...`}
+                        className="h-9"
+                        data-testid={`input-placeholder-${key}`}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </ScrollArea>
       </DialogContent>
