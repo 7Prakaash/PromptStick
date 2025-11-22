@@ -3,19 +3,25 @@
  * Displays all templates for a specific category
  */
 
+import { useState } from 'react';
 import { useRoute, useLocation } from 'wouter';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { templateCategories } from '@/data/templates';
+import { templateCategories, type Template } from '@/data/templates';
 import { getGeneratorPath } from '@/lib/routes';
 import { ArrowLeft } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
+import { PromptTemplateDialog } from '@/components/PromptTemplateDialog';
+import { useToast } from '@/hooks/use-toast';
 
 export default function TemplateDetail() {
   const [, params] = useRoute('/templates/:categoryId');
   const [, setLocation] = useLocation();
   const categoryId = params?.categoryId;
+  const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const { toast } = useToast();
 
   const category = templateCategories.find(c => c.id === categoryId);
 
@@ -40,6 +46,24 @@ export default function TemplateDetail() {
   const handleUseTemplate = (template: typeof category.templates[0]) => {
     sessionStorage.setItem('template', JSON.stringify(template));
     setLocation(getGeneratorPath(template.type));
+  };
+
+  const handlePromptClick = (template: Template) => {
+    setSelectedTemplate(template);
+    setDialogOpen(true);
+  };
+
+  const handleSavePrompt = (prompt: string) => {
+    // Save to localStorage
+    const savedPrompts = JSON.parse(localStorage.getItem('savedPrompts') || '[]');
+    savedPrompts.push({
+      id: Date.now().toString(),
+      name: selectedTemplate?.name || 'Custom Prompt',
+      prompt,
+      type: selectedTemplate?.type || 'text',
+      createdAt: new Date().toISOString(),
+    });
+    localStorage.setItem('savedPrompts', JSON.stringify(savedPrompts));
   };
 
   return (
@@ -113,7 +137,11 @@ export default function TemplateDetail() {
                     </Button>
                   </div>
                   
-                  <div className="bg-muted/50 p-4 rounded-lg">
+                  <div 
+                    className="bg-muted/50 p-4 rounded-lg cursor-pointer hover-elevate transition-all"
+                    onClick={() => handlePromptClick(template)}
+                    data-testid={`div-prompt-preview-${template.id}`}
+                  >
                     <p className="text-sm font-mono leading-relaxed whitespace-pre-wrap" data-testid="text-template-prompt">
                       {template.prompt}
                     </p>
@@ -124,6 +152,14 @@ export default function TemplateDetail() {
           </div>
         </div>
       </div>
+
+      {/* Prompt Template Dialog */}
+      <PromptTemplateDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        template={selectedTemplate}
+        onSave={handleSavePrompt}
+      />
     </div>
   );
 }
