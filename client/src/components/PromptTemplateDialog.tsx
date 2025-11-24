@@ -4,6 +4,7 @@
  */
 
 import { useState, useRef, useEffect } from 'react';
+import { useLocation } from 'wouter';
 import {
   Dialog,
   DialogContent,
@@ -22,7 +23,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { Copy, Edit3, Check, Save, Lightbulb } from 'lucide-react';
+import { Copy, Edit3, Check, Save, Lightbulb, Share2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { Template } from '@/data/templates';
 import { savePrompt as savePromptToStorage, getAllPrompts } from '@/utils/localStorage';
@@ -32,6 +33,7 @@ interface PromptTemplateDialogProps {
   onOpenChange: (open: boolean) => void;
   template: Template | null;
   onSave?: (prompt: string) => void;
+  categoryId?: string;
 }
 
 interface PlaceholderSegment {
@@ -47,14 +49,30 @@ export function PromptTemplateDialog({
   onOpenChange,
   template,
   onSave,
+  categoryId,
 }: PromptTemplateDialogProps) {
   const [isEditable, setIsEditable] = useState(false);
   const [segments, setSegments] = useState<PlaceholderSegment[]>([]);
   const [placeholderValues, setPlaceholderValues] = useState<Map<string, string>>(new Map());
   const [copied, setCopied] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
   const placeholderInputRefs = useRef<Map<string, HTMLSpanElement>>(new Map());
+  const [location, setLocation] = useLocation();
   const { toast } = useToast();
+
+  // Update URL when dialog opens with template
+  useEffect(() => {
+    if (open && template && categoryId) {
+      // Add template ID to URL query params
+      const currentPath = location.split('?')[0];
+      const newUrl = `${currentPath}?${template.id}`;
+      // Only update if the URL is different
+      if (location !== newUrl) {
+        setLocation(newUrl, { replace: true });
+      }
+    }
+  }, [open, template, categoryId, location, setLocation]);
 
   // Parse prompt into segments when template changes
   useEffect(() => {
@@ -77,6 +95,7 @@ export function PromptTemplateDialog({
       setIsEditable(false);
       setCopied(false);
       setSaved(false);
+      setLinkCopied(false);
     }
   }, [template]);
 
@@ -281,6 +300,43 @@ export function PromptTemplateDialog({
     );
   };
 
+  // Handle sharing template link
+  const handleShareLink = async () => {
+    if (!template || !categoryId) return;
+
+    const shareUrl = `${window.location.origin}/templates/${categoryId}?${template.id}`;
+
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(shareUrl);
+      } else {
+        // Fallback for insecure contexts
+        const textArea = document.createElement('textarea');
+        textArea.value = shareUrl;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      }
+
+      setLinkCopied(true);
+      toast({
+        title: 'Link copied!',
+        description: 'Template link copied to clipboard',
+      });
+
+      setTimeout(() => setLinkCopied(false), 2000);
+    } catch (error) {
+      toast({
+        title: 'Copy failed',
+        description: 'Unable to copy link to clipboard',
+        variant: 'destructive',
+      });
+    }
+  };
+
   // Handle dialog close - reset to original state
   const handleOpenChange = (newOpen: boolean) => {
     if (!newOpen && template) {
@@ -304,6 +360,7 @@ export function PromptTemplateDialog({
       setIsEditable(false);
       setCopied(false);
       setSaved(false);
+      setLinkCopied(false);
     }
     
     onOpenChange(newOpen);
@@ -317,9 +374,23 @@ export function PromptTemplateDialog({
         <DialogHeader className="p-6 pb-4 border-b">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
-              <DialogTitle className="text-2xl mb-2" data-testid="text-dialog-title">
-                {template.name}
-              </DialogTitle>
+              <div className="flex items-start justify-between gap-2 flex-wrap">
+                <DialogTitle className="text-2xl mb-2" data-testid="text-dialog-title">
+                  {template.name}
+                </DialogTitle>
+                <Button
+                  size="icon"
+                  variant="outline"
+                  onClick={handleShareLink}
+                  data-testid="button-share-link"
+                >
+                  {linkCopied ? (
+                    <Check className="h-4 w-4" />
+                  ) : (
+                    <Share2 className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
               <DialogDescription className="text-base" data-testid="text-dialog-description">
                 {template.description}
               </DialogDescription>

@@ -3,7 +3,7 @@
  * Displays all templates for a specific category
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRoute, useLocation } from 'wouter';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,13 +17,25 @@ import { useToast } from '@/hooks/use-toast';
 
 export default function TemplateDetail() {
   const [, params] = useRoute('/templates/:categoryId');
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const categoryId = params?.categoryId;
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const { toast } = useToast();
 
   const category = templateCategories.find(c => c.id === categoryId);
+
+  // Check URL for template ID and auto-open dialog
+  useEffect(() => {
+    if (category && location.includes('?')) {
+      const templateId = location.split('?')[1];
+      const template = category.templates.find(t => t.id === templateId);
+      if (template) {
+        setSelectedTemplate(template);
+        setDialogOpen(true);
+      }
+    }
+  }, [category, location]);
 
   if (!category) {
     return (
@@ -51,6 +63,15 @@ export default function TemplateDetail() {
   const handlePromptClick = (template: Template) => {
     setSelectedTemplate(template);
     setDialogOpen(true);
+  };
+
+  const handleDialogClose = (open: boolean) => {
+    setDialogOpen(open);
+    // Remove query params when dialog closes
+    if (!open && location.includes('?')) {
+      const currentPath = location.split('?')[0];
+      setLocation(currentPath, { replace: true });
+    }
   };
 
   const handleSavePrompt = (prompt: string) => {
@@ -156,9 +177,10 @@ export default function TemplateDetail() {
       {/* Prompt Template Dialog */}
       <PromptTemplateDialog
         open={dialogOpen}
-        onOpenChange={setDialogOpen}
+        onOpenChange={handleDialogClose}
         template={selectedTemplate}
         onSave={handleSavePrompt}
+        categoryId={categoryId}
       />
     </div>
   );
