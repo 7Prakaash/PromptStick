@@ -26,15 +26,20 @@ export default function TemplateDetail() {
 
   // Check URL for template ID and auto-open dialog
   useEffect(() => {
-    if (category && location.includes('?')) {
-      const templateId = location.split('?')[1];
-      const template = category.templates.find(t => t.id === templateId);
-      if (template) {
-        setSelectedTemplate(template);
-        setDialogOpen(true);
+    if (!category) return;
+    
+    const queryStart = location.indexOf('?');
+    if (queryStart !== -1) {
+      const templateId = location.substring(queryStart + 1);
+      if (templateId) {
+        const template = category.templates.find(t => t.id === templateId);
+        if (template && !dialogOpen) {
+          setSelectedTemplate(template);
+          setDialogOpen(true);
+        }
       }
     }
-  }, [category, location]);
+  }, [category, location, dialogOpen]);
 
   if (!category) {
     return (
