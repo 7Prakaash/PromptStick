@@ -28,9 +28,9 @@ export default function TemplateDetail() {
   useEffect(() => {
     if (!category) return;
     
-    const queryStart = location.indexOf('?');
-    if (queryStart !== -1) {
-      const templateId = location.substring(queryStart + 1);
+    const hashStart = location.indexOf('#');
+    if (hashStart !== -1) {
+      const templateId = location.substring(hashStart + 1);
       if (templateId) {
         const template = category.templates.find(t => t.id === templateId);
         if (template) {
