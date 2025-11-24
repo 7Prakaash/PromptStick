@@ -289,7 +289,7 @@ export function PromptTemplateDialog({
   const handleShareLink = async () => {
     if (!template || !categoryId) return;
 
-    const shareUrl = `${window.location.origin}/templates/${categoryId}?${template.id}`;
+    const shareUrl = `${window.location.origin}/templates/${categoryId}#${template.id}`;
 
     try {
       if (navigator.clipboard && window.isSecureContext) {
