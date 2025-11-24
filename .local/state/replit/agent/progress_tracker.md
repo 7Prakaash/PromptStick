@@ -8,6 +8,16 @@ All migration tasks completed successfully. Application is fully functional.
 
 ## Recent Updates - November 24, 2025
 
+### Session 5: Auto-Open Dialog Fix for Shared Links
+[x] Fixed useEffect dependency array issue that prevented auto-open from working
+[x] Removed dialogOpen from dependency array to prevent logic conflicts
+[x] Added guard condition to only open dialog when showing different template
+[x] Architect review confirmed fix works correctly - shared links now auto-open the dialog
+[x] All three URL scenarios now working:
+  - Opening popup adds ?template-id to URL
+  - Closing popup removes ?template-id completely  
+  - Loading URL with ?template-id auto-opens dialog with that template ✅ FIXED
+
 ### Session 4: Template URL Sharing Bug Fix
 [x] Fixed URL logic conflict between PromptTemplateDialog and TemplateDetail components
 [x] Removed URL management from PromptTemplateDialog to centralize in parent component
