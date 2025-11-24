@@ -28,21 +28,38 @@ export default function TemplateDetail() {
   useEffect(() => {
     if (!category) return;
     
-    const hashStart = location.indexOf('#');
-    if (hashStart !== -1) {
-      const templateId = location.substring(hashStart + 1);
-      if (templateId) {
-        const template = category.templates.find(t => t.id === templateId);
-        if (template) {
-          // Only open if we're not already showing this template
-          if (!dialogOpen || selectedTemplate?.id !== template.id) {
-            setSelectedTemplate(template);
-            setDialogOpen(true);
+    const checkHashAndOpenDialog = () => {
+      // Get hash from window.location since wouter doesn't track hash changes
+      const hash = window.location.hash;
+      if (hash && hash.length > 1) {
+        const templateId = hash.substring(1); // Remove the '#' prefix
+        if (templateId) {
+          const template = category.templates.find(t => t.id === templateId);
+          if (template) {
+            // Only open if we're not already showing this template
+            if (!dialogOpen || selectedTemplate?.id !== template.id) {
+              setSelectedTemplate(template);
+              setDialogOpen(true);
+            }
           }
         }
       }
-    }
-  }, [category, location]);
+    };
+
+    // Check on mount and when location changes
+    checkHashAndOpenDialog();
+
+    // Listen for hash changes
+    const handleHashChange = () => {
+      checkHashAndOpenDialog();
+    };
+    
+    window.addEventListener('hashchange', handleHashChange);
+    
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+    };
+  }, [category, location, dialogOpen, selectedTemplate]);
 
   if (!category) {
     return (
@@ -65,17 +82,20 @@ export default function TemplateDetail() {
   const handlePromptClick = (template: Template) => {
     setSelectedTemplate(template);
     setDialogOpen(true);
-    // Add template ID to URL when opening dialog
-    const currentPath = location.split('#')[0];
-    setLocation(`${currentPath}#${template.id}`, { replace: true });
+    // Add template ID to URL hash when opening dialog using replaceState to avoid history stack
+    // Preserve any existing query string
+    const url = `${window.location.pathname}${window.location.search}#${template.id}`;
+    history.replaceState(null, '', url);
   };
 
   const handleDialogClose = (open: boolean) => {
     setDialogOpen(open);
     // Remove hash completely when dialog closes
     if (!open) {
-      const currentPath = location.split('#')[0];
-      setLocation(currentPath, { replace: true });
+      // Use replaceState to properly remove the hash without leaving a bare '#'
+      // Preserve any existing query string
+      const url = `${window.location.pathname}${window.location.search}`;
+      history.replaceState(null, '', url);
     }
   };
 
