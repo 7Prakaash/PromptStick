@@ -66,15 +66,15 @@ export default function TemplateDetail() {
     setSelectedTemplate(template);
     setDialogOpen(true);
     // Add template ID to URL when opening dialog
-    const currentPath = location.split('?')[0];
-    setLocation(`${currentPath}?${template.id}`, { replace: true });
+    const currentPath = location.split('#')[0];
+    setLocation(`${currentPath}#${template.id}`, { replace: true });
   };
 
   const handleDialogClose = (open: boolean) => {
     setDialogOpen(open);
-    // Remove query params completely when dialog closes
+    // Remove hash completely when dialog closes
     if (!open) {
-      const currentPath = location.split('?')[0];
+      const currentPath = location.split('#')[0];
       setLocation(currentPath, { replace: true });
     }
   };
@@ -93,7 +93,7 @@ export default function TemplateDetail() {
   };
 
   const handleShareTemplate = (template: Template) => {
-    const shareUrl = `${window.location.origin}/templates/${categoryId}?${template.id}`;
+    const shareUrl = `${window.location.origin}/templates/${categoryId}#${template.id}`;
     navigator.clipboard.writeText(shareUrl);
     toast({
       title: "Link copied!",
