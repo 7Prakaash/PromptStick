@@ -33,13 +33,16 @@ export default function TemplateDetail() {
       const templateId = location.substring(queryStart + 1);
       if (templateId) {
         const template = category.templates.find(t => t.id === templateId);
-        if (template && !dialogOpen) {
-          setSelectedTemplate(template);
-          setDialogOpen(true);
+        if (template) {
+          // Only open if we're not already showing this template
+          if (!dialogOpen || selectedTemplate?.id !== template.id) {
+            setSelectedTemplate(template);
+            setDialogOpen(true);
+          }
         }
       }
     }
-  }, [category, location, dialogOpen]);
+  }, [category, location]);
 
   if (!category) {
     return (
