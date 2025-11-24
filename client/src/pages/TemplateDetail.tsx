@@ -57,12 +57,15 @@ export default function TemplateDetail() {
   const handlePromptClick = (template: Template) => {
     setSelectedTemplate(template);
     setDialogOpen(true);
+    // Add template ID to URL when opening dialog
+    const currentPath = location.split('?')[0];
+    setLocation(`${currentPath}?${template.id}`, { replace: true });
   };
 
   const handleDialogClose = (open: boolean) => {
     setDialogOpen(open);
-    // Remove query params when dialog closes
-    if (!open && location.includes('?')) {
+    // Remove query params completely when dialog closes
+    if (!open) {
       const currentPath = location.split('?')[0];
       setLocation(currentPath, { replace: true });
     }
