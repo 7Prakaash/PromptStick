@@ -4,7 +4,6 @@
  */
 
 import { useState, useRef, useEffect } from 'react';
-import { useLocation } from 'wouter';
 import {
   Dialog,
   DialogContent,
@@ -58,21 +57,7 @@ export function PromptTemplateDialog({
   const [saved, setSaved] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
   const placeholderInputRefs = useRef<Map<string, HTMLSpanElement>>(new Map());
-  const [location, setLocation] = useLocation();
   const { toast } = useToast();
-
-  // Update URL when dialog opens with template
-  useEffect(() => {
-    if (open && template && categoryId) {
-      // Add template ID to URL query params
-      const currentPath = location.split('?')[0];
-      const newUrl = `${currentPath}?${template.id}`;
-      // Only update if the URL is different
-      if (location !== newUrl) {
-        setLocation(newUrl, { replace: true });
-      }
-    }
-  }, [open, template, categoryId, location, setLocation]);
 
   // Parse prompt into segments when template changes
   useEffect(() => {
