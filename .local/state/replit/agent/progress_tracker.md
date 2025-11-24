@@ -8,6 +8,17 @@ All migration tasks completed successfully. Application is fully functional.
 
 ## Recent Updates - November 24, 2025
 
+### Session 4: Template URL Sharing Bug Fix
+[x] Fixed URL logic conflict between PromptTemplateDialog and TemplateDetail components
+[x] Removed URL management from PromptTemplateDialog to centralize in parent component
+[x] Fixed handleDialogClose to properly remove query parameters without leaving trailing '?'
+[x] Fixed handlePromptClick to add template ID to URL when opening dialog
+[x] Improved auto-open useEffect to handle shared URLs with template IDs
+[x] Architect review confirmed all three scenarios work correctly:
+  - Opening popup adds ?template-id to URL
+  - Closing popup removes ?template-id completely
+  - Loading URL with ?template-id auto-opens dialog with that template
+
 ### Session 3: Template URL Sharing Feature
 [x] Updated PromptTemplateDialog to modify URL when opened with template ID query parameter
 [x] Added share button with Share2 icon next to dialog title that copies template link
