@@ -9,8 +9,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { templateCategories, type Template } from '@/data/templates';
-import { getGeneratorPath } from '@/lib/routes';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Share2 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { PromptTemplateDialog } from '@/components/PromptTemplateDialog';
 import { useToast } from '@/hooks/use-toast';
@@ -55,11 +54,6 @@ export default function TemplateDetail() {
 
   const IconComponent = (LucideIcons as any)[category.icon] || LucideIcons.FileText;
 
-  const handleUseTemplate = (template: typeof category.templates[0]) => {
-    sessionStorage.setItem('template', JSON.stringify(template));
-    setLocation(getGeneratorPath(template.type));
-  };
-
   const handlePromptClick = (template: Template) => {
     setSelectedTemplate(template);
     setDialogOpen(true);
@@ -85,6 +79,15 @@ export default function TemplateDetail() {
       createdAt: new Date().toISOString(),
     });
     localStorage.setItem('savedPrompts', JSON.stringify(savedPrompts));
+  };
+
+  const handleShareTemplate = (template: Template) => {
+    const shareUrl = `${window.location.origin}/templates/${categoryId}?${template.id}`;
+    navigator.clipboard.writeText(shareUrl);
+    toast({
+      title: "Link copied!",
+      description: "Template link copied to clipboard",
+    });
   };
 
   return (
@@ -150,12 +153,22 @@ export default function TemplateDetail() {
                         </div>
                       )}
                     </div>
-                    <Button
-                      onClick={() => handleUseTemplate(template)}
-                      data-testid={`button-use-${template.id}`}
-                    >
-                      Use Template
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        onClick={() => handleShareTemplate(template)}
+                        data-testid={`button-share-${template.id}`}
+                      >
+                        <Share2 className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        onClick={() => handlePromptClick(template)}
+                        data-testid={`button-use-${template.id}`}
+                      >
+                        Use Template
+                      </Button>
+                    </div>
                   </div>
                   
                   <div 
