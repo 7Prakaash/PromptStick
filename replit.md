@@ -2,6 +2,15 @@
 
 ## Recent Changes
 
+### November 24, 2025 - Template Deep-Link URL Format Change
+- **Changed URL format from query parameters to hash fragments** - Template deep-links now use `#template-id` instead of `?template-id`
+  - Example: `/templates/content-writing#blog-post-outline` instead of `/templates/content-writing?template-id=blog-post-outline`
+- **Improved hash management** - Using `history.replaceState()` to properly add/remove hash fragments without history stack pollution
+- **Preserved query strings** - Hash manipulation now preserves any existing query parameters in the URL
+- **Added hash change listener** - Properly handles browser hash changes with complete effect dependencies to prevent stale closures
+- **Updated share links** - Both TemplateDetail.tsx and PromptTemplateDialog.tsx now generate share URLs with hash format
+- **Production-ready implementation** - All edge cases handled (manual hash edits, navigation, etc.)
+
 ### November 21, 2025 - Migrated to Frontend-Only Architecture
 - **Removed backend server** - Eliminated Express.js server and all backend infrastructure
 - **Deleted server/ and shared/ directories** - Cleaned up unused backend code
