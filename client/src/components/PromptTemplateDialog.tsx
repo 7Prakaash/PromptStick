@@ -355,7 +355,7 @@ export function PromptTemplateDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] p-0 gap-0" data-testid="dialog-prompt-template">
+      <DialogContent className="max-w-4xl max-h-[90vh] p-0 gap-0" hideCloseButton data-testid="dialog-prompt-template">
         <DialogHeader className="p-6 pb-4 border-b">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
@@ -491,9 +491,9 @@ export function PromptTemplateDialog({
                         onBlur={(e) =>
                           handleSegmentChange(segment.id, e.currentTarget.textContent || '')
                         }
-                        className={`bg-accent text-accent-foreground px-1.5 py-0.5 rounded border border-accent-foreground/30 font-semibold transition-all ${
+                        className={`text-purple-600 dark:text-purple-400 font-medium transition-all ${
                           isEditable
-                            ? 'cursor-pointer hover:bg-accent/80 hover:border-accent-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2'
+                            ? 'cursor-pointer hover:text-purple-700 dark:hover:text-purple-300 focus:outline-none focus:underline'
                             : ''
                         }`}
                         data-testid={`placeholder-segment-${segment.id}`}
