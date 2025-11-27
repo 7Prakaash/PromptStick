@@ -3,13 +3,16 @@
  * Choose between Text, Image, or Video prompt generators
  */
 
+import { useState } from 'react';
 import { Link } from 'wouter';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FileText, Image, Video, ArrowRight } from 'lucide-react';
+import { FileText, Image, Video, ArrowRight, ChevronDown, ChevronUp } from 'lucide-react';
 import { getGeneratorPath } from '@/lib/routes';
 
 export default function GeneratorSelection() {
+  const [seoExpanded, setSeoExpanded] = useState(false);
+  
   const generators = [
     {
       type: 'text' as const,
@@ -102,28 +105,45 @@ export default function GeneratorSelection() {
           </div>
 
           {/* SEO Summary Section */}
-          <Card className="mt-12 p-6 md:p-8" data-testid="card-seo-summary">
-            <h2 className="text-xl font-bold mb-4" data-testid="text-seo-title">
-              Why use an AI prompt generator?
-            </h2>
-            <div className="space-y-4 text-muted-foreground leading-relaxed">
-              <p>
-                This page gives you an overview of our <strong>AI prompt generators</strong> designed to help you create optimized prompts 
-                for text, image, and video generation. The quality of your AI outputs depends entirely on the quality of your prompts.
-              </p>
-              <p>
-                Our generators support popular AI models including <strong>GPT-4</strong>, <strong>Claude</strong>, <strong>DALL-E</strong>, 
-                <strong> Midjourney</strong>, and <strong>Stable Diffusion</strong>. Each generator includes options for tone, style, 
-                and model-specific optimization to help you achieve <strong>professional results</strong>.
-              </p>
-              <p>
-                Whether you're writing blog posts, generating marketing copy, or creating stunning AI artwork, PromptStick helps you 
-                craft perfectly structured prompts. Looking for ready-made solutions? Check out our{' '}
-                <a href="/templates" className="text-primary hover:underline" data-testid="link-templates">template library</a>{' '}
-                for pre-built prompts you can use instantly.
-              </p>
-            </div>
-          </Card>
+          <div className="mt-12 border-t pt-8">
+            <Card 
+              className="p-6 md:p-8 cursor-pointer hover-elevate transition-all" 
+              onClick={() => setSeoExpanded(!seoExpanded)}
+              data-testid="card-seo-summary"
+            >
+              <div className="flex items-center justify-between gap-4 mb-4">
+                <h2 className="text-xl font-bold" data-testid="text-seo-title">
+                  Why use an AI prompt generator?
+                </h2>
+                {seoExpanded ? (
+                  <ChevronUp className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                ) : (
+                  <ChevronDown className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                )}
+              </div>
+              <div className="space-y-4 text-muted-foreground leading-relaxed">
+                <p>
+                  This page gives you an overview of our <strong>AI prompt generators</strong> designed to help you create optimized prompts 
+                  for text, image, and video generation. The quality of your AI outputs depends entirely on the quality of your prompts.
+                </p>
+                {seoExpanded && (
+                  <>
+                    <p>
+                      Our generators support popular AI models including <strong>GPT-4</strong>, <strong>Claude</strong>, <strong>DALL-E</strong>, 
+                      <strong> Midjourney</strong>, and <strong>Stable Diffusion</strong>. Each generator includes options for tone, style, 
+                      and model-specific optimization to help you achieve <strong>professional results</strong>.
+                    </p>
+                    <p>
+                      Whether you're writing blog posts, generating marketing copy, or creating stunning AI artwork, PromptStick helps you 
+                      craft perfectly structured prompts. Looking for ready-made solutions? Check out our{' '}
+                      <a href="/templates" className="text-primary hover:underline" data-testid="link-templates" onClick={(e) => e.stopPropagation()}>template library</a>{' '}
+                      for pre-built prompts you can use instantly.
+                    </p>
+                  </>
+                )}
+              </div>
+            </Card>
+          </div>
         </div>
       </div>
     </div>
