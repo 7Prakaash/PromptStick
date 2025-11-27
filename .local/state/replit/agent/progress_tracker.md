@@ -16,3 +16,4 @@
 
 ## Layout Fixes
 [x] 12. Move SEO card outside scrollable area in SavedPrompts.tsx so it stays stable at the bottom
+[x] 13. Align SEO card with main content column using matching grid layout

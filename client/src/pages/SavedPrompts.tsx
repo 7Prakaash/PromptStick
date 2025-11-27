@@ -520,8 +520,12 @@ export default function SavedPrompts() {
               </main>
             </div>
 
-            {/* SEO Summary Section - Outside scrollable area */}
-            <div className="mt-6 border-t pt-6">
+            {/* SEO Summary Section - Outside scrollable area, aligned with main content */}
+            <div className="grid lg:grid-cols-[250px,1fr] gap-6 mt-6 border-t pt-6">
+              {/* Empty space to match sidebar column */}
+              <div className="hidden lg:block" />
+              
+              {/* SEO Card in main content column */}
               <Card 
                 className="p-6 md:p-8 cursor-pointer hover-elevate transition-all" 
                 onClick={() => setSeoExpanded(!seoExpanded)}
