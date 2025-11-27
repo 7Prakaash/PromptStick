@@ -477,92 +477,90 @@ export default function SavedPrompts() {
                 </Card>
               </aside>
 
-              {/* Main Content */}
-              <main className="space-y-6 h-[calc(100vh-16rem)] overflow-y-auto">
-                <MainContentDropZone>
-                  {/* Prompts Grid - Always Grid View */}
-                  {filteredPrompts.length === 0 ? (
-                    <Card className="h-full flex items-center justify-center p-12" data-testid="card-empty-state">
-                      <div className="flex flex-col items-center space-y-6 max-w-md">
-                        <div className="rounded-full bg-primary/10 p-6">
-                          <Sparkles className="h-12 w-12 text-primary" />
+              {/* Main Content Column - contains both scrollable prompts AND SEO card */}
+              <div className="flex flex-col">
+                <main className="h-[calc(100vh-16rem)] overflow-y-auto">
+                  <MainContentDropZone>
+                    {/* Prompts Grid - Always Grid View */}
+                    {filteredPrompts.length === 0 ? (
+                      <Card className="h-full flex items-center justify-center p-12" data-testid="card-empty-state">
+                        <div className="flex flex-col items-center space-y-6 max-w-md">
+                          <div className="rounded-full bg-primary/10 p-6">
+                            <Sparkles className="h-12 w-12 text-primary" />
+                          </div>
+                          <div className="space-y-2 text-center">
+                            <h3 className="text-lg font-semibold">No prompts found</h3>
+                            <p className="text-sm text-muted-foreground">
+                              Start building your prompt library by adding your first prompt
+                            </p>
+                          </div>
+                          <Button onClick={() => setShowAddModal(true)} data-testid="button-add-first">
+                            <Plus className="h-4 w-4 mr-2" />
+                            Add Your First Prompt
+                          </Button>
                         </div>
-                        <div className="space-y-2 text-center">
-                          <h3 className="text-lg font-semibold">No prompts found</h3>
-                          <p className="text-sm text-muted-foreground">
-                            Start building your prompt library by adding your first prompt
-                          </p>
-                        </div>
-                        <Button onClick={() => setShowAddModal(true)} data-testid="button-add-first">
-                          <Plus className="h-4 w-4 mr-2" />
-                          Add Your First Prompt
-                        </Button>
+                      </Card>
+                    ) : (
+                      <div
+                        className="grid md:grid-cols-2 gap-4"
+                        data-testid="container-prompts"
+                      >
+                        {filteredPrompts.map((prompt) => (
+                          <PromptCard
+                            key={prompt.id}
+                            prompt={prompt}
+                            onCopy={handleCopy}
+                            onDelete={handleDelete}
+                            onToggleFavorite={handleToggleFavorite}
+                            onSaveEdit={handleSaveEdit}
+                          />
+                        ))}
                       </div>
-                    </Card>
-                  ) : (
-                    <div
-                      className="grid md:grid-cols-2 gap-4"
-                      data-testid="container-prompts"
-                    >
-                      {filteredPrompts.map((prompt) => (
-                        <PromptCard
-                          key={prompt.id}
-                          prompt={prompt}
-                          onCopy={handleCopy}
-                          onDelete={handleDelete}
-                          onToggleFavorite={handleToggleFavorite}
-                          onSaveEdit={handleSaveEdit}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </MainContentDropZone>
-              </main>
-            </div>
+                    )}
+                  </MainContentDropZone>
+                </main>
 
-            {/* SEO Summary Section - Outside scrollable area, aligned with main content */}
-            <div className="grid lg:grid-cols-[250px,1fr] gap-6 mt-6 border-t pt-6">
-              {/* Empty space to match sidebar column */}
-              <div className="hidden lg:block" />
-              
-              {/* SEO Card in main content column */}
-              <Card 
-                className="p-6 md:p-8 cursor-pointer hover-elevate transition-all" 
-                onClick={() => setSeoExpanded(!seoExpanded)}
-                data-testid="card-seo-summary"
-              >
-                <div className="flex items-center justify-between gap-4 mb-4">
-                  <h2 className="text-xl font-bold" data-testid="text-seo-title">
-                    Why save and organize your AI prompts?
-                  </h2>
-                  {seoExpanded ? (
-                    <ChevronUp className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                  ) : (
-                    <ChevronDown className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                  )}
-                </div>
-                <div className="space-y-4 text-muted-foreground leading-relaxed">
-                  <p>
-                    This is your <strong>AI prompt library</strong> where you can store, organize, and reuse your best prompts. 
-                    Build a collection of effective prompts for text, image, and video AI models to save time and achieve consistent results.
-                  </p>
-                  {seoExpanded && (
-                    <>
+                {/* SEO Summary Section - Inside main content column, outside scrollable area */}
+                <div className="mt-6 border-t pt-6">
+                  <Card 
+                    className="p-6 md:p-8 cursor-pointer hover-elevate transition-all" 
+                    onClick={() => setSeoExpanded(!seoExpanded)}
+                    data-testid="card-seo-summary"
+                  >
+                    <div className="flex items-center justify-between gap-4 mb-4">
+                      <h2 className="text-xl font-bold" data-testid="text-seo-title">
+                        Why save and organize your AI prompts?
+                      </h2>
+                      {seoExpanded ? (
+                        <ChevronUp className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                      ) : (
+                        <ChevronDown className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                      )}
+                    </div>
+                    <div className="space-y-4 text-muted-foreground leading-relaxed">
                       <p>
-                        Use <strong>folders</strong> to categorize your prompts by project, client, or use case. Drag and drop prompts 
-                        between folders to keep everything organized. Mark your favorites for quick access to the prompts you use most often.
+                        This is your <strong>AI prompt library</strong> where you can store, organize, and reuse your best prompts. 
+                        Build a collection of effective prompts for text, image, and video AI models to save time and achieve consistent results.
                       </p>
-                      <p>
-                        Need new prompts? Visit our{' '}
-                        <a href="/generators" className="text-primary hover:underline" data-testid="link-generators" onClick={(e) => e.stopPropagation()}>prompt generators</a>{' '}
-                        to create custom AI prompts or browse our{' '}
-                        <a href="/templates" className="text-primary hover:underline" data-testid="link-templates" onClick={(e) => e.stopPropagation()}>template library</a>{' '}
-                        for ready-to-use prompts you can save directly to your library.
-                      </p>
-                    </>
-                  )}
+                      {seoExpanded && (
+                        <>
+                          <p>
+                            Use <strong>folders</strong> to categorize your prompts by project, client, or use case. Drag and drop prompts 
+                            between folders to keep everything organized. Mark your favorites for quick access to the prompts you use most often.
+                          </p>
+                          <p>
+                            Need new prompts? Visit our{' '}
+                            <a href="/generators" className="text-primary hover:underline" data-testid="link-generators" onClick={(e) => e.stopPropagation()}>prompt generators</a>{' '}
+                            to create custom AI prompts or browse our{' '}
+                            <a href="/templates" className="text-primary hover:underline" data-testid="link-templates" onClick={(e) => e.stopPropagation()}>template library</a>{' '}
+                            for ready-to-use prompts you can save directly to your library.
+                          </p>
+                        </>
+                      )}
+                    </div>
+                  </Card>
                 </div>
-              </Card>
+              </div>
             </div>
           </div>
         </div>
