@@ -31,7 +31,7 @@ export const templateCategories: TemplateCategory[] = [
         id: 'blog-post',
         name: 'Blog Post Generator',
         description: 'Create engaging blog posts on any topic',
-        prompt: 'Write a comprehensive blog post about [TOPIC]. Include an engaging introduction, 3-5 main sections with subheadings, practical examples, and a conclusion with actionable takeaways. Tone: [TONE]. Target audience: [AUDIENCE].',
+        prompt: 'Write a comprehensive blog post about [TOPIC]. Include an engaging introduction, 3-5 main sections with subheadings, practical examples, and a conclusion with actionable takeaways. Tone: [TONE]. Target audience: [AUDIENCE]. Write a comprehensive blog post about [TOPIC]. Include an engaging introduction, 3-5 main sections with subheadings, practical examples, and a conclusion with actionable takeaways. Tone: [TONE]. Target audience: [AUDIENCE]. Write a comprehensive blog post about [TOPIC]. Include an engaging introduction, 3-5 main sections with subheadings, practical examples, and a conclusion with actionable takeaways. Tone: [TONE]. Target audience: [AUDIENCE]. Write a comprehensive blog post about [TOPIC]. Include an engaging introduction, 3-5 main sections with subheadings, practical examples, and a conclusion with actionable takeaways. Tone: [TONE]. Target audience: [AUDIENCE]. Write a comprehensive blog post about [TOPIC]. Include an engaging introduction, 3-5 main sections with subheadings, practical examples, and a conclusion with actionable takeaways. Tone: [TONE]. Target audience: [AUDIENCE].',
         type: 'text',
         llm: 'GPT-4'
       },
