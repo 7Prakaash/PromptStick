@@ -517,48 +517,48 @@ export default function SavedPrompts() {
                     </div>
                   )}
                 </MainContentDropZone>
-              </main>
-            </div>
 
-            {/* SEO Summary Section */}
-            <div className="mt-8 border-t pt-8">
-              <Card 
-                className="p-6 md:p-8 cursor-pointer hover-elevate transition-all" 
-                onClick={() => setSeoExpanded(!seoExpanded)}
-                data-testid="card-seo-summary"
-              >
-                <div className="flex items-center justify-between gap-4 mb-4">
-                  <h2 className="text-xl font-bold" data-testid="text-seo-title">
-                    Why save and organize your AI prompts?
-                  </h2>
-                  {seoExpanded ? (
-                    <ChevronUp className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                  ) : (
-                    <ChevronDown className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                  )}
-                </div>
-                <div className="space-y-4 text-muted-foreground leading-relaxed">
-                  <p>
-                    This is your <strong>AI prompt library</strong> where you can store, organize, and reuse your best prompts. 
-                    Build a collection of effective prompts for text, image, and video AI models to save time and achieve consistent results.
-                  </p>
-                  {seoExpanded && (
-                    <>
+                {/* SEO Summary Section */}
+                <div className="mt-6 border-t pt-6">
+                  <Card 
+                    className="p-6 md:p-8 cursor-pointer hover-elevate transition-all" 
+                    onClick={() => setSeoExpanded(!seoExpanded)}
+                    data-testid="card-seo-summary"
+                  >
+                    <div className="flex items-center justify-between gap-4 mb-4">
+                      <h2 className="text-xl font-bold" data-testid="text-seo-title">
+                        Why save and organize your AI prompts?
+                      </h2>
+                      {seoExpanded ? (
+                        <ChevronUp className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                      ) : (
+                        <ChevronDown className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                      )}
+                    </div>
+                    <div className="space-y-4 text-muted-foreground leading-relaxed">
                       <p>
-                        Use <strong>folders</strong> to categorize your prompts by project, client, or use case. Drag and drop prompts 
-                        between folders to keep everything organized. Mark your favorites for quick access to the prompts you use most often.
+                        This is your <strong>AI prompt library</strong> where you can store, organize, and reuse your best prompts. 
+                        Build a collection of effective prompts for text, image, and video AI models to save time and achieve consistent results.
                       </p>
-                      <p>
-                        Need new prompts? Visit our{' '}
-                        <a href="/generators" className="text-primary hover:underline" data-testid="link-generators" onClick={(e) => e.stopPropagation()}>prompt generators</a>{' '}
-                        to create custom AI prompts or browse our{' '}
-                        <a href="/templates" className="text-primary hover:underline" data-testid="link-templates" onClick={(e) => e.stopPropagation()}>template library</a>{' '}
-                        for ready-to-use prompts you can save directly to your library.
-                      </p>
-                    </>
-                  )}
+                      {seoExpanded && (
+                        <>
+                          <p>
+                            Use <strong>folders</strong> to categorize your prompts by project, client, or use case. Drag and drop prompts 
+                            between folders to keep everything organized. Mark your favorites for quick access to the prompts you use most often.
+                          </p>
+                          <p>
+                            Need new prompts? Visit our{' '}
+                            <a href="/generators" className="text-primary hover:underline" data-testid="link-generators" onClick={(e) => e.stopPropagation()}>prompt generators</a>{' '}
+                            to create custom AI prompts or browse our{' '}
+                            <a href="/templates" className="text-primary hover:underline" data-testid="link-templates" onClick={(e) => e.stopPropagation()}>template library</a>{' '}
+                            for ready-to-use prompts you can save directly to your library.
+                          </p>
+                        </>
+                      )}
+                    </div>
+                  </Card>
                 </div>
-              </Card>
+              </main>
             </div>
           </div>
         </div>
