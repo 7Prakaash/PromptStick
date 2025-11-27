@@ -13,3 +13,6 @@
 [x] 9. Add divider and collapsible SEO card to TemplateDetail.tsx
 [x] 10. Add divider and collapsible SEO card to GeneratorSelection.tsx
 [x] 11. Add collapsible SEO card to SavedPrompts.tsx below the main content grid
+
+## Layout Fixes
+[x] 12. Move SEO card outside scrollable area in SavedPrompts.tsx so it stays stable at the bottom
