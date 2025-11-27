@@ -203,13 +203,14 @@ export default function TemplateDetail() {
                   </div>
                   
                   <div 
-                    className="bg-muted/50 p-4 rounded-lg cursor-pointer hover-elevate transition-all"
+                    className="bg-muted/50 p-4 rounded-lg cursor-pointer hover-elevate transition-all max-h-32 overflow-hidden relative"
                     onClick={() => handlePromptClick(template)}
                     data-testid={`div-prompt-preview-${template.id}`}
                   >
                     <p className="text-sm font-mono leading-relaxed whitespace-pre-wrap" data-testid="text-template-prompt">
                       {template.prompt}
                     </p>
+                    <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-muted/50 to-transparent pointer-events-none" />
                   </div>
                 </div>
               </Card>
