@@ -67,45 +67,26 @@ export default function Templates() {
           </div>
 
           {/* SEO Summary Section */}
-          <Card className="mt-12 p-8 bg-gradient-to-br from-primary/5 via-background to-accent/5 border-primary/10" data-testid="card-seo-summary">
-            <div className="space-y-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <LucideIcons.Lightbulb className="h-5 w-5 text-primary" />
-                </div>
-                <h2 className="text-2xl font-bold" data-testid="text-seo-title">
-                  Why Use AI Prompt Templates?
-                </h2>
-              </div>
-              
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-3">
-                  <h3 className="font-semibold text-lg">Save Time with Ready-Made Prompts</h3>
-                  <p className="text-muted-foreground leading-relaxed">
-                    Our curated collection of AI prompt templates helps you skip the trial-and-error process. 
-                    Each template is crafted by prompt engineering experts to deliver consistent, high-quality 
-                    results across popular AI models like ChatGPT, Claude, DALL-E, and Midjourney.
-                  </p>
-                </div>
-                
-                <div className="space-y-3">
-                  <h3 className="font-semibold text-lg">Boost Your Productivity</h3>
-                  <p className="text-muted-foreground leading-relaxed">
-                    Whether you're creating content for marketing, developing code, designing visuals, or 
-                    producing educational materials, our templates provide the perfect starting point. 
-                    Customize variables like tone, audience, and format to match your exact needs.
-                  </p>
-                </div>
-              </div>
-
-              <div className="pt-4 border-t border-border/50">
-                <p className="text-sm text-muted-foreground">
-                  <strong>PromptStick Template Library</strong> offers {templateCategories.length} categories 
-                  with {templateCategories.reduce((acc, cat) => acc + cat.templates.length, 0)}+ professional 
-                  templates for text generation, image creation, video production, and more. Start creating 
-                  better AI outputs today.
-                </p>
-              </div>
+          <Card className="mt-12 p-6 md:p-8" data-testid="card-seo-summary">
+            <h2 className="text-xl font-bold mb-4" data-testid="text-seo-title">
+              Why use AI prompt templates?
+            </h2>
+            <div className="space-y-4 text-muted-foreground leading-relaxed">
+              <p>
+                This page gives you an overview of our <strong>AI prompt template library</strong> designed to help you generate high-quality content faster. 
+                Browse through {templateCategories.length} categories with {templateCategories.reduce((acc, cat) => acc + cat.templates.length, 0)}+ ready-to-use templates 
+                for text, image, and video generation.
+              </p>
+              <p>
+                Our templates are optimized for popular AI models including <strong>GPT-4</strong>, <strong>Claude</strong>, <strong>DALL-E</strong>, and <strong>Midjourney</strong>. 
+                Each template includes customizable variables so you can adjust tone, style, and format to match your specific needs.
+              </p>
+              <p>
+                Whether you're creating blog posts, marketing copy, or stunning visuals, PromptStick helps you <strong>save time</strong> and achieve consistent, professional results. 
+                Click any category above to explore templates or visit our{' '}
+                <a href="/generators" className="text-primary hover:underline" data-testid="link-generators">prompt generators</a>{' '}
+                to create custom prompts from scratch.
+              </p>
             </div>
           </Card>
         </div>
