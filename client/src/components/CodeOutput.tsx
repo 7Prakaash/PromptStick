@@ -138,7 +138,7 @@ export default function CodeOutput({ prompt, onSave, showSave = true, onEdit }: 
             <div className="w-3 h-3 rounded-full bg-chart-2/50" />
           </div>
         </div>
-        <div className="p-6 bg-card">
+        <div className="p-6 bg-card max-h-96 overflow-y-auto">
           {isEditing ? (
             <Textarea
               value={editedPrompt}
