@@ -5,6 +5,9 @@
 
 import type { SavedPrompt, Folder, UsageStats } from '@/types';
 
+// Re-export types for convenience
+export type { SavedPrompt, Folder, UsageStats };
+
 const STORAGE_KEYS = {
   PROMPTS: 'promptstick_prompts',
   FOLDERS: 'promptstick_folders',

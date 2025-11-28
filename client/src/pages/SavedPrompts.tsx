@@ -355,7 +355,7 @@ export default function SavedPrompts() {
     return (
       <div 
         ref={setNodeRef} 
-        className={`transition-colors rounded-md ${isOver ? 'ring-2 ring-primary ring-offset-2' : ''}`}
+        className={`h-full transition-colors rounded-md ${isOver ? 'ring-2 ring-primary ring-offset-2' : ''}`}
       >
         {children}
       </div>
