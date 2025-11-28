@@ -18,3 +18,6 @@
 [x] 12. Move SEO card outside scrollable area in SavedPrompts.tsx so it stays stable at the bottom
 [x] 13. Align SEO card with main content column using matching grid layout
 [x] 14. Restructure SEO card to be inside main content column container, independent of sidebar height
+
+## Layout Max Height Fix
+[x] 15. Fix empty state Card to fill maximum available height by adding h-full to MainContentDropZone wrapper
