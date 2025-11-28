@@ -21,3 +21,4 @@
 
 ## Layout Max Height Fix
 [x] 15. Fix empty state Card to fill maximum available height by adding h-full to MainContentDropZone wrapper
+[x] 16. Fix CodeOutput component to have fixed max height (24rem) with internal scrolling for long prompts
