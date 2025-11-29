@@ -9,7 +9,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { templateCategories, type Template } from '@/data/templates';
-import { ArrowLeft, Share2, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowLeft, Share2 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { PromptTemplateDialog } from '@/components/PromptTemplateDialog';
 import { useToast } from '@/hooks/use-toast';
@@ -20,7 +20,6 @@ export default function TemplateDetail() {
   const categoryId = params?.categoryId;
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [seoExpanded, setSeoExpanded] = useState(false);
   const { toast } = useToast();
 
   const category = templateCategories.find(c => c.id === categoryId);
@@ -221,41 +220,29 @@ export default function TemplateDetail() {
           {/* SEO Summary Section */}
           <div className="mt-12 border-t pt-8">
             <Card 
-              className="p-6 md:p-8 cursor-pointer hover-elevate transition-all" 
-              onClick={() => setSeoExpanded(!seoExpanded)}
+              className="p-6 md:p-8" 
               data-testid="card-seo-summary"
             >
-              <div className="flex items-center justify-between gap-4 mb-4">
-                <h2 className="text-xl font-bold" data-testid="text-seo-title">
-                  About {category.name} templates
-                </h2>
-                {seoExpanded ? (
-                  <ChevronUp className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                ) : (
-                  <ChevronDown className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                )}
-              </div>
+              <h2 className="text-xl font-bold mb-4" data-testid="text-seo-title">
+                About {category.name} templates
+              </h2>
               <div className="space-y-4 text-muted-foreground leading-relaxed">
                 <p>
                   This page provides <strong>{category.templates.length} professional {category.name.toLowerCase()} templates</strong> designed 
                   to help you create {category.description.toLowerCase()} more efficiently. Each template is optimized for popular AI models 
                   like <strong>GPT-4</strong> and <strong>Claude</strong>.
                 </p>
-                {seoExpanded && (
-                  <>
-                    <p>
-                      Our templates include customizable variables for topic, tone, audience, and format so you can adjust them to match your 
-                      specific requirements. Whether you're a beginner or experienced user, these <strong>ready-to-use prompts</strong> help you 
-                      get consistent, high-quality results.
-                    </p>
-                    <p>
-                      Click any template above to customize and use it instantly. Looking for more options? Browse our complete{' '}
-                      <a href="/templates" className="text-primary hover:underline" data-testid="link-templates" onClick={(e) => e.stopPropagation()}>template library</a>{' '}
-                      or create custom prompts with our{' '}
-                      <a href="/generators" className="text-primary hover:underline" data-testid="link-generators" onClick={(e) => e.stopPropagation()}>AI prompt generators</a>.
-                    </p>
-                  </>
-                )}
+                <p>
+                  Our templates include customizable variables for topic, tone, audience, and format so you can adjust them to match your 
+                  specific requirements. Whether you're a beginner or experienced user, these <strong>ready-to-use prompts</strong> help you 
+                  get consistent, high-quality results.
+                </p>
+                <p>
+                  Click any template above to customize and use it instantly. Looking for more options? Browse our complete{' '}
+                  <a href="/templates" className="text-primary hover:underline" data-testid="link-templates">template library</a>{' '}
+                  or create custom prompts with our{' '}
+                  <a href="/generators" className="text-primary hover:underline" data-testid="link-generators">AI prompt generators</a>.
+                </p>
               </div>
             </Card>
           </div>
