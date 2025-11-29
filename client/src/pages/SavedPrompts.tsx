@@ -479,7 +479,7 @@ export default function SavedPrompts() {
 
               {/* Main Content Column - contains both scrollable prompts AND SEO card */}
               <div className="flex flex-col">
-                <main className="h-[calc(100vh-16rem)] overflow-y-auto">
+                <main className="max-h-[calc(100vh-16rem)] overflow-y-auto">
                   <MainContentDropZone>
                     {/* Prompts Grid - Always Grid View */}
                     {filteredPrompts.length === 0 ? (
