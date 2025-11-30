@@ -3,7 +3,7 @@
  * Unified generator page for text, image, and video prompts
  */
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import GeneratorForm, { GeneratorParams } from '@/components/GeneratorForm';
 import CodeOutput from '@/components/CodeOutput';
 import LimitReachedModal from '@/components/LimitReachedModal';
@@ -42,7 +42,32 @@ export default function GeneratorPage({ type }: GeneratorPageProps) {
   const [isSaved, setIsSaved] = useState(false);
   const [lastTemplateName, setLastTemplateName] = useState<string | undefined>(undefined);
   const queryInputRef = useRef<HTMLTextAreaElement>(null);
+  const formContainerRef = useRef<HTMLDivElement>(null);
+  const [formHeight, setFormHeight] = useState<number | null>(null);
   const { toast} = useToast();
+
+  // Measure the form container height using ResizeObserver
+  useLayoutEffect(() => {
+    const formContainer = formContainerRef.current;
+    if (!formContainer) return;
+
+    const measureHeight = () => {
+      setFormHeight(formContainer.offsetHeight);
+    };
+
+    // Initial measurement
+    measureHeight();
+
+    // Use ResizeObserver to track dynamic changes
+    const resizeObserver = new ResizeObserver(() => {
+      measureHeight();
+    });
+    resizeObserver.observe(formContainer);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
 
   // Check for edit prompt or template in sessionStorage
   useEffect(() => {
@@ -285,7 +310,7 @@ export default function GeneratorPage({ type }: GeneratorPageProps) {
         {/* Two Column Layout */}
         <div className="max-w-7xl mx-auto grid lg:grid-cols-[2fr,3fr] gap-8">
           {/* Left Column: Form */}
-          <div className="bg-card rounded-lg border p-6">
+          <div ref={formContainerRef} className="bg-card rounded-lg border p-6">
             <GeneratorForm
               ref={queryInputRef}
               type={type}
@@ -302,6 +327,7 @@ export default function GeneratorPage({ type }: GeneratorPageProps) {
               onSave={handleSave}
               showSave={!!generatedPrompt}
               onEdit={handleEdit}
+              maxHeight={formHeight}
             />
           </div>
         </div>

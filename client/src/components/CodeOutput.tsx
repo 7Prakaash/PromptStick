@@ -15,9 +15,10 @@ interface CodeOutputProps {
   onSave?: () => void;
   showSave?: boolean;
   onEdit?: (editedPrompt: string) => void;
+  maxHeight?: number | null;
 }
 
-export default function CodeOutput({ prompt, onSave, showSave = true, onEdit }: CodeOutputProps) {
+export default function CodeOutput({ prompt, onSave, showSave = true, onEdit, maxHeight }: CodeOutputProps) {
   const [copied, setCopied] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedPrompt, setEditedPrompt] = useState(prompt);
@@ -60,7 +61,11 @@ export default function CodeOutput({ prompt, onSave, showSave = true, onEdit }: 
 
   if (!prompt) {
     return (
-      <Card className="p-8 flex items-center justify-center min-h-64" data-testid="card-output-empty">
+      <Card 
+        className="p-8 flex items-center justify-center" 
+        style={maxHeight ? { height: `${maxHeight}px` } : { minHeight: '16rem' }}
+        data-testid="card-output-empty"
+      >
         <div className="text-center space-y-2">
           <p className="text-muted-foreground">Your generated prompt will appear here</p>
           <p className="text-xs text-muted-foreground">Fill in the form and click Generate</p>
@@ -70,11 +75,15 @@ export default function CodeOutput({ prompt, onSave, showSave = true, onEdit }: 
   }
 
   return (
-    <div className="space-y-4" data-testid="container-output">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+    <Card 
+      className="relative overflow-hidden flex flex-col" 
+      style={maxHeight ? { height: `${maxHeight}px` } : { minHeight: '16rem' }}
+      data-testid="card-output"
+    >
+      {/* Header with actions */}
+      <div className="px-4 py-3 border-b flex items-center justify-between gap-2 shrink-0 flex-wrap">
         <h3 className="text-lg font-semibold" data-testid="text-output-title">Generated Prompt</h3>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           {isEditing ? (
             <Button
               variant="default"
@@ -128,31 +137,31 @@ export default function CodeOutput({ prompt, onSave, showSave = true, onEdit }: 
         </div>
       </div>
 
-      {/* Code Container */}
-      <Card className="relative overflow-hidden" data-testid="card-output">
-        <div className="bg-muted/50 px-4 py-2 border-b flex items-center justify-between">
-          <span className="text-xs font-mono text-muted-foreground">prompt.txt</span>
-          <div className="flex gap-1">
-            <div className="w-3 h-3 rounded-full bg-destructive/50" />
-            <div className="w-3 h-3 rounded-full bg-primary/50" />
-            <div className="w-3 h-3 rounded-full bg-chart-2/50" />
-          </div>
+      {/* Code header */}
+      <div className="bg-muted/50 px-4 py-2 border-b flex items-center justify-between shrink-0">
+        <span className="text-xs font-mono text-muted-foreground">prompt.txt</span>
+        <div className="flex gap-1">
+          <div className="w-3 h-3 rounded-full bg-destructive/50" />
+          <div className="w-3 h-3 rounded-full bg-primary/50" />
+          <div className="w-3 h-3 rounded-full bg-chart-2/50" />
         </div>
-        <div className="p-6 bg-card max-h-96 overflow-y-auto">
-          {isEditing ? (
-            <Textarea
-              value={editedPrompt}
-              onChange={(e) => setEditedPrompt(e.target.value)}
-              className="font-mono text-sm leading-relaxed min-h-64 resize-y"
-              data-testid="textarea-edit-output"
-            />
-          ) : (
-            <pre className="font-mono text-sm leading-relaxed whitespace-pre-wrap break-words" data-testid="text-output-content">
-              {prompt}
-            </pre>
-          )}
-        </div>
-      </Card>
-    </div>
+      </div>
+
+      {/* Scrollable content */}
+      <div className="p-6 bg-card flex-1 overflow-y-auto" data-testid="container-output">
+        {isEditing ? (
+          <Textarea
+            value={editedPrompt}
+            onChange={(e) => setEditedPrompt(e.target.value)}
+            className="font-mono text-sm leading-relaxed min-h-64 resize-none h-full"
+            data-testid="textarea-edit-output"
+          />
+        ) : (
+          <pre className="font-mono text-sm leading-relaxed whitespace-pre-wrap break-words" data-testid="text-output-content">
+            {prompt}
+          </pre>
+        )}
+      </div>
+    </Card>
   );
 }
