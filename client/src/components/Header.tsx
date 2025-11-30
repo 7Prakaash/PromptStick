@@ -1,32 +1,16 @@
 /**
  * Header component with navigation
- * Sticky header with logo, navigation links, and usage counter
+ * Sticky header with logo and navigation links
  */
 
 import { Link, useLocation } from 'wouter';
 import { Sparkles, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useState, useEffect } from 'react';
-import { getUsageStats, getDailyLimit, getMonthlyLimit } from '@/utils/localStorage';
+import { useState } from 'react';
 
 export default function Header() {
   const [location] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [stats, setStats] = useState(getUsageStats());
-  const dailyLimit = getDailyLimit();
-  const monthlyLimit = getMonthlyLimit();
-  const dailyPercent = (stats.daily.count / dailyLimit) * 100;
-  const monthlyPercent = (stats.monthly.count / monthlyLimit) * 100;
-
-  // Listen for usage updates
-  useEffect(() => {
-    const handleUsageUpdate = () => {
-      setStats(getUsageStats());
-    };
-
-    window.addEventListener('usageUpdated', handleUsageUpdate);
-    return () => window.removeEventListener('usageUpdated', handleUsageUpdate);
-  }, []);
 
   const navLinks = [
     { href: '/', label: 'Home' },
@@ -63,43 +47,6 @@ export default function Header() {
             ))}
           </nav>
 
-          {/* Usage Counter - Only on generator pages */}
-          {(location.startsWith('/generator/') || 
-            location === '/text-prompt-generator' ||
-            location === '/image-prompt-generator' ||
-            location === '/video-prompt-generator') && (
-            <div className="hidden md:flex items-center gap-3">
-              <div className="flex flex-col items-end gap-1" data-testid="usage-counter">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-muted-foreground">
-                    Daily: {stats.daily.count}/{dailyLimit}
-                  </span>
-                  <div className="w-20 h-1.5 bg-muted rounded-full overflow-hidden">
-                    <div
-                      className={`h-full transition-all ${
-                        dailyPercent > 80 ? 'bg-destructive' : 'bg-primary'
-                      }`}
-                      style={{ width: `${Math.min(dailyPercent, 100)}%` }}
-                    />
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-muted-foreground">
-                    Monthly: {stats.monthly.count}/{monthlyLimit}
-                  </span>
-                  <div className="w-20 h-1.5 bg-muted rounded-full overflow-hidden">
-                    <div
-                      className={`h-full transition-all ${
-                        monthlyPercent > 80 ? 'bg-destructive' : 'bg-chart-2'
-                      }`}
-                      style={{ width: `${Math.min(monthlyPercent, 100)}%` }}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
           {/* Mobile Menu Button */}
           <Button
             variant="ghost"
@@ -130,19 +77,6 @@ export default function Header() {
                 {link.label}
               </Link>
             ))}
-            {(location.startsWith('/generator/') ||
-              location === '/text-prompt-generator' ||
-              location === '/image-prompt-generator' ||
-              location === '/video-prompt-generator') && (
-              <div className="px-4 py-2 space-y-1" data-testid="usage-counter-mobile">
-                <div className="text-xs text-muted-foreground">
-                  Daily: {stats.daily.count}/{dailyLimit}
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  Monthly: {stats.monthly.count}/{monthlyLimit}
-                </div>
-              </div>
-            )}
           </nav>
         )}
       </div>

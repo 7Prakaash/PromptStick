@@ -20,6 +20,9 @@ import {
   hasReachedMonthlyLimit,
   incrementUsage,
   dispatchUsageUpdate,
+  getUsageStats,
+  getDailyLimit,
+  getMonthlyLimit,
 } from '@/utils/localStorage';
 import { useToast } from '@/hooks/use-toast';
 import { FileText, Image, Video } from 'lucide-react';
@@ -45,6 +48,20 @@ export default function GeneratorPage({ type }: GeneratorPageProps) {
   const formContainerRef = useRef<HTMLDivElement>(null);
   const [formHeight, setFormHeight] = useState<number | null>(null);
   const { toast} = useToast();
+
+  const [stats, setStats] = useState(getUsageStats());
+  const dailyLimit = getDailyLimit();
+  const monthlyLimit = getMonthlyLimit();
+  const dailyPercent = (stats.daily.count / dailyLimit) * 100;
+  const monthlyPercent = (stats.monthly.count / monthlyLimit) * 100;
+
+  useEffect(() => {
+    const handleUsageUpdate = () => {
+      setStats(getUsageStats());
+    };
+    window.addEventListener('usageUpdated', handleUsageUpdate);
+    return () => window.removeEventListener('usageUpdated', handleUsageUpdate);
+  }, []);
 
   // Measure the form container height using ResizeObserver
   useLayoutEffect(() => {
@@ -294,17 +311,51 @@ export default function GeneratorPage({ type }: GeneratorPageProps) {
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="max-w-7xl mx-auto mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 rounded-lg bg-primary/10">
-              <Icon className="h-6 w-6 text-primary" />
+          <div className="flex items-start justify-between gap-4 flex-wrap">
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="p-2 rounded-lg bg-primary/10">
+                  <Icon className="h-6 w-6 text-primary" />
+                </div>
+                <h1 className="text-3xl md:text-4xl font-bold" data-testid="text-page-title">
+                  {config.title}
+                </h1>
+              </div>
+              <p className="text-muted-foreground" data-testid="text-page-description">
+                {config.description}
+              </p>
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold" data-testid="text-page-title">
-              {config.title}
-            </h1>
+
+            {/* Credit Usage Bar */}
+            <div className="flex flex-col items-end gap-1" data-testid="usage-counter">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground whitespace-nowrap">
+                  Daily: {stats.daily.count}/{dailyLimit}
+                </span>
+                <div className="w-24 h-1.5 bg-muted rounded-full overflow-hidden">
+                  <div
+                    className={`h-full transition-all ${
+                      dailyPercent > 80 ? 'bg-destructive' : 'bg-primary'
+                    }`}
+                    style={{ width: `${Math.min(dailyPercent, 100)}%` }}
+                  />
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground whitespace-nowrap">
+                  Monthly: {stats.monthly.count}/{monthlyLimit}
+                </span>
+                <div className="w-24 h-1.5 bg-muted rounded-full overflow-hidden">
+                  <div
+                    className={`h-full transition-all ${
+                      monthlyPercent > 80 ? 'bg-destructive' : 'bg-chart-2'
+                    }`}
+                    style={{ width: `${Math.min(monthlyPercent, 100)}%` }}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
-          <p className="text-muted-foreground" data-testid="text-page-description">
-            {config.description}
-          </p>
         </div>
 
         {/* Two Column Layout */}
