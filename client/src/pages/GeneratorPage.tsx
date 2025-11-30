@@ -650,7 +650,7 @@ export default function GeneratorPage({ type }: GeneratorPageProps) {
         <div className="max-w-7xl mx-auto mt-16 space-y-16">
           {/* How It Works Section */}
           <section data-testid="section-how-it-works">
-            <h2 className="text-2xl md:text-3xl font-bold mb-8">{seo.howItWorks.title}</h2>
+            <h2 className="text-2xl md:text-3xl font-bold mb-8 text-center">{seo.howItWorks.title}</h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
               {seo.howItWorks.steps.map((step) => (
                 <div
@@ -674,7 +674,7 @@ export default function GeneratorPage({ type }: GeneratorPageProps) {
 
           {/* Benefits & Features Section */}
           <section data-testid="section-benefits">
-            <h2 className="text-2xl md:text-3xl font-bold mb-8">{seo.benefits.title}</h2>
+            <h2 className="text-2xl md:text-3xl font-bold mb-8 text-center">{seo.benefits.title}</h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
               {seo.benefits.items.map((item, index) => {
                 const BenefitIcon = item.icon;
@@ -694,9 +694,9 @@ export default function GeneratorPage({ type }: GeneratorPageProps) {
             </div>
           </section>
 
-          {/* FAQ Section */}
+          {/* FAQ Section with Schema.org markup */}
           <section data-testid="section-faq">
-            <h2 className="text-2xl md:text-3xl font-bold mb-8">{seo.faqs.title}</h2>
+            <h2 className="text-2xl md:text-3xl font-bold mb-8 text-center">{seo.faqs.title}</h2>
             <div className="bg-card rounded-lg border">
               <Accordion type="single" collapsible className="w-full">
                 {seo.faqs.items.map((faq, index) => (
@@ -716,7 +716,30 @@ export default function GeneratorPage({ type }: GeneratorPageProps) {
                 ))}
               </Accordion>
             </div>
+            {/* FAQ Schema.org JSON-LD for SEO */}
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{
+                __html: JSON.stringify({
+                  "@context": "https://schema.org",
+                  "@type": "FAQPage",
+                  "mainEntity": seo.faqs.items.map((faq) => ({
+                    "@type": "Question",
+                    "name": faq.question,
+                    "acceptedAnswer": {
+                      "@type": "Answer",
+                      "text": faq.answer,
+                    },
+                  })),
+                }),
+              }}
+            />
           </section>
+        </div>
+
+        {/* Divider Line */}
+        <div className="max-w-7xl mx-auto mt-16">
+          <hr className="border-t border-border" />
         </div>
       </div>
 
