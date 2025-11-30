@@ -23,6 +23,7 @@ import {
   getUsageStats,
   getDailyLimit,
   getMonthlyLimit,
+  getAllFolders,
 } from '@/utils/localStorage';
 import { useToast } from '@/hooks/use-toast';
 import { FileText, Image, Video } from 'lucide-react';
@@ -50,6 +51,7 @@ export default function GeneratorPage({ type }: GeneratorPageProps) {
   const { toast} = useToast();
 
   const [stats, setStats] = useState(getUsageStats());
+  const [folders, setFolders] = useState(getAllFolders());
   const dailyLimit = getDailyLimit();
   const monthlyLimit = getMonthlyLimit();
   const dailyPercent = (stats.daily.count / dailyLimit) * 100;
@@ -61,6 +63,21 @@ export default function GeneratorPage({ type }: GeneratorPageProps) {
     };
     window.addEventListener('usageUpdated', handleUsageUpdate);
     return () => window.removeEventListener('usageUpdated', handleUsageUpdate);
+  }, []);
+
+  useEffect(() => {
+    setFolders(getAllFolders());
+    
+    const handleStorageChange = () => {
+      setFolders(getAllFolders());
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('foldersUpdated', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('foldersUpdated', handleStorageChange);
+    };
   }, []);
 
   // Measure the form container height using ResizeObserver
@@ -302,6 +319,38 @@ export default function GeneratorPage({ type }: GeneratorPageProps) {
     }
   };
 
+  const handleSaveToFolder = (folderId: string) => {
+    if (!generatedPrompt || !lastParams) return;
+
+    if (isSaved) {
+      toast({
+        title: 'Already saved!',
+        description: 'This prompt is already in your library',
+      });
+      return;
+    }
+
+    const folder = folders.find(f => f.id === folderId);
+    
+    savePrompt({
+      type,
+      name: lastTemplateName,
+      query: lastParams.query,
+      generatedPrompt,
+      llm: lastParams.llm,
+      tone: lastParams.tone,
+      style: lastParams.style,
+      isFavorite: false,
+      folderId,
+    });
+
+    toast({
+      title: 'Saved!',
+      description: folder ? `Prompt saved to "${folder.name}"` : 'Prompt saved to folder',
+    });
+    setIsSaved(true);
+  };
+
   const handleRetryAfterNoMatch = () => {
     queryInputRef.current?.focus();
   };
@@ -379,6 +428,8 @@ export default function GeneratorPage({ type }: GeneratorPageProps) {
               showSave={!!generatedPrompt}
               onEdit={handleEdit}
               maxHeight={formHeight}
+              folders={folders}
+              onSaveToFolder={handleSaveToFolder}
             />
           </div>
         </div>

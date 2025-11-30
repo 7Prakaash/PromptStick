@@ -7,8 +7,16 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { Copy, Check, Save, Edit, CheckCheck } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Copy, Check, Save, Edit, CheckCheck, ChevronDown, FolderOpen } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import type { Folder } from '@/types';
 
 interface CodeOutputProps {
   prompt: string;
@@ -16,9 +24,11 @@ interface CodeOutputProps {
   showSave?: boolean;
   onEdit?: (editedPrompt: string) => void;
   maxHeight?: number | null;
+  folders?: Folder[];
+  onSaveToFolder?: (folderId: string) => void;
 }
 
-export default function CodeOutput({ prompt, onSave, showSave = true, onEdit, maxHeight }: CodeOutputProps) {
+export default function CodeOutput({ prompt, onSave, showSave = true, onEdit, maxHeight, folders = [], onSaveToFolder }: CodeOutputProps) {
   const [copied, setCopied] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedPrompt, setEditedPrompt] = useState(prompt);
@@ -124,15 +134,54 @@ export default function CodeOutput({ prompt, onSave, showSave = true, onEdit, ma
             )}
           </Button>
           {showSave && onSave && (
-            <Button
-              variant="default"
-              size="sm"
-              onClick={onSave}
-              data-testid="button-save"
-            >
-              <Save className="h-4 w-4 mr-2" />
-              Save
-            </Button>
+            <DropdownMenu>
+              <div className="flex">
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={onSave}
+                  className="rounded-r-none border-r-0"
+                  data-testid="button-save"
+                >
+                  <Save className="h-4 w-4 mr-2" />
+                  Save
+                </Button>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="default"
+                    size="sm"
+                    className="rounded-l-none px-2"
+                    data-testid="button-save-dropdown"
+                  >
+                    <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+              </div>
+              <DropdownMenuContent align="end" data-testid="menu-save-to-folder">
+                <DropdownMenuItem
+                  onClick={onSave}
+                  data-testid="menu-item-save-default"
+                >
+                  <Save className="h-4 w-4 mr-2" />
+                  Save to Library
+                </DropdownMenuItem>
+                {folders.length > 0 && (
+                  <>
+                    <DropdownMenuSeparator />
+                    {folders.map((folder) => (
+                      <DropdownMenuItem
+                        key={folder.id}
+                        onClick={() => onSaveToFolder?.(folder.id)}
+                        data-testid={`menu-item-folder-${folder.id}`}
+                      >
+                        <FolderOpen className="h-4 w-4 mr-2" />
+                        {folder.name}
+                      </DropdownMenuItem>
+                    ))}
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
         </div>
       </div>

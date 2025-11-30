@@ -5,3 +5,6 @@
 [x] 5. Remove credit usage bar from Header.tsx (both desktop and mobile versions)
 [x] 6. Add credit usage bar to GeneratorPage header area, positioned above output section on the right
 [x] 7. Verify layout and alignment on all generator pages and test responsiveness
+[x] 8. Update CodeOutput component to add dropdown menu next to Save button with folder options
+[x] 9. Update GeneratorPage to fetch folders and pass them with save-to-folder handler to CodeOutput
+[x] 10. Test the dropdown functionality and verify prompts save to selected folders
