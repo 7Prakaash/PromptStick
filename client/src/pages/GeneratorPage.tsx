@@ -26,13 +26,14 @@ import {
   getAllFolders,
 } from '@/utils/localStorage';
 import { useToast } from '@/hooks/use-toast';
-import { FileText, Image, Video, Sparkles, Zap, Target, Clock, Layers, Palette, Film, PenTool } from 'lucide-react';
+import { FileText, Image, Video } from 'lucide-react';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+import { Card } from '@/components/ui/card';
 
 interface GeneratorPageProps {
   type: 'text' | 'image' | 'video';
@@ -194,15 +195,12 @@ export default function GeneratorPage({ type }: GeneratorPageProps) {
           },
         ],
       },
-      benefits: {
-        title: 'Benefits & Features',
-        items: [
-          { icon: Zap, text: 'Instant prompt generation with smart template matching' },
-          { icon: Target, text: 'Prompts tailored to specific AI models for better results' },
-          { icon: PenTool, text: 'Multiple tone options from formal to creative writing' },
-          { icon: Layers, text: 'Style modifiers for detailed, concise, or step-by-step outputs' },
-          { icon: Clock, text: 'Save and organize prompts for quick reuse' },
-          { icon: Sparkles, text: 'Professional-grade prompts without prompt engineering expertise' },
+      seoCard: {
+        title: 'Why use the Text Prompt Generator?',
+        paragraphs: [
+          'Our <strong>text prompt generator</strong> helps you create optimized prompts for AI models like ChatGPT, Claude, and Gemini. Whether you need blog posts, emails, marketing copy, or technical documentation, this tool structures your ideas into effective prompts that get better results.',
+          'Each prompt is <strong>tailored to your chosen AI model</strong>, taking into account the unique strengths and formatting preferences of different language models. Plus, with tone and style options, you can ensure your output matches your brand voice perfectly.',
+          'Save time and skip the trial-and-error of prompt engineering. Our smart templates and customization options help you generate <strong>professional-grade prompts</strong> in seconds, not hours.',
         ],
       },
       faqs: {
@@ -257,15 +255,12 @@ export default function GeneratorPage({ type }: GeneratorPageProps) {
           },
         ],
       },
-      benefits: {
-        title: 'Benefits & Features',
-        items: [
-          { icon: Palette, text: 'Pre-built artistic style templates for consistent aesthetics' },
-          { icon: Target, text: 'Platform-specific optimization for DALL-E, Midjourney, and more' },
-          { icon: Layers, text: 'Comprehensive modifier library for lighting, composition, and mood' },
-          { icon: Sparkles, text: 'Professional photography and art terminology built-in' },
-          { icon: Clock, text: 'Quick generation saves hours of prompt trial and error' },
-          { icon: Zap, text: 'Higher-quality AI images with expert-crafted prompts' },
+      seoCard: {
+        title: 'Why use the Image Prompt Generator?',
+        paragraphs: [
+          'Our <strong>image prompt generator</strong> creates optimized prompts for AI art platforms like DALL-E, Midjourney, and Stable Diffusion. Transform your visual ideas into detailed, platform-specific prompts that produce stunning results.',
+          'Each prompt includes <strong>professional photography and art terminology</strong> along with lighting, composition, and mood modifiers. No need to master complex prompt syntax - our tool handles the technical details automatically.',
+          'Whether you need photorealistic renders, digital art, or stylized illustrations, our templates help you achieve <strong>consistent, high-quality visuals</strong> without hours of trial and error.',
         ],
       },
       faqs: {
@@ -320,15 +315,12 @@ export default function GeneratorPage({ type }: GeneratorPageProps) {
           },
         ],
       },
-      benefits: {
-        title: 'Benefits & Features',
-        items: [
-          { icon: Film, text: 'Prompts structured for AI video generation best practices' },
-          { icon: Target, text: 'Platform-specific formatting for Runway, Pika, Sora, and more' },
-          { icon: Layers, text: 'Camera movement and transition suggestions included' },
-          { icon: Sparkles, text: 'Cinematic terminology for professional-looking results' },
-          { icon: Clock, text: 'Skip the learning curve of video prompt engineering' },
-          { icon: Zap, text: 'Consistent, high-quality video outputs every time' },
+      seoCard: {
+        title: 'Why use the Video Prompt Generator?',
+        paragraphs: [
+          'Our <strong>video prompt generator</strong> creates optimized prompts for AI video platforms like Runway, Pika, and Sora. Turn your video concepts into detailed prompts that include motion, timing, and cinematic elements.',
+          'Each prompt is <strong>structured for AI video best practices</strong>, incorporating camera movements, transitions, and pacing that these platforms understand. Get professional-quality results without mastering complex video prompt syntax.',
+          'Whether you are creating short clips, product demos, or creative content, our tool helps you <strong>skip the learning curve</strong> and generate compelling AI videos from the first try.',
         ],
       },
       faqs: {
@@ -672,27 +664,26 @@ export default function GeneratorPage({ type }: GeneratorPageProps) {
             </div>
           </section>
 
-          {/* Benefits & Features Section */}
-          <section data-testid="section-benefits">
-            <h2 className="text-2xl md:text-3xl font-bold mb-8 text-center">{seo.benefits.title}</h2>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {seo.benefits.items.map((item, index) => {
-                const BenefitIcon = item.icon;
-                return (
-                  <div
+          {/* SEO Card Section */}
+          <div data-testid="section-seo-card">
+            <Card
+              className="p-6 md:p-8"
+              data-testid="card-seo"
+            >
+              <h2 className="text-xl font-bold mb-4" data-testid="text-seo-title">
+                {seo.seoCard.title}
+              </h2>
+              <div className="space-y-4 text-muted-foreground leading-relaxed">
+                {seo.seoCard.paragraphs.map((paragraph, index) => (
+                  <p 
                     key={index}
-                    className="flex items-start gap-3 p-4 bg-card rounded-lg border"
-                    data-testid={`benefit-${index}`}
-                  >
-                    <div className="flex-shrink-0 p-2 rounded-lg bg-primary/10">
-                      <BenefitIcon className="h-5 w-5 text-primary" />
-                    </div>
-                    <p className="text-sm leading-relaxed">{item.text}</p>
-                  </div>
-                );
-              })}
-            </div>
-          </section>
+                    dangerouslySetInnerHTML={{ __html: paragraph }}
+                    data-testid={`text-seo-paragraph-${index}`}
+                  />
+                ))}
+              </div>
+            </Card>
+          </div>
 
           {/* FAQ Section with Schema.org markup */}
           <section data-testid="section-faq">
