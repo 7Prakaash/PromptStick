@@ -2,6 +2,14 @@
 
 ## Recent Changes
 
+### November 30, 2025 - SEO Sections Added to Generator Pages
+- **Added "How It Works" section** - Four numbered steps explaining the generator workflow for each type
+- **Added "Benefits & Features" section** - Six SEO-optimized bullet points with icons specific to each generator
+- **Added "FAQ Section"** - 4-6 frequently asked questions in accordion style using Shadcn Accordion component
+- **Unique content per generator type** - Text, Image, and Video generators each have tailored content
+- **Proper test IDs** - All new sections include data-testid attributes for testing
+- **SEO-friendly structure** - Semantic headings (h2, h3), descriptive content, and proper accessibility
+
 ### November 24, 2025 - Template Deep-Link URL Format Change
 - **Changed URL format from query parameters to hash fragments** - Template deep-links now use `#template-id` instead of `?template-id`
   - Example: `/templates/content-writing#blog-post-outline` instead of `/templates/content-writing?template-id=blog-post-outline`
