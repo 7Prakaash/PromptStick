@@ -44,6 +44,7 @@ export default function GeneratorPage({ type }: GeneratorPageProps) {
   const [lastQueryForCycling, setLastQueryForCycling] = useState<string>('');
   const [matchIndex, setMatchIndex] = useState<number>(0);
   const [isSaved, setIsSaved] = useState(false);
+  const [savedPromptId, setSavedPromptId] = useState<string | null>(null);
   const [lastTemplateName, setLastTemplateName] = useState<string | undefined>(undefined);
   const queryInputRef = useRef<HTMLTextAreaElement>(null);
   const formContainerRef = useRef<HTMLDivElement>(null);
@@ -255,6 +256,7 @@ export default function GeneratorPage({ type }: GeneratorPageProps) {
       setLastTemplateName(matchedTemplate.name);
       setIsGenerating(false);
       setIsSaved(false);
+      setSavedPromptId(null);
 
       // Only increment usage counter after successful generation with valid match
       incrementUsage();
@@ -296,11 +298,12 @@ export default function GeneratorPage({ type }: GeneratorPageProps) {
         title: 'Updated!',
         description: 'Prompt updated in your library',
       });
+      setSavedPromptId(editPromptId);
       setEditPromptId(null);
       setIsSaved(true);
     } else {
       // Save new prompt
-      savePrompt({
+      const newPrompt = savePrompt({
         type,
         name: lastTemplateName,
         query: lastParams.query,
@@ -315,6 +318,7 @@ export default function GeneratorPage({ type }: GeneratorPageProps) {
         title: 'Saved!',
         description: 'Prompt saved to your library',
       });
+      setSavedPromptId(newPrompt.id);
       setIsSaved(true);
     }
   };
@@ -322,17 +326,21 @@ export default function GeneratorPage({ type }: GeneratorPageProps) {
   const handleSaveToFolder = (folderId: string) => {
     if (!generatedPrompt || !lastParams) return;
 
-    if (isSaved) {
+    const folder = folders.find(f => f.id === folderId);
+
+    // If prompt is already saved, move it to the selected folder
+    if (isSaved && savedPromptId) {
+      updatePrompt(savedPromptId, { folderId });
+      
       toast({
-        title: 'Already saved!',
-        description: 'This prompt is already in your library',
+        title: 'Moved!',
+        description: folder ? `Prompt moved to "${folder.name}"` : 'Prompt moved to folder',
       });
       return;
     }
 
-    const folder = folders.find(f => f.id === folderId);
-    
-    savePrompt({
+    // Save new prompt directly to folder
+    const newPrompt = savePrompt({
       type,
       name: lastTemplateName,
       query: lastParams.query,
@@ -348,6 +356,7 @@ export default function GeneratorPage({ type }: GeneratorPageProps) {
       title: 'Saved!',
       description: folder ? `Prompt saved to "${folder.name}"` : 'Prompt saved to folder',
     });
+    setSavedPromptId(newPrompt.id);
     setIsSaved(true);
   };
 
