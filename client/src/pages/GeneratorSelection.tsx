@@ -8,6 +8,12 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileText, Image, Video, ArrowRight } from 'lucide-react';
 import { getGeneratorPath } from '@/lib/routes';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 
 export default function GeneratorSelection() {
   const generators = [
@@ -129,6 +135,113 @@ export default function GeneratorSelection() {
               </div>
             </Card>
           </div>
+
+          {/* FAQ Section */}
+          <section className="mt-12" data-testid="section-faq">
+            <h2 className="text-2xl md:text-3xl font-bold mb-8 text-center">Frequently Asked Questions</h2>
+            <div className="bg-card rounded-lg border">
+              <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="faq-0" className="px-6" data-testid="faq-0">
+                  <AccordionTrigger className="text-left py-5 hover:no-underline">
+                    <span className="font-medium">What is an AI prompt generator?</span>
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground pb-5">
+                    An AI prompt generator is a tool that helps you create optimized instructions for AI models like ChatGPT, Claude, DALL-E, and Midjourney. 
+                    Instead of writing prompts from scratch, our generator structures your ideas into effective prompts that get better results from AI.
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="faq-1" className="px-6" data-testid="faq-1">
+                  <AccordionTrigger className="text-left py-5 hover:no-underline">
+                    <span className="font-medium">Which generator should I choose?</span>
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground pb-5">
+                    Choose based on your content type: use the Text Generator for written content like blog posts, emails, and marketing copy. 
+                    The Image Generator is for creating prompts for AI art tools like DALL-E and Midjourney. 
+                    The Video Generator helps structure prompts for AI video tools like Runway and Pika.
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="faq-2" className="px-6" data-testid="faq-2">
+                  <AccordionTrigger className="text-left py-5 hover:no-underline">
+                    <span className="font-medium">How do I use the generated prompts?</span>
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground pb-5">
+                    After generating a prompt, simply copy it using the copy button and paste it directly into your preferred AI tool. 
+                    The prompts are optimized for the specific AI model you selected, so they work immediately without additional editing.
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="faq-3" className="px-6" data-testid="faq-3">
+                  <AccordionTrigger className="text-left py-5 hover:no-underline">
+                    <span className="font-medium">Can I save my generated prompts?</span>
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground pb-5">
+                    Yes, you can save any generated prompt to your personal library. Organize them into folders, mark favorites, 
+                    and access them anytime from the Saved Prompts section for quick reuse.
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="faq-4" className="px-6" data-testid="faq-4">
+                  <AccordionTrigger className="text-left py-5 hover:no-underline">
+                    <span className="font-medium">Is there a limit to how many prompts I can generate?</span>
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground pb-5">
+                    Free users have a daily limit of 5 prompts and a monthly limit of 50 prompts. 
+                    This resets automatically, giving you consistent access to all three generators.
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </div>
+            {/* FAQ Schema.org JSON-LD for SEO */}
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{
+                __html: JSON.stringify({
+                  "@context": "https://schema.org",
+                  "@type": "FAQPage",
+                  "mainEntity": [
+                    {
+                      "@type": "Question",
+                      "name": "What is an AI prompt generator?",
+                      "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "An AI prompt generator is a tool that helps you create optimized instructions for AI models like ChatGPT, Claude, DALL-E, and Midjourney. Instead of writing prompts from scratch, our generator structures your ideas into effective prompts that get better results from AI."
+                      }
+                    },
+                    {
+                      "@type": "Question",
+                      "name": "Which generator should I choose?",
+                      "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Choose based on your content type: use the Text Generator for written content like blog posts, emails, and marketing copy. The Image Generator is for creating prompts for AI art tools like DALL-E and Midjourney. The Video Generator helps structure prompts for AI video tools like Runway and Pika."
+                      }
+                    },
+                    {
+                      "@type": "Question",
+                      "name": "How do I use the generated prompts?",
+                      "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "After generating a prompt, simply copy it using the copy button and paste it directly into your preferred AI tool. The prompts are optimized for the specific AI model you selected, so they work immediately without additional editing."
+                      }
+                    },
+                    {
+                      "@type": "Question",
+                      "name": "Can I save my generated prompts?",
+                      "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Yes, you can save any generated prompt to your personal library. Organize them into folders, mark favorites, and access them anytime from the Saved Prompts section for quick reuse."
+                      }
+                    },
+                    {
+                      "@type": "Question",
+                      "name": "Is there a limit to how many prompts I can generate?",
+                      "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Free users have a daily limit of 5 prompts and a monthly limit of 50 prompts. This resets automatically, giving you consistent access to all three generators."
+                      }
+                    }
+                  ]
+                }),
+              }}
+            />
+          </section>
         </div>
       </div>
     </div>

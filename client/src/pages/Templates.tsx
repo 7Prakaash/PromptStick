@@ -8,6 +8,12 @@ import { Card } from '@/components/ui/card';
 import { templateCategories } from '@/data/templates';
 import { getTemplatePath } from '@/lib/routes';
 import * as LucideIcons from 'lucide-react';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 
 export default function Templates() {
   const [, setLocation] = useLocation();
@@ -94,6 +100,112 @@ export default function Templates() {
               </div>
             </Card>
           </div>
+
+          {/* FAQ Section */}
+          <section className="mt-12" data-testid="section-faq">
+            <h2 className="text-2xl md:text-3xl font-bold mb-8 text-center">Frequently Asked Questions</h2>
+            <div className="bg-card rounded-lg border">
+              <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="faq-0" className="px-6" data-testid="faq-0">
+                  <AccordionTrigger className="text-left py-5 hover:no-underline">
+                    <span className="font-medium">What are AI prompt templates?</span>
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground pb-5">
+                    AI prompt templates are pre-built, optimized instructions designed for specific use cases like blog writing, marketing copy, or image generation. 
+                    They save you time by providing a proven structure you can customize with your own details instead of writing prompts from scratch.
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="faq-1" className="px-6" data-testid="faq-1">
+                  <AccordionTrigger className="text-left py-5 hover:no-underline">
+                    <span className="font-medium">How do I use a template?</span>
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground pb-5">
+                    Click on any category to browse available templates, then select one to customize. 
+                    Fill in the variables like topic, tone, and audience, then copy the generated prompt directly into your preferred AI tool like ChatGPT or Midjourney.
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="faq-2" className="px-6" data-testid="faq-2">
+                  <AccordionTrigger className="text-left py-5 hover:no-underline">
+                    <span className="font-medium">Can I customize the templates?</span>
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground pb-5">
+                    Yes, every template includes customizable variables. You can adjust the topic, tone, target audience, format, and other parameters. 
+                    The template structure ensures your customizations still produce high-quality, effective prompts.
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="faq-3" className="px-6" data-testid="faq-3">
+                  <AccordionTrigger className="text-left py-5 hover:no-underline">
+                    <span className="font-medium">Which AI models work with these templates?</span>
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground pb-5">
+                    Our templates are optimized for all major AI models including ChatGPT (GPT-4, GPT-3.5), Claude, Gemini, DALL-E, Midjourney, and Stable Diffusion. 
+                    Each template shows the recommended AI model for best results.
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="faq-4" className="px-6" data-testid="faq-4">
+                  <AccordionTrigger className="text-left py-5 hover:no-underline">
+                    <span className="font-medium">What's the difference between templates and generators?</span>
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground pb-5">
+                    Templates are pre-built prompts for specific use cases that you customize with variables. Generators let you create prompts from scratch by describing what you need. 
+                    Use templates when you want quick, proven structures; use generators for unique, custom requirements.
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </div>
+            {/* FAQ Schema.org JSON-LD for SEO */}
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{
+                __html: JSON.stringify({
+                  "@context": "https://schema.org",
+                  "@type": "FAQPage",
+                  "mainEntity": [
+                    {
+                      "@type": "Question",
+                      "name": "What are AI prompt templates?",
+                      "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "AI prompt templates are pre-built, optimized instructions designed for specific use cases like blog writing, marketing copy, or image generation. They save you time by providing a proven structure you can customize with your own details instead of writing prompts from scratch."
+                      }
+                    },
+                    {
+                      "@type": "Question",
+                      "name": "How do I use a template?",
+                      "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Click on any category to browse available templates, then select one to customize. Fill in the variables like topic, tone, and audience, then copy the generated prompt directly into your preferred AI tool like ChatGPT or Midjourney."
+                      }
+                    },
+                    {
+                      "@type": "Question",
+                      "name": "Can I customize the templates?",
+                      "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Yes, every template includes customizable variables. You can adjust the topic, tone, target audience, format, and other parameters. The template structure ensures your customizations still produce high-quality, effective prompts."
+                      }
+                    },
+                    {
+                      "@type": "Question",
+                      "name": "Which AI models work with these templates?",
+                      "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Our templates are optimized for all major AI models including ChatGPT (GPT-4, GPT-3.5), Claude, Gemini, DALL-E, Midjourney, and Stable Diffusion. Each template shows the recommended AI model for best results."
+                      }
+                    },
+                    {
+                      "@type": "Question",
+                      "name": "What's the difference between templates and generators?",
+                      "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Templates are pre-built prompts for specific use cases that you customize with variables. Generators let you create prompts from scratch by describing what you need. Use templates when you want quick, proven structures; use generators for unique, custom requirements."
+                      }
+                    }
+                  ]
+                }),
+              }}
+            />
+          </section>
         </div>
       </div>
     </div>

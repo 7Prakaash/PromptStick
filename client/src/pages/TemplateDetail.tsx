@@ -13,6 +13,12 @@ import { ArrowLeft, Share2 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { PromptTemplateDialog } from '@/components/PromptTemplateDialog';
 import { useToast } from '@/hooks/use-toast';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 
 export default function TemplateDetail() {
   const [, params] = useRoute('/templates/:categoryId');
@@ -246,6 +252,112 @@ export default function TemplateDetail() {
               </div>
             </Card>
           </div>
+
+          {/* FAQ Section */}
+          <section className="mt-12" data-testid="section-faq">
+            <h2 className="text-2xl md:text-3xl font-bold mb-8 text-center">Frequently Asked Questions</h2>
+            <div className="bg-card rounded-lg border">
+              <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="faq-0" className="px-6" data-testid="faq-0">
+                  <AccordionTrigger className="text-left py-5 hover:no-underline">
+                    <span className="font-medium">How do I use {category.name.toLowerCase()} templates?</span>
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground pb-5">
+                    Click the "Use Template" button on any template above. Fill in the customizable variables like your topic, desired tone, and target audience. 
+                    The template will generate an optimized prompt you can copy directly into your AI tool.
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="faq-1" className="px-6" data-testid="faq-1">
+                  <AccordionTrigger className="text-left py-5 hover:no-underline">
+                    <span className="font-medium">Can I customize the template variables?</span>
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground pb-5">
+                    Yes, every template includes editable variables. You can modify the topic, tone, audience, length, and other parameters. 
+                    The template structure ensures your customizations produce effective, well-formatted prompts.
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="faq-2" className="px-6" data-testid="faq-2">
+                  <AccordionTrigger className="text-left py-5 hover:no-underline">
+                    <span className="font-medium">Which AI models work best with these templates?</span>
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground pb-5">
+                    Each template shows the recommended AI model for optimal results. Most {category.name.toLowerCase()} templates work great with 
+                    ChatGPT (GPT-4), Claude, and Gemini. Check the "Recommended" label on each template for specific guidance.
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="faq-3" className="px-6" data-testid="faq-3">
+                  <AccordionTrigger className="text-left py-5 hover:no-underline">
+                    <span className="font-medium">Can I save templates I've customized?</span>
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground pb-5">
+                    Yes, after customizing a template, you can save the generated prompt to your personal library. 
+                    Access your saved prompts anytime from the Saved Prompts section to reuse or edit them.
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="faq-4" className="px-6" data-testid="faq-4">
+                  <AccordionTrigger className="text-left py-5 hover:no-underline">
+                    <span className="font-medium">How can I share a template with others?</span>
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground pb-5">
+                    Click the share button next to any template to copy a direct link. 
+                    Anyone with the link can view and use that specific template, making it easy to share with teammates or clients.
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </div>
+            {/* FAQ Schema.org JSON-LD for SEO */}
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{
+                __html: JSON.stringify({
+                  "@context": "https://schema.org",
+                  "@type": "FAQPage",
+                  "mainEntity": [
+                    {
+                      "@type": "Question",
+                      "name": `How do I use ${category.name.toLowerCase()} templates?`,
+                      "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Click the 'Use Template' button on any template above. Fill in the customizable variables like your topic, desired tone, and target audience. The template will generate an optimized prompt you can copy directly into your AI tool."
+                      }
+                    },
+                    {
+                      "@type": "Question",
+                      "name": "Can I customize the template variables?",
+                      "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Yes, every template includes editable variables. You can modify the topic, tone, audience, length, and other parameters. The template structure ensures your customizations produce effective, well-formatted prompts."
+                      }
+                    },
+                    {
+                      "@type": "Question",
+                      "name": "Which AI models work best with these templates?",
+                      "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": `Each template shows the recommended AI model for optimal results. Most ${category.name.toLowerCase()} templates work great with ChatGPT (GPT-4), Claude, and Gemini. Check the 'Recommended' label on each template for specific guidance.`
+                      }
+                    },
+                    {
+                      "@type": "Question",
+                      "name": "Can I save templates I've customized?",
+                      "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Yes, after customizing a template, you can save the generated prompt to your personal library. Access your saved prompts anytime from the Saved Prompts section to reuse or edit them."
+                      }
+                    },
+                    {
+                      "@type": "Question",
+                      "name": "How can I share a template with others?",
+                      "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Click the share button next to any template to copy a direct link. Anyone with the link can view and use that specific template, making it easy to share with teammates or clients."
+                      }
+                    }
+                  ]
+                }),
+              }}
+            />
+          </section>
         </div>
       </div>
 
